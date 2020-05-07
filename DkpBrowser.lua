@@ -191,6 +191,9 @@ function createFilterButtons()
     end
 
     toggleAllFilters()
+    if IsInGuild() then
+        getglobal("OuterFrame"):RegisterEvent("GUILD_ROSTER_UPDATE")
+    end
 end
 
 function relayCommands()
