@@ -108,28 +108,40 @@ local function getToggledRoster()
     return toggledRoster
 end
 
+local function clearEntries()
+    for member = 1, MaximumMembersShown, 1 do
+        local listEntry = getglobal("OuterFrameListEntry" .. member)
+        getglobal(listEntry:GetName() .. "Player"):SetText("")
+        getglobal(listEntry:GetName() .. "Amount"):SetText("")
+    end
+end
+
 function updateEntries()
     local toggledRoster = getToggledRoster()
     FauxScrollFrame_Update(OuterFrameListScrollFrame, table.getn(toggledRoster), MaximumMembersShown, 24,
         "OuterFrameListEntry", 267, 283)
-    for member = 1, MaximumMembersShown, 1 do
-        local rosterEntry = toggledRoster[member + OuterFrameListScrollFrame.offset]
-        local name = rosterEntry[1]
-        local dkp = rosterEntry[2]
-        local listEntry = getglobal("OuterFrameListEntry" .. member)
-        if rosterEntry then
-            listEntry:Show()
-            local playerFrame = getglobal(listEntry:GetName() .. "Player")
-            playerFrame:SetText(name)
-            setColor(playerFrame, rosterEntry[3])
-            getglobal(listEntry:GetName() .. "Amount"):SetText(dkp)
-            if member == CurrentSelection then
-                getglobal(listEntry:GetName() .. "Background"):Show()
+    if table.getn(toggledRoster) == 0 then
+        clearEntries()
+    else
+        for member = 1, MaximumMembersShown, 1 do
+            local rosterEntry = toggledRoster[member + OuterFrameListScrollFrame.offset]
+            local name = rosterEntry[1]
+            local dkp = rosterEntry[2]
+            local listEntry = getglobal("OuterFrameListEntry" .. member)
+            if rosterEntry then
+                listEntry:Show()
+                local playerFrame = getglobal(listEntry:GetName() .. "Player")
+                playerFrame:SetText(name)
+                setColor(playerFrame, rosterEntry[3])
+                getglobal(listEntry:GetName() .. "Amount"):SetText(dkp)
+                if member == CurrentSelection then
+                    getglobal(listEntry:GetName() .. "Background"):Show()
+                else
+                    getglobal(listEntry:GetName() .. "Background"):Hide()
+                end
             else
-                getglobal(listEntry:GetName() .. "Background"):Hide()
+                listEntry:Hide()
             end
-        else
-            listEntry:Hide()
         end
     end
 end
@@ -182,7 +194,7 @@ function createFilterButtons()
 end
 
 function relayCommands()
-    DEFAULT_CHAT_FRAME:AddMessage("|c80BE0AFF"..INTRO);
+    DEFAULT_CHAT_FRAME:AddMessage("|c80BE0AFF" .. INTRO);
 end
 
 function classButtonOnClick(id)

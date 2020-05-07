@@ -6,7 +6,6 @@
             </OnLoad>
             <OnClick>
                     sortList(self:GetID())
-                    PlaySound("igMainMenuOptionCheckBoxOn")
             </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. "Background"):SetVertexColor(1, 1, 1, 0.4)
@@ -139,9 +138,9 @@
                     <Layer level="ARTWORK">
                         <FontString inherits="GameFontHighlight" text="TITLE">
                             <Anchors>
-                                <Anchor point="RIGHT" relativeTo="$parentTitleHeader" relativePoint="LEFT">
+                                <Anchor point="RIGHT" relativeTo="TitleFrame" relativePoint="LEFT">
                                     <Offset>
-                                        <AbsDimension x="0" y="0"/>
+                                        <AbsDimension x="56" y="0"/>
                                     </Offset>
                                 </Anchor>
                             </Anchors>
