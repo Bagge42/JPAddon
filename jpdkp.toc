@@ -1,0 +1,4 @@
+## Interface: 11303
+localization.en.lua
+DkpBrowser.lua
+DkpBrowser.xml

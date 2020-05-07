@@ -1,0 +1,251 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Button name="ListHeader" virtual="true">
+        <Scripts>
+            <OnLoad>
+                    getglobal(self:GetName() .. "Background"):SetVertexColor(0, 0, 0, 1)
+            </OnLoad>
+            <OnClick>
+                    sortList(self:GetID())
+                    PlaySound("igMainMenuOptionCheckBoxOn")
+            </OnClick>
+            <OnEnter>
+                    getglobal(self:GetName() .. "Background"):SetVertexColor(1, 1, 1, 0.4)
+            </OnEnter>
+            <OnLeave>
+                    self:GetScript("OnLoad")(self)
+            </OnLeave>
+        </Scripts>
+        <ButtonText>
+            <Anchors>
+                <Anchor point="LEFT">
+                    <Offset>
+                        <AbsDimension x="4" y="0"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </ButtonText>
+        <NormalFont style="GameFontHighlight"/>
+        <NormalTexture name="$parentBackground">
+            <Color r="0" g="0" b="0" a="0.6"/>
+        </NormalTexture>
+    </Button>
+    <Button name="ListEntry" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="267" y="24"/>
+        </Size>
+        <Layers>
+            <Layer>
+                <FontString name="$parentPlayer" justifyH="LEFT" inherits="GameFontHighlightSmall">
+                    <Size>
+                        <AbsDimension x="184" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentAmount" justifyH="LEFT" inherits="GameFontHighlightSmall">
+                    <Size>
+                        <AbsDimension x="83" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayer">
+                            <Offset>
+                                <AbsDimension x="4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                    getglobal(self:GetName() .. "Background"):Hide()
+            </OnLoad>
+            <OnClick>
+                    selectEntry(self:GetID())
+            </OnClick>
+            <OnEnter>
+                    getglobal(self:GetName() .. "Background"):Show()
+            </OnEnter>
+            <OnLeave>
+                    if not isSelected(self:GetID()) then
+                        getglobal(self:GetName() .. "Background"):Hide()
+                    end
+            </OnLeave>
+        </Scripts>
+        <NormalTexture name="$parentBackground">
+            <Color r="0" g="0" b="0.5" a="0.33"/>
+        </NormalTexture>
+    </Button>
+    <Button name="ClassButton" virtual="true">>
+        <Size>
+            <AbsDimension x="32" y="32"/>
+        </Size>
+        <Scripts>
+            <OnClick>
+                    classButtonOnClick(self:GetID())
+            </OnClick>
+        </Scripts>
+    </Button>
+    <Frame name="OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
+        <Anchors>
+            <Anchor point="RIGHT" relativePoint="CENTER">
+                <Offset>
+                    <AbsDimension x="200" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Size>
+            <AbsDimension x="283" y="300"/>
+        </Size>
+        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
+            <Color r="0" g="0" b="0" a="0.3"/>
+        </Backdrop>
+        <Scripts>
+            <OnLoad>
+                    relayCommands()
+                    createEntries()
+                    createFilterButtons()
+                    self:RegisterEvent("GUILD_ROSTER_UPDATE")
+                    self:SetUserPlaced(1)
+                    self:RegisterForDrag("LeftButton")
+            </OnLoad>
+            <OnEvent>
+                    updateGuildRoster()
+            </OnEvent>
+            <OnDragStart>
+                    self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                    self:StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+        <Frames>
+            <Frame name="TitleFrame">
+                <Size>
+                    <AbsDimension x="283" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontHighlight" text="TITLE">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="$parentTitleHeader" relativePoint="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="0" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button name="$parentClose" text="CLOSE_BUTTON">
+                        <Size>
+                            <AbsDimension x="20" y="20"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="5"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <ButtonText>
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="7" y="-2"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </ButtonText>
+                        <NormalFont style="GameFontHighlight"/>
+                        <Scripts>
+                            <OnClick>
+                                    self:GetParent():GetParent():Hide()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="$parentList">
+                <Size>
+                    <AbsDimension x="283" y="225"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP">
+                        <Offset>
+                            <AbsDimension x="0" y="-20"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnMouseWheel>
+                            ScrollFrameTemplate_OnMouseWheel(OuterFrameListScrollFrame, delta)
+                    </OnMouseWheel>
+                </Scripts>
+                <Frames>
+                    <ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+                        <Size>
+                            <AbsDimension x="16" y="192"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPRIGHT">
+                                <Offset>
+                                    <AbsDimension x="-23" y="-28"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnVerticalScroll>
+                                FauxScrollFrame_OnVerticalScroll(self, offset, 24, updateEntries)
+                            </OnVerticalScroll>
+                        </Scripts>
+                    </ScrollFrame>
+                    <Button inherits="ListHeader" name="$parentPlayerHeader" id="1" text="PLAYER_HEADER">
+                        <Size>
+                            <AbsDimension x="188" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="0" y="-4"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </Button>
+                    <Button inherits="ListHeader" name="$parentAmountHeader" id="2" text="AMOUNT_HEADER">
+                        <Size>
+                            <AbsDimension x="95" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
+                        </Anchors>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="$parentFilter">
+                <Size>
+                    <AbsDimension x="253" y="32"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativeTo="$parentList">
+                        <Offset>
+                            <AbsDimension x="0" y="-36"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+        </Frames>
+    </Frame>
+</Ui>
