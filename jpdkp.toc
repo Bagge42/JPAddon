@@ -2,4 +2,5 @@
 localization.en.lua
 DkpBrowsing\DkpBrowser.lua
 DkpBrowsing\DkpBrowser.xml
+DkpManagement\DkpManager.lua
 DkpManagement\DkpManager.xml

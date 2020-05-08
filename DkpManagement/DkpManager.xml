@@ -1,29 +1,29 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Frame name="OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="false">
+    <Button name="RaidDkpButton" virtual="true">
+        <Size>
+            <AbsDimension x="52" y="45"/>
+        </Size>
+        <Scripts>
+            <OnClick>
+                    raidDkpButtonOnClick(self:GetID())
+            </OnClick>
+        </Scripts>
+    </Button>
+    <Frame name="Management" parent="OuterFrame">
         <Anchors>
-            <Anchor point="RIGHT" relativePoint="CENTER">
+            <Anchor point="TOPLEFT" relativeTo="OuterFrameList" relativePoint="TOPRIGHT">
                 <Offset>
-                    <AbsDimension x="200" y="0"/>
+                    <AbsDimension x="0" y="-4"/>
                 </Offset>
             </Anchor>
         </Anchors>
         <Size>
-            <AbsDimension x="283" y="300"/>
+            <AbsDimension x="283" y="276"/>
         </Size>
-        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
-            <Color r="0" g="0" b="0" a="0.3"/>
-        </Backdrop>
         <Scripts>
             <OnLoad>
-                    self:SetUserPlaced(1)
-                    self:RegisterForDrag("LeftButton")
+                createManagementButtons()
             </OnLoad>
-            <OnDragStart>
-                    self:StartMoving()
-            </OnDragStart>
-            <OnDragStop>
-                    self:StopMovingOrSizing()
-            </OnDragStop>
         </Scripts>
         <Frames>
             <Frame name="TitleFrame">
@@ -31,40 +31,15 @@
                     <AbsDimension x="283" y="24"/>
                 </Size>
                 <Anchors>
-                    <Anchor point="TOPLEFT"/>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
                 </Anchors>
                 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
                     <Color r="0" g="0" b="0" a="1"/>
                 </Backdrop>
-                <Frames>
-                    <Button name="$parentClose" text="CLOSE_BUTTON">
-                        <Size>
-                            <AbsDimension x="20" y="20"/>
-                        </Size>
-                        <Anchors>
-                            <Anchor point="RIGHT">
-                                <Offset>
-                                    <AbsDimension x="0" y="5"/>
-                                </Offset>
-                            </Anchor>
-                        </Anchors>
-                        <ButtonText>
-                            <Anchors>
-                                <Anchor point="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="7" y="-2"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </ButtonText>
-                        <NormalFont style="GameFontHighlight"/>
-                        <Scripts>
-                            <OnClick>
-                                    self:GetParent():GetParent():Hide()
-                            </OnClick>
-                        </Scripts>
-                    </Button>
-                </Frames>
             </Frame>
         </Frames>
     </Frame>
