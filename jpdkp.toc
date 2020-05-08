@@ -1,5 +1,6 @@
 ## Interface: 11303
 localization.en.lua
+GuildRosterHandler.lua
 DkpBrowsing\DkpBrowser.lua
 DkpBrowsing\DkpBrowser.xml
 DkpManagement\DkpManager.lua

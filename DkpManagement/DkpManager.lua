@@ -1,3 +1,6 @@
+local _, guildRosterHandler = ...
+local GuildRosterHandler = guildRosterHandler.Handler
+
 local ButtonIdToIcon = { "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas" }
 local IdToButton = {}
 
@@ -26,7 +29,30 @@ function createManagementButtons()
     attachIcons()
 end
 
+local function getRaidRoster()
+    local playersInRaid = GetNumGroupMembers()
+
+    local raidRosterTable = { }
+    if playersInRaid then
+        local guildRoster = GuildRosterHandler:getRoster()
+        local memberCount = table.getn(guildRoster);
+        for playerCount = 1, playersInRaid, 1 do
+            local name, _, _, _, _ = GetRaidRosterInfo(playerCount);
+
+            for m = 1, memberCount, 1 do
+                local memberEntry = guildRoster[m]
+                if name == memberEntry[1] then
+                    raidRosterTable[table.getn(raidRosterTable) + 1] = memberEntry;
+                end
+            end
+        end
+    end
+
+    return raidRosterTable
+end
+
 function raidDkpButtonOnClick(id)
-    print(id)
+    local guildRoster = GuildRosterHandler:getRoster()
+    print(guildRoster[1][1])
 end
 

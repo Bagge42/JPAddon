@@ -1,6 +1,6 @@
-local GuildRoster = {}
-local CurrentIdUsed = 1
-local CurrentOrderUsed = "asc"
+local _, guildRosterHandler = ...
+local GuildRosterHandler = guildRosterHandler.Handler
+
 local CurrentSelection = 0
 local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
@@ -22,40 +22,6 @@ end
 function removeRealmName(nameAndRealm)
     local _, _, name = string.find(nameAndRealm, "([^-]*)-%s*")
     return name
-end
-
-function updateGuildRoster()
-    if not CanViewOfficerNote() then
-        return
-    end
-
-    local memberCount = GetNumGuildMembers()
-    local guildRoster = {}
-
-    for n = 1, memberCount, 1 do
-        local nameAndRealm, rank, rankIndex, _, class, zone, _, officernote, online = GetGuildRosterInfo(n)
-        local name = removeRealmName(nameAndRealm)
-        if name ~= "" then
-            local isOnline = 0
-            if online then
-                isOnline = 1
-            end
-
-            if not officernote or officernote == "" then
-                officernote = "<0>"
-            end
-
-            local _, _, dkp = string.find(officernote, "<(-?%d*)>")
-            if not dkp or not tonumber(dkp) then
-                dkp = 0
-            end
-
-            guildRoster[n] = { name, (1 * dkp), class, rank, isOnline, zone, rankIndex }
-        end
-    end
-
-    GuildRoster = guildRoster
-    sortList()
 end
 
 local function setColor(frame, class)
@@ -100,13 +66,23 @@ end
 
 local function getToggledRoster()
     local toggledRoster = {}
-    for member = 1, table.getn(GuildRoster), 1 do
-        if ToggledClasses[GuildRoster[member][3]] then
-            toggledRoster[table.getn(toggledRoster) + 1] = GuildRoster[member]
+    local guildRoster = GuildRosterHandler:getRoster()
+    for member = 1, table.getn(guildRoster), 1 do
+        if ToggledClasses[guildRoster[member][3]] then
+            toggledRoster[table.getn(toggledRoster) + 1] = guildRoster[member]
         end
     end
     return toggledRoster
 end
+
+--local function getPlayerClass(playerName)
+--    for entryCount = 1, table.getn(GuildRoster), 1 do
+--        local entry = GuildRoster[entryCount]
+--        if entry[1] == playerName then
+--            return entry[3]
+--        end
+--    end
+--end
 
 local function clearEntries()
     for member = 1, MaximumMembersShown, 1 do
@@ -116,32 +92,38 @@ local function clearEntries()
     end
 end
 
-function updateEntries()
+local function getNumberOfEntriesToFill(toggledRoster)
+    local sizeOfToggledRoster = table.getn(toggledRoster)
+    if sizeOfToggledRoster < MaximumMembersShown then
+        return sizeOfToggledRoster
+    end
+    return MaximumMembersShown
+end
+
+local function updateEntries()
     local toggledRoster = getToggledRoster()
     FauxScrollFrame_Update(OuterFrameListScrollFrame, table.getn(toggledRoster), MaximumMembersShown, 24,
         "OuterFrameListEntry", 267, 283)
-    if table.getn(toggledRoster) == 0 then
-        clearEntries()
-    else
-        for member = 1, MaximumMembersShown, 1 do
-            local rosterEntry = toggledRoster[member + OuterFrameListScrollFrame.offset]
-            local name = rosterEntry[1]
-            local dkp = rosterEntry[2]
-            local listEntry = getglobal("OuterFrameListEntry" .. member)
-            if rosterEntry then
-                listEntry:Show()
-                local playerFrame = getglobal(listEntry:GetName() .. "Player")
-                playerFrame:SetText(name)
-                setColor(playerFrame, rosterEntry[3])
-                getglobal(listEntry:GetName() .. "Amount"):SetText(dkp)
-                if member == CurrentSelection then
-                    getglobal(listEntry:GetName() .. "Background"):Show()
-                else
-                    getglobal(listEntry:GetName() .. "Background"):Hide()
-                end
+    clearEntries()
+    local numberToFillIn = getNumberOfEntriesToFill(toggledRoster)
+    for member = 1, numberToFillIn, 1 do
+        local rosterEntry = toggledRoster[member + OuterFrameListScrollFrame.offset]
+        local name = rosterEntry[1]
+        local dkp = rosterEntry[2]
+        local listEntry = getglobal("OuterFrameListEntry" .. member)
+        if rosterEntry then
+            listEntry:Show()
+            local playerFrame = getglobal(listEntry:GetName() .. "Player")
+            playerFrame:SetText(name)
+            setColor(playerFrame, rosterEntry[3])
+            getglobal(listEntry:GetName() .. "Amount"):SetText(dkp)
+            if member == CurrentSelection then
+                getglobal(listEntry:GetName() .. "Background"):Show()
             else
-                listEntry:Hide()
+                getglobal(listEntry:GetName() .. "Background"):Hide()
             end
+        else
+            listEntry:Hide()
         end
     end
 end
@@ -155,6 +137,16 @@ function createEntries()
         followingEntries:SetID(entryNr)
         followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
     end
+end
+
+function sortList(id)
+    GuildRosterHandler:sortRoster(id)
+    updateEntries()
+end
+
+function updateRoster()
+    GuildRosterHandler:update()
+    updateEntries()
 end
 
 local function attachIcon(button, left, right, top, bottom)
@@ -191,9 +183,6 @@ function createFilterButtons()
     end
 
     toggleAllFilters()
-    if IsInGuild() then
-        getglobal("OuterFrame"):RegisterEvent("GUILD_ROSTER_UPDATE")
-    end
 end
 
 function relayCommands()
@@ -209,27 +198,6 @@ function classButtonOnClick(id)
         icon:SetDesaturated(1)
         ToggledClasses[IdsToClasses[id]] = nil
     end
-    updateEntries()
-end
-
-function sortList(id)
-    if CurrentIdUsed == id then
-        if CurrentOrderUsed == "asc" then
-            CurrentOrderUsed = "des"
-        else
-            CurrentOrderUsed = "asc"
-        end
-    elseif id then
-        CurrentIdUsed = id
-        CurrentOrderUsed = "asc"
-    end
-    table.sort(GuildRoster, function(member1, member2)
-        if CurrentOrderUsed == "des" then
-            return member1[CurrentIdUsed] > member2[CurrentIdUsed]
-        else
-            return member1[CurrentIdUsed] < member2[CurrentIdUsed]
-        end
-    end)
     updateEntries()
 end
 
