@@ -77,18 +77,6 @@ local function modifyRaidDkp(dkp)
         for raider = 1, table.getn(raidRoster), 1 do
             modifyPlayerDkp(raidRoster[raider][1], dkp)
         end
-
-        --        for n = 1, table.getn(SOTA_RaidQueue), 1 do
-        --            local guildInfo = SOTA_GetGuildPlayerInfo(SOTA_RaidQueue[n][1])
-        --
-        --            if guildInfo then
-        --                SOTA_ApplyPlayerDKP(SOTA_RaidQueue[n][1], dkp)
-        --                tidChanges[tidIndex] = { SOTA_RaidQueue[n][1], dkp }
-        --                tidIndex = tidIndex + 1
-        --            end
-        --        end
-
-        --			publicEcho(string.format("%d DKP was added to all players in raid", dkp))
         local warningMessage = "Jesus and all participating pals earned " .. dkp .. " DKP"
         sendWarningMessage(warningMessage)
     end
