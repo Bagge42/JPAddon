@@ -5,6 +5,8 @@ local GuildRosterHandler = guildRosterHandler.Handler
 local CurrentIdUsed = 1
 local CurrentOrderUsed = "asc"
 local GuildRoster = {}
+local NameToRosterId = {}
+local GuildIndex = {}
 
 local function removeRealmName(nameAndRealm)
     local _, _, name = string.find(nameAndRealm, "([^-]*)-%s*")
@@ -16,11 +18,11 @@ function GuildRosterHandler:update()
         return
     end
 
-    local memberCount = GetNumGuildMembers()
+    local NrOfGuildMembers = GetNumGuildMembers()
     local guildRoster = {}
 
-    for n = 1, memberCount, 1 do
-        local nameAndRealm, rank, rankIndex, _, class, zone, _, officernote, online = GetGuildRosterInfo(n)
+    for member = 1, NrOfGuildMembers, 1 do
+        local nameAndRealm, rank, rankIndex, _, class, zone, _, officernote, online = GetGuildRosterInfo(member)
         if rank ~= ALT and rank ~= OFFICERALT then
             local name = removeRealmName(nameAndRealm)
             if name ~= "" then
@@ -29,25 +31,32 @@ function GuildRosterHandler:update()
                     isOnline = 1
                 end
 
-                if not officernote or officernote == "" then
-                    officernote = "<0>"
+                local dkp = 0
+                local _, _, dkpInNote = string.find(officernote, "<(-?%d*)>")
+                if dkpInNote and tonumber(dkpInNote) then
+                    dkp = dkpInNote
                 end
 
-                local _, _, dkp = string.find(officernote, "<(-?%d*)>")
-                if not dkp or not tonumber(dkp) then
-                    dkp = 0
-                end
-
-                guildRoster[table.getn(guildRoster) + 1] = { name, (1 * dkp), class, rank, isOnline, zone, rankIndex }
+                local rosterId = table.getn(guildRoster) + 1
+                GuildIndex[name] = member
+                NameToRosterId[name] = rosterId
+                guildRoster[rosterId] = { name, (1 * dkp), class, rank, isOnline, zone, rankIndex }
             end
         end
     end
 
     GuildRoster = guildRoster
-    GuildRosterHandler:sortRoster()
 end
 
-function GuildRosterHandler:sortRoster(id)
+local function copyGuildRoster()
+    local copy = { }
+    for memberCount = 1, table.getn(GuildRoster), 1 do
+        copy[memberCount] = GuildRoster[memberCount]
+    end
+    return copy
+end
+
+function GuildRosterHandler:getSortedRoster(id)
     if CurrentIdUsed == id then
         if CurrentOrderUsed == "asc" then
             CurrentOrderUsed = "des"
@@ -58,16 +67,27 @@ function GuildRosterHandler:sortRoster(id)
         CurrentIdUsed = id
         CurrentOrderUsed = "asc"
     end
-    table.sort(GuildRoster, function(member1, member2)
+    local sortedRoster = copyGuildRoster()
+    table.sort(sortedRoster, function(member1, member2)
         if CurrentOrderUsed == "des" then
             return member1[CurrentIdUsed] > member2[CurrentIdUsed]
         else
             return member1[CurrentIdUsed] < member2[CurrentIdUsed]
         end
     end)
+    return sortedRoster
 end
 
 function GuildRosterHandler:getRoster()
     return GuildRoster
+end
+
+function GuildRosterHandler:getMemberInfo(memberName)
+    local rosterId = NameToRosterId[memberName]
+    return GuildRoster[rosterId]
+end
+
+function GuildRosterHandler:getGuildIndex(memberName)
+    return GuildIndex[memberName]
 end
 

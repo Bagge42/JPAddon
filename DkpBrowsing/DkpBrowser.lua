@@ -8,7 +8,7 @@ local ToggledClasses = {}
 
 SLASH_DKP_COMMAND1 = "/jp"
 SlashCmdList["DKP_COMMAND"] = function(msg)
-    handleCommand(msg);
+    handleCommand(msg)
 end
 
 function handleCommand(msg)
@@ -64,9 +64,9 @@ local function setColor(frame, class)
     frame:SetTextColor(r, g, b)
 end
 
-local function getToggledRoster()
+local function getToggledRoster(sortButtonId)
     local toggledRoster = {}
-    local guildRoster = GuildRosterHandler:getRoster()
+    local guildRoster = GuildRosterHandler:getSortedRoster(sortButtonId)
     for member = 1, table.getn(guildRoster), 1 do
         if ToggledClasses[guildRoster[member][3]] then
             toggledRoster[table.getn(toggledRoster) + 1] = guildRoster[member]
@@ -74,15 +74,6 @@ local function getToggledRoster()
     end
     return toggledRoster
 end
-
---local function getPlayerClass(playerName)
---    for entryCount = 1, table.getn(GuildRoster), 1 do
---        local entry = GuildRoster[entryCount]
---        if entry[1] == playerName then
---            return entry[3]
---        end
---    end
---end
 
 local function clearEntries()
     for member = 1, MaximumMembersShown, 1 do
@@ -100,8 +91,8 @@ local function getNumberOfEntriesToFill(toggledRoster)
     return MaximumMembersShown
 end
 
-local function updateEntries()
-    local toggledRoster = getToggledRoster()
+local function updateEntries(sortButtonId)
+    local toggledRoster = getToggledRoster(sortButtonId)
     FauxScrollFrame_Update(OuterFrameListScrollFrame, table.getn(toggledRoster), MaximumMembersShown, 24,
         "OuterFrameListEntry", 267, 283)
     clearEntries()
@@ -140,8 +131,7 @@ function createEntries()
 end
 
 function sortList(id)
-    GuildRosterHandler:sortRoster(id)
-    updateEntries()
+    updateEntries(id)
 end
 
 function updateRoster()
@@ -185,8 +175,12 @@ function createFilterButtons()
     toggleAllFilters()
 end
 
+function echo(msg)
+    DEFAULT_CHAT_FRAME:AddMessage("|c80BE0AFF" .. msg)
+end
+
 function relayCommands()
-    DEFAULT_CHAT_FRAME:AddMessage("|c80BE0AFF" .. INTRO);
+    echo(INTRO)
 end
 
 function classButtonOnClick(id)
