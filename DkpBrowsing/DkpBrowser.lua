@@ -1,7 +1,6 @@
 local _, guildRosterHandler = ...
 local GuildRosterHandler = guildRosterHandler.Handler
 
-local CurrentSelection = 0
 local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
 local ToggledClasses = {}
@@ -17,11 +16,6 @@ function handleCommand(msg)
     else
         OuterFrame:Show()
     end
-end
-
-function removeRealmName(nameAndRealm)
-    local _, _, name = string.find(nameAndRealm, "([^-]*)-%s*")
-    return name
 end
 
 local function setColor(frame, class)
@@ -77,9 +71,9 @@ end
 
 local function clearEntries()
     for member = 1, MaximumMembersShown, 1 do
-        local listEntry = getglobal("OuterFrameListEntry" .. member)
-        getglobal(listEntry:GetName() .. "Player"):SetText("")
-        getglobal(listEntry:GetName() .. "Amount"):SetText("")
+        local listEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. member)
+        getglobal(listEntry:GetName() .. PLAYER):SetText("")
+        getglobal(listEntry:GetName() .. AMOUNT):SetText("")
     end
 end
 
@@ -91,27 +85,32 @@ local function getNumberOfEntriesToFill(toggledRoster)
     return MaximumMembersShown
 end
 
-local function updateEntries(sortButtonId)
-    local toggledRoster = getToggledRoster(sortButtonId)
+function updateEntries(sortButtonId)
+    local toggledRoster
+    if sortButtonId ~= nill and tonumber(sortButtonId) then
+        toggledRoster = getToggledRoster(sortButtonId)
+    else
+        toggledRoster = getToggledRoster()
+    end
     FauxScrollFrame_Update(OuterFrameListScrollFrame, table.getn(toggledRoster), MaximumMembersShown, 24,
-        "OuterFrameListEntry", 267, 283)
+        OUTER_FRAME_LIST_ENTRY, 267, 283)
     clearEntries()
     local numberToFillIn = getNumberOfEntriesToFill(toggledRoster)
     for member = 1, numberToFillIn, 1 do
         local rosterEntry = toggledRoster[member + OuterFrameListScrollFrame.offset]
         local name = rosterEntry[1]
         local dkp = rosterEntry[2]
-        local listEntry = getglobal("OuterFrameListEntry" .. member)
+        local listEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. member)
         if rosterEntry then
             listEntry:Show()
-            local playerFrame = getglobal(listEntry:GetName() .. "Player")
+            local playerFrame = getglobal(listEntry:GetName() .. PLAYER)
             playerFrame:SetText(name)
             setColor(playerFrame, rosterEntry[3])
-            getglobal(listEntry:GetName() .. "Amount"):SetText(dkp)
-            if member == CurrentSelection then
-                getglobal(listEntry:GetName() .. "Background"):Show()
+            getglobal(listEntry:GetName() .. AMOUNT):SetText(dkp)
+            if name == getSelectedPlayer() then
+                getglobal(listEntry:GetName() .. BACKGROUND):Show()
             else
-                getglobal(listEntry:GetName() .. "Background"):Hide()
+                getglobal(listEntry:GetName() .. BACKGROUND):Hide()
             end
         else
             listEntry:Hide()
@@ -120,18 +119,14 @@ local function updateEntries(sortButtonId)
 end
 
 function createEntries()
-    local initialEntry = CreateFrame("Button", "$parentEntry1", OuterFrameList, "ListEntry")
+    local initialEntry = CreateFrame("Button", "$parentEntry1", OuterFrameList, LIST_ENTRY)
     initialEntry:SetID(1)
     initialEntry:SetPoint("TOPLEFT", 0, -28)
     for entryNr = 2, MaximumMembersShown, 1 do
-        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, OuterFrameList, "ListEntry")
+        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, OuterFrameList, LIST_ENTRY)
         followingEntries:SetID(entryNr)
         followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
     end
-end
-
-function sortList(id)
-    updateEntries(id)
 end
 
 function updateRoster()
@@ -153,20 +148,20 @@ local function toggleAllFilters()
 end
 
 function createFilterButtons()
-    local initialButton = CreateFrame("Button", "$parentClassButton1", OuterFrameFilter, "ClassButton")
+    local initialButton = CreateFrame("Button", "$parentClassButton1", OuterFrameFilter, CLASS_BUTTON)
     initialButton:SetID(1)
     initialButton:SetPoint("LEFT", OuterFrameFilter, "LEFT")
     attachIcon(initialButton, 0, 0.25, 0, 0.25)
 
     for firstRowCount = 2, 4, 1 do
-        local firstImageRow = CreateFrame("Button", "$parentClassButton" .. firstRowCount, OuterFrameFilter, "ClassButton")
+        local firstImageRow = CreateFrame("Button", "$parentClassButton" .. firstRowCount, OuterFrameFilter, CLASS_BUTTON)
         firstImageRow:SetID(firstRowCount)
         firstImageRow:SetPoint("LEFT", "$parentClassButton" .. (firstRowCount - 1), "RIGHT")
         attachIcon(firstImageRow, 0 + 0.25 * (firstRowCount - 1), 0.25 * firstRowCount, 0, 0.25)
     end
 
     for secondRowCount = 5, 8, 1 do
-        local secondImageRow = CreateFrame("Button", "$parentClassButton" .. secondRowCount, OuterFrameFilter, "ClassButton")
+        local secondImageRow = CreateFrame("Button", "$parentClassButton" .. secondRowCount, OuterFrameFilter, CLASS_BUTTON)
         secondImageRow:SetID(secondRowCount)
         secondImageRow:SetPoint("LEFT", "$parentClassButton" .. (secondRowCount - 1), "RIGHT")
         attachIcon(secondImageRow, 0 + 0.25 * (secondRowCount - 4 - 1), 0.25 * (secondRowCount - 4), 0.25, 0.50)
@@ -175,12 +170,8 @@ function createFilterButtons()
     toggleAllFilters()
 end
 
-function echo(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|c80BE0AFF" .. msg)
-end
-
 function relayCommands()
-    echo(INTRO)
+    jpMsg(INTRO)
 end
 
 function classButtonOnClick(id)
@@ -193,19 +184,4 @@ function classButtonOnClick(id)
         ToggledClasses[IdsToClasses[id]] = nil
     end
     updateEntries()
-end
-
-function selectEntry(id)
-    if CurrentSelection ~= 0 then
-        getglobal("OuterFrameListEntry" .. CurrentSelection .. "Background"):Hide()
-    end
-    if CurrentSelection == id then
-        CurrentSelection = 0
-    else
-        CurrentSelection = id
-    end
-end
-
-function isSelected(id)
-    return id == CurrentSelection
 end

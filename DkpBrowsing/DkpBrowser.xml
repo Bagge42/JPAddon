@@ -2,13 +2,13 @@
     <Button name="ListHeader" virtual="true">
         <Scripts>
             <OnLoad>
-                    getglobal(self:GetName() .. "Background"):SetVertexColor(0, 0, 0, 1)
+                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
             </OnLoad>
             <OnClick>
-                sortList(self:GetID())
+                updateEntries(self:GetID())
             </OnClick>
             <OnEnter>
-                    getglobal(self:GetName() .. "Background"):SetVertexColor(1, 1, 1, 0.4)
+                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.4)
             </OnEnter>
             <OnLeave>
                     self:GetScript("OnLoad")(self)
@@ -62,17 +62,17 @@
         </Layers>
         <Scripts>
             <OnLoad>
-                    getglobal(self:GetName() .. "Background"):Hide()
+                    getglobal(self:GetName() .. BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
                     selectEntry(self:GetID())
             </OnClick>
             <OnEnter>
-                    getglobal(self:GetName() .. "Background"):Show()
+                    getglobal(self:GetName() .. BACKGROUND):Show()
             </OnEnter>
             <OnLeave>
                     if not isSelected(self:GetID()) then
-                        getglobal(self:GetName() .. "Background"):Hide()
+                        getglobal(self:GetName() .. BACKGROUND):Hide()
                     end
             </OnLeave>
         </Scripts>

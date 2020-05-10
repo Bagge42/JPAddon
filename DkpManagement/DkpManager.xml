@@ -9,6 +9,22 @@
             </OnClick>
         </Scripts>
     </Button>
+    <Button name="AdjustDkp" virtual="true">
+        <Size>
+            <AbsDimension x="24" y="24"/>
+        </Size>
+        <ButtonText>
+            <Anchors>
+                <Anchor point="CENTER"/>
+            </Anchors>
+        </ButtonText>
+        <NormalFont style="GameFontHighlightLarge"/>
+        <Scripts>
+            <OnClick>
+                    adjustDkpOnClick(self:GetID())
+            </OnClick>
+        </Scripts>
+    </Button>
     <Frame name="Management" parent="OuterFrame">
         <Anchors>
             <Anchor point="TOPLEFT" relativeTo="OuterFrameList" relativePoint="TOPRIGHT">
@@ -26,21 +42,163 @@
             </OnLoad>
         </Scripts>
         <Frames>
-            <Frame name="TitleFrame">
+            <Frame name="$parentTitleFrame">
                 <Size>
                     <AbsDimension x="283" y="24"/>
                 </Size>
                 <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset>
-                            <AbsDimension x="0" y="0"/>
-                        </Offset>
-                    </Anchor>
+                    <Anchor point="TOPLEFT"/>
                 </Anchors>
                 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
                     <Color r="0" g="0" b="0" a="1"/>
                 </Backdrop>
             </Frame>
+            <Frame name="$parentPlayerManagement" hidden="true">
+                <Size>
+                    <AbsDimension x="283" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT"/>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Frames>
+                    <Button name="$parentQueue" text="QUEUE_BUTTON">
+                        <Anchors>
+                            <Anchor point="RIGHT"/>
+                        </Anchors>
+                        <Size>
+                            <AbsDimension x="111" y="24"/>
+                        </Size>
+                        <ButtonText name="$parentText">
+                            <Anchors>
+                                <Anchor point="CENTER">
+                                    <Offset>
+                                        <AbsDimension x="0" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </ButtonText>
+                        <NormalFont style="GameFontHighlight"/>
+                        <Scripts>
+                            <OnClick>
+                                benchPlayer()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentSub" text="SUB_BUTTON" inherits="AdjustDkp" id="2">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentQueue" relativePoint="LEFT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <ButtonText>
+                            <Anchors>
+                                <Anchor point="CENTER">
+                                    <Offset>
+                                        <AbsDimension x="0" y="0.8"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </ButtonText>
+                    </Button>
+                    <Button name="$parentAdd" text="ADD_BUTTON" inherits="AdjustDkp" id="1">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentSub" relativePoint="LEFT"/>
+                        </Anchors>
+                        <ButtonText>
+                            <Anchors>
+                                <Anchor point="CENTER">
+                                    <Offset>
+                                        <AbsDimension x="0" y="-0.5"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </ButtonText>
+                    </Button>
+                    <EditBox name="$parentValue" numeric="true" font="GameFontHighlight" autoFocus="false">
+                        <Size>
+                            <AbsDimension x="36" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentAdd" relativePoint="LEFT"/>
+                        </Anchors>
+                        <TextInsets>
+                            <AbsInset left="5" right="0" top="0" bottom="0"/>
+                        </TextInsets>
+                        <FontString>
+                            <Color r="1" g="1" b="1" a="0.9"/>
+                        </FontString>
+                        <Scripts>
+                            <OnEscapePressed>
+                                self:ClearFocus()
+                            </OnEscapePressed>
+                        </Scripts>
+                    </EditBox>
+                    <Frame name="$parentDescription">
+                        <Size>
+                            <AbsDimension x="88" y="24"/>
+                        </Size>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontHighlight" text="PLAYER_MAN_DESCRIPTION">
+                                    <Color r="1" g="1" b="1" a="0.9"/>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentValue" relativePoint="LEFT"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+            </Frame>
+            <Button name="$parentDecay" text="DECAY">
+                <Size>
+                    <AbsDimension x="52" y="45"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            decay()
+                    </OnClick>
+                </Scripts>
+                <ButtonText>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </ButtonText>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <NormalFont style="GameFontHighlightLarge"/>
+            </Button>
+            <Button name="$parentUndo" text="UNDO">
+                <Size>
+                    <AbsDimension x="136" y="45"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            undo()
+                    </OnClick>
+                </Scripts>
+                <ButtonText>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </ButtonText>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <NormalFont style="GameFontHighlightLarge"/>
+            </Button>
         </Frames>
     </Frame>
 </Ui>

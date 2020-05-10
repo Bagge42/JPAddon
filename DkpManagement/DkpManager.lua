@@ -4,7 +4,8 @@ local GuildRosterHandler = guildRosterHandler.Handler
 local ButtonIdToIcon = { "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas" }
 local IdToButton = {}
 local RaidIdToName = { "Ony", "MC", "BWL", "AQ", "Naxx" }
-local RaidDkpValues = { ["Ony"] = 12, ["MC"] = 33, ["BWL"] = 27, ["AQ"] = 0, ["Naxx"] = 1 }
+local RaidDkpValues = { ["Ony"] = 12, ["MC"] = 33, ["BWL"] = 27, ["AQ"] = 0, ["Naxx"] = 0 }
+local DecayPercentage = 20
 
 local function attachIcons()
     for raidId = 1, 5, 1 do
@@ -34,41 +35,24 @@ function createManagementButtons()
     attachIcons()
 end
 
-local function getRaidRoster()
-    local playersInRaid = GetNumGroupMembers()
-
-    local raidRosterTable = {}
-    if playersInRaid then
-        for playerCount = 1, playersInRaid, 1 do
-            local name, _, _, _, _ = GetRaidRosterInfo(playerCount)
-            local playerInfo = GuildRosterHandler:getMemberInfo(name)
-            raidRosterTable[playerCount] = playerInfo
-        end
-    end
-
-    return raidRosterTable
-end
-
 local function modifyPlayerDkp(name, dkp)
     local playerInfo = GuildRosterHandler:getMemberInfo(name);
     local currentDkp = playerInfo[2]
     local newDkp = currentDkp + dkp
 
+    local warningMessage = ""
+    if dkp < 0 then
+        warningMessage = "Subtracted " .. -dkp .. " DKP from " .. name
+        singlePlayerAction(UNDO_ACTION_SUBBED, name, dkp)
+    else
+        warningMessage = "Added " .. dkp .. " DKP to " .. name
+        singlePlayerAction(UNDO_ACTION_ADDED, name, dkp)
+    end
+    sendWarningMessage(warningMessage)
+
     local newOfficerNote = "<" .. newDkp .. ">"
     local guildIndex = GuildRosterHandler:getGuildIndex(name)
     GuildRosterSetOfficerNote(guildIndex, newOfficerNote);
-end
-
-local function isInRaid()
-    local inRaid = (GetNumGroupMembers() > 0)
-    if not inRaid then
-        echo("You must be in a raid!")
-    end
-    return inRaid
-end
-
-local function sendWarningMessage(msg)
-    SendChatMessage(msg, "RAID_WARNING")
 end
 
 local function modifyRaidDkp(dkp)
@@ -77,6 +61,7 @@ local function modifyRaidDkp(dkp)
         for raider = 1, table.getn(raidRoster), 1 do
             modifyPlayerDkp(raidRoster[raider][1], dkp)
         end
+        raidAddAction(dkp)
         local warningMessage = "Jesus and all participating pals earned " .. dkp .. " DKP"
         sendWarningMessage(warningMessage)
     end
@@ -92,9 +77,40 @@ local function clearDkp()
 end
 
 function raidDkpButtonOnClick(id)
-    if id == 4 then
+    if id == 5 then
         clearDkp()
     end
     local value = RaidDkpValues[RaidIdToName[id]]
     modifyRaidDkp(value)
+end
+
+local function adjustPlayerDkp(neg)
+    local dkp = getglobal(PLAYER_MANAGEMENT .. "Value"):GetNumber()
+    if neg then
+        dkp = -dkp
+    end
+    local playerName = getSelectedPlayer()
+    modifyPlayerDkp(playerName, dkp)
+end
+
+function adjustDkpOnClick(id)
+    if id == 1 then
+        adjustPlayerDkp(false)
+    else
+        adjustPlayerDkp(true)
+    end
+end
+
+function decay()
+    local roster = GuildRosterHandler:getRoster()
+    local totalDecayedDkp = 0
+    for member = 1, table.getn(roster), 1 do
+        local memberEntry = roster[member]
+        local currentDkp = memberEntry[2]
+        local decayedDkp = floor(currentDkp * (DecayPercentage / 100))
+        if decayedDkp > 0 then
+            totalDecayedDkp = totalDecayedDkp + decayedDkp
+            modifyPlayerDkp(memberEntry[1], -decayedDkp)
+        end
+    end
 end

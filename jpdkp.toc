@@ -1,7 +1,11 @@
 ## Interface: 11303
 localization.en.lua
 GuildRosterHandler.lua
+Utils.lua
+Selection.lua
+DkpManagement\Bench.lua
 DkpBrowsing\DkpBrowser.lua
 DkpBrowsing\DkpBrowser.xml
+DkpManagement\Undoing.lua
 DkpManagement\DkpManager.lua
 DkpManagement\DkpManager.xml
