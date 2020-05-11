@@ -22,6 +22,7 @@
         <Scripts>
             <OnClick>
                     adjustDkpOnClick(self:GetID())
+                    resetPlayerEditBox()
             </OnClick>
         </Scripts>
     </Button>
@@ -63,6 +64,15 @@
                 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
                     <Color r="0" g="0" b="0" a="1"/>
                 </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentPlayerName" inherits="GameFontNormal">
+                            <Anchors>
+                                <Anchor point="BOTTOM" relativePoint="TOP"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
                 <Frames>
                     <Button name="$parentQueue" text="QUEUE_BUTTON">
                         <Anchors>
@@ -157,7 +167,7 @@
             </Frame>
             <Button name="$parentDecay" text="DECAY">
                 <Size>
-                    <AbsDimension x="52" y="45"/>
+                    <AbsDimension x="62" y="45"/>
                 </Size>
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT"/>
@@ -175,7 +185,7 @@
                 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
                     <Color r="0" g="0" b="0" a="1"/>
                 </Backdrop>
-                <NormalFont style="GameFontHighlightLarge"/>
+                <NormalFont style="GameFontHighlight"/>
             </Button>
             <Button name="$parentUndo" text="UNDO">
                 <Size>
@@ -197,7 +207,7 @@
                 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
                     <Color r="0" g="0" b="0" a="1"/>
                 </Backdrop>
-                <NormalFont style="GameFontHighlightLarge"/>
+                <NormalFont style="GameFontHighlight"/>
             </Button>
         </Frames>
     </Frame>

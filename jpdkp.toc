@@ -6,6 +6,6 @@ Selection.lua
 DkpManagement\Bench.lua
 DkpBrowsing\DkpBrowser.lua
 DkpBrowsing\DkpBrowser.xml
-DkpManagement\Undoing.lua
+DkpManagement\LastAction.lua
 DkpManagement\DkpManager.lua
 DkpManagement\DkpManager.xml

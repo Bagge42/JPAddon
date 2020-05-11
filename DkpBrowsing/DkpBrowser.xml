@@ -5,7 +5,7 @@
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
             </OnLoad>
             <OnClick>
-                updateEntries(self:GetID())
+                    updateEntries(self:GetID())
             </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.4)

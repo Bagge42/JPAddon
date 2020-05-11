@@ -95,3 +95,8 @@ function GuildRosterHandler:getGuildIndex(memberName)
     return GuildIndex[memberName]
 end
 
+function GuildRosterHandler:getPlayerClass(player)
+    local rosterId = NameToRosterId[player]
+    return GuildRoster[rosterId][3]
+end
+

@@ -23,6 +23,9 @@ function selectEntry(entryId)
         EntryIdOfSelection = 0
     else
         getglobal(PLAYER_MANAGEMENT):Show()
+        local playerNameFrame = getglobal(PLAYER_MANAGEMENT .. "PlayerName")
+        playerNameFrame:SetText(playerInEntry)
+        setClassColor(playerNameFrame, GuildRosterHandler:getPlayerClass(playerInEntry))
         getglobal(PLAYER_MANAGEMENT .. "Value"):SetFocus()
         getglobal(OUTER_FRAME_LIST_ENTRY .. entryId .. BACKGROUND):Show()
         CurrentSelection = playerInEntry

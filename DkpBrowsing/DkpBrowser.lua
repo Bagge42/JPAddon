@@ -18,7 +18,7 @@ function handleCommand(msg)
     end
 end
 
-local function setColor(frame, class)
+function setClassColor(frame, class)
     local r = 0
     local g = 0
     local b = 0
@@ -105,7 +105,7 @@ function updateEntries(sortButtonId)
             listEntry:Show()
             local playerFrame = getglobal(listEntry:GetName() .. PLAYER)
             playerFrame:SetText(name)
-            setColor(playerFrame, rosterEntry[3])
+            setClassColor(playerFrame, rosterEntry[3])
             getglobal(listEntry:GetName() .. AMOUNT):SetText(dkp)
             if name == getSelectedPlayer() then
                 getglobal(listEntry:GetName() .. BACKGROUND):Show()

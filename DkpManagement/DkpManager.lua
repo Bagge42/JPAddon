@@ -40,16 +40,6 @@ local function modifyPlayerDkp(name, dkp)
     local currentDkp = playerInfo[2]
     local newDkp = currentDkp + dkp
 
-    local warningMessage = ""
-    if dkp < 0 then
-        warningMessage = "Subtracted " .. -dkp .. " DKP from " .. name
-        singlePlayerAction(UNDO_ACTION_SUBBED, name, dkp)
-    else
-        warningMessage = "Added " .. dkp .. " DKP to " .. name
-        singlePlayerAction(UNDO_ACTION_ADDED, name, dkp)
-    end
-    sendWarningMessage(warningMessage)
-
     local newOfficerNote = "<" .. newDkp .. ">"
     local guildIndex = GuildRosterHandler:getGuildIndex(name)
     GuildRosterSetOfficerNote(guildIndex, newOfficerNote);
@@ -62,7 +52,11 @@ local function modifyRaidDkp(dkp)
             modifyPlayerDkp(raidRoster[raider][1], dkp)
         end
         raidAddAction(dkp)
-        local warningMessage = "Jesus and all participating pals earned " .. dkp .. " DKP"
+        local warningMessage = "Jesus and all participating pals " .. dkp .. " DKP"
+        if dkp < 0 then
+            local name, _ = UnitName("player")
+            warningMessage = name .. " had the audacity to pilfer " .. -dkp .. " DKP from jesus and all participating pals"
+        end
         sendWarningMessage(warningMessage)
     end
 end
@@ -84,12 +78,29 @@ function raidDkpButtonOnClick(id)
     modifyRaidDkp(value)
 end
 
+local function subWarn(player, dkp)
+    local warningMessage = "Subtracted " .. dkp .. " DKP from " .. player
+    sendWarningMessage(warningMessage)
+end
+
+local function addWarn(player, dkp)
+    local warningMessage = "Added " .. dkp .. " DKP to " .. player
+    sendWarningMessage(warningMessage)
+end
+
 local function adjustPlayerDkp(neg)
     local dkp = getglobal(PLAYER_MANAGEMENT .. "Value"):GetNumber()
-    if neg then
-        dkp = -dkp
-    end
     local playerName = getSelectedPlayer()
+
+    if neg then
+        singlePlayerAction(UNDO_ACTION_SUBBED, playerName, dkp)
+        subWarn(playerName, dkp)
+        dkp = -dkp
+    else
+        addWarn(playerName, dkp)
+        singlePlayerAction(UNDO_ACTION_ADDED, playerName, dkp)
+    end
+
     modifyPlayerDkp(playerName, dkp)
 end
 
@@ -104,6 +115,7 @@ end
 function decay()
     local roster = GuildRosterHandler:getRoster()
     local totalDecayedDkp = 0
+    decayAction(roster)
     for member = 1, table.getn(roster), 1 do
         local memberEntry = roster[member]
         local currentDkp = memberEntry[2]
@@ -113,4 +125,50 @@ function decay()
             modifyPlayerDkp(memberEntry[1], -decayedDkp)
         end
     end
+end
+
+local function setDkp(player, dkp)
+    local newOfficerNote = "<" .. dkp .. ">"
+    local guildIndex = GuildRosterHandler:getGuildIndex(player)
+    GuildRosterSetOfficerNote(guildIndex, newOfficerNote);
+end
+
+local function undoDecay()
+    local rosterPriorToDecay = getLastActionRoster()
+    for member = 1, table.getn(rosterPriorToDecay), 1 do
+        local rosterEntry = rosterPriorToDecay[member]
+        print(rosterEntry[1])
+        print(rosterEntry[2])
+        setDkp(rosterEntry[1], rosterEntry[2])
+    end
+end
+
+function singlePlayerUndo(player, amount, sign)
+    modifyPlayerDkp(player, -amount)
+    if sign < 0 then
+        subWarn(player, amount)
+    else
+        addWarn(player, -amount)
+    end
+end
+
+function undo()
+    local lastAction = getLastAction()
+    local amountInLastAction = getLastActionAmount()
+    if lastAction == nil then
+        return
+    elseif lastAction == UNDO_ACTION_SUBBED then
+        singlePlayerUndo(getLastActionPlayer(), amountInLastAction, 1)
+    elseif lastAction == UNDO_ACTION_ADDED then
+        singlePlayerUndo(getLastActionPlayer(), amountInLastAction, -1)
+    elseif lastAction == UNDO_ACTION_DECAY then
+        undoDecay()
+    elseif lastAction == UNDO_ACTION_RAIDADD then
+        modifyRaidDkp(-amountInLastAction)
+    end
+    resetLastAction()
+end
+
+function resetPlayerEditBox()
+    getglobal(PLAYER_MANAGEMENT .. "Value"):SetNumber("")
 end
