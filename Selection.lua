@@ -4,7 +4,7 @@ local GuildRosterHandler = guildRosterHandler.Handler
 local CurrentSelection = ""
 local EntryIdOfSelection = 0
 
-local function colorBenchButton(selectedPlayer)
+function colorBenchButton(selectedPlayer)
     if isBenched(selectedPlayer) then
         getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(0, 1, 0, 0.5)
     else

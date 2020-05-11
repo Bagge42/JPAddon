@@ -1,0 +1,95 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Button name="BenchEntry" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="80" y="24"/>
+        </Size>
+        <Layers>
+            <Layer>
+                <FontString name="$parentPlayer" justifyH="LEFT" inherits="GameFontHighlightSmall">
+                    <Size>
+                        <AbsDimension x="80" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                    getglobal(self:GetName() .. BACKGROUND):Hide()
+            </OnLoad>
+            <OnClick>
+                    removeFromBench(self:GetID())
+            </OnClick>
+            <OnEnter>
+                    getglobal(self:GetName() .. BACKGROUND):Show()
+            </OnEnter>
+            <OnLeave>
+                    getglobal(self:GetName() .. BACKGROUND):Hide()
+            </OnLeave>
+        </Scripts>
+        <NormalTexture name="$parentBackground">
+            <Color r="0" g="0" b="0.5" a="0.33"/>
+        </NormalTexture>
+    </Button>
+    <Frame name="Bench" parent="OuterFrame">
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="Management" relativePoint="TOPRIGHT">
+                <Offset>
+                    <AbsDimension x="0" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Size>
+            <AbsDimension x="80" y="276"/>
+        </Size>
+        <Frames>
+            <Frame name="$parentTitleFrame">
+                <Size>
+                    <AbsDimension x="80" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontHighlight" text="BENCH_TITLE">
+                            <Anchors>
+                                <Anchor point="CENTER">
+                                    <Offset>
+                                        <AbsDimension x="0" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame name="$parentList">
+                <Scripts>
+                    <OnLoad>
+                            createBenchEntries()
+                    </OnLoad>
+                </Scripts>
+                <Size>
+                    <AbsDimension x="80" y="252"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-24"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+        </Frames>
+    </Frame>
+</Ui>

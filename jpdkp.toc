@@ -9,3 +9,4 @@ DkpBrowsing\DkpBrowser.xml
 DkpManagement\LastAction.lua
 DkpManagement\DkpManager.lua
 DkpManagement\DkpManager.xml
+DkpManagement\Bench.xml

@@ -25,6 +25,7 @@ UNDO_ACTION_ADDED = "Added"
 UNDO_ACTION_SUBBED = "Subbed"
 UNDO_ACTION_DECAY = "Decay"
 UNDO_ACTION_RAIDADD = "RaidAdd"
+BENCH_TITLE = "Bench"
 
 -- XML Frame naming related
 
@@ -35,3 +36,4 @@ OUTER_FRAME_LIST_ENTRY = "OuterFrameListEntry"
 BACKGROUND = "Background"
 LIST_ENTRY = "ListEntry"
 CLASS_BUTTON = "ClassButton"
+BENCH_ENTRY = "BenchEntry"
