@@ -11,3 +11,7 @@ function changeBenchState(player)
         Bench[player] = true
     end
 end
+
+function getBench()
+    return Bench
+end

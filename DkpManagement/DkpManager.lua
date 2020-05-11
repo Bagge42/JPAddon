@@ -51,8 +51,12 @@ local function modifyRaidDkp(dkp)
         for raider = 1, table.getn(raidRoster), 1 do
             modifyPlayerDkp(raidRoster[raider][1], dkp)
         end
+        local bench = getBench()
+        for player, _ in pairs(bench) do
+           modifyPlayerDkp(player, dkp)
+        end
         raidAddAction(dkp)
-        local warningMessage = "Jesus and all participating pals " .. dkp .. " DKP"
+        local warningMessage = "Jesus and all participating pals earned " .. dkp .. " DKP"
         if dkp < 0 then
             local name, _ = UnitName("player")
             warningMessage = name .. " had the audacity to pilfer " .. -dkp .. " DKP from jesus and all participating pals"
@@ -114,9 +118,10 @@ end
 
 function decay()
     local roster = GuildRosterHandler:getRoster()
+    local rosterSize = table.getn(roster)
     local totalDecayedDkp = 0
     decayAction(roster)
-    for member = 1, table.getn(roster), 1 do
+    for member = 1, rosterSize, 1 do
         local memberEntry = roster[member]
         local currentDkp = memberEntry[2]
         local decayedDkp = floor(currentDkp * (DecayPercentage / 100))
@@ -125,6 +130,10 @@ function decay()
             modifyPlayerDkp(memberEntry[1], -decayedDkp)
         end
     end
+    local actionMsg = UnitName("player") .. " performed a " .. DecayPercentage .. "% DKP decay."
+    sendGuildMessage(actionMsg)
+    local amountMsg = "A total of ".. totalDecayedDkp .." DKP was subtracted from ".. rosterSize .." players."
+    sendGuildMessage(amountMsg)
 end
 
 local function setDkp(player, dkp)
@@ -137,10 +146,10 @@ local function undoDecay()
     local rosterPriorToDecay = getLastActionRoster()
     for member = 1, table.getn(rosterPriorToDecay), 1 do
         local rosterEntry = rosterPriorToDecay[member]
-        print(rosterEntry[1])
-        print(rosterEntry[2])
         setDkp(rosterEntry[1], rosterEntry[2])
     end
+    local actionMsg = UnitName("player") .. " undid the decay, all dkp has been restored."
+    sendGuildMessage(actionMsg)
 end
 
 function singlePlayerUndo(player, amount, sign)

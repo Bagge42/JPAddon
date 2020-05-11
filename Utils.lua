@@ -9,6 +9,10 @@ function sendWarningMessage(msg)
     SendChatMessage(msg, "RAID_WARNING")
 end
 
+function sendGuildMessage(msg)
+    SendChatMessage(msg, "GUILD")
+end
+
 function removeRealmName(nameAndRealm)
     local _, _, name = string.find(nameAndRealm, "([^-]*)-%s*")
     return name
