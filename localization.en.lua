@@ -29,6 +29,7 @@ BENCH_TITLE = "Bench"
 ALL = "All"
 NONE = "None"
 TOGGLES = "Select:"
+LOG = "Log"
 
 -- XML Frame naming related
 

@@ -26,6 +26,28 @@
             </OnClick>
         </Scripts>
     </Button>
+    <Button name="HoverLight" virtual="true">
+        <Scripts>
+            <OnLoad>
+                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
+            </OnLoad>
+            <OnEnter>
+                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.4)
+            </OnEnter>
+            <OnLeave>
+                    self:GetScript("OnLoad")(self)
+            </OnLeave>
+        </Scripts>
+        <NormalTexture name="$parentBackground">
+            <Color r="0" g="0" b="0" a="0.6"/>
+        </NormalTexture>
+        <NormalFont style="GameFontHighlight"/>
+        <ButtonText>
+            <Anchors>
+                <Anchor point="CENTER"/>
+            </Anchors>
+        </ButtonText>
+    </Button>
     <Frame name="Management" parent="OuterFrame">
         <Anchors>
             <Anchor point="TOPLEFT" relativeTo="OuterFrameList" relativePoint="TOPRIGHT">
@@ -169,31 +191,9 @@
                     </Frame>
                 </Frames>
             </Frame>
-            <Button name="$parentDecay" text="DECAY">
+            <Button name="$parentUndo" text="UNDO" inherits="HoverLight">
                 <Size>
-                    <AbsDimension x="62" y="45"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOMRIGHT"/>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                            decay()
-                    </OnClick>
-                </Scripts>
-                <ButtonText>
-                    <Anchors>
-                        <Anchor point="CENTER"/>
-                    </Anchors>
-                </ButtonText>
-                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
-                    <Color r="0" g="0" b="0" a="1"/>
-                </Backdrop>
-                <NormalFont style="GameFontHighlight"/>
-            </Button>
-            <Button name="$parentUndo" text="UNDO">
-                <Size>
-                    <AbsDimension x="136" y="45"/>
+                    <AbsDimension x="135" y="45"/>
                 </Size>
                 <Anchors>
                     <Anchor point="BOTTOMLEFT"/>
@@ -203,15 +203,32 @@
                             undo()
                     </OnClick>
                 </Scripts>
-                <ButtonText>
-                    <Anchors>
-                        <Anchor point="CENTER"/>
-                    </Anchors>
-                </ButtonText>
-                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
-                    <Color r="0" g="0" b="0" a="1"/>
-                </Backdrop>
-                <NormalFont style="GameFontHighlight"/>
+            </Button>
+            <Button name="$parentDecay" text="DECAY" inherits="HoverLight">
+                <Size>
+                    <AbsDimension x="74" y="45"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentUndo" relativePoint="RIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            decay()
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parentLog" text="LOG" inherits="HoverLight">
+                <Size>
+                    <AbsDimension x="74" y="45"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentDecay" relativePoint="RIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+
+                    </OnClick>
+                </Scripts>
             </Button>
         </Frames>
     </Frame>
