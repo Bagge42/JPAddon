@@ -48,14 +48,6 @@ function GuildRosterHandler:update()
     GuildRoster = guildRoster
 end
 
-local function copyGuildRoster()
-    local copy = { }
-    for memberCount = 1, table.getn(GuildRoster), 1 do
-        copy[memberCount] = GuildRoster[memberCount]
-    end
-    return copy
-end
-
 function GuildRosterHandler:getSortedRoster(id)
     if CurrentIdUsed == id then
         if CurrentOrderUsed == ASCENDING then
@@ -67,7 +59,7 @@ function GuildRosterHandler:getSortedRoster(id)
         CurrentIdUsed = id
         CurrentOrderUsed = ASCENDING
     end
-    local sortedRoster = copyGuildRoster()
+    local sortedRoster = copyTable(GuildRoster)
     table.sort(sortedRoster, function(member1, member2)
         if CurrentOrderUsed == DESCENDING then
             return member1[CurrentIdUsed] > member2[CurrentIdUsed]
@@ -98,5 +90,20 @@ end
 function GuildRosterHandler:getPlayerClass(player)
     local rosterId = NameToRosterId[player]
     return GuildRoster[rosterId][3]
+end
+
+function GuildRosterHandler:getRaidRoster()
+    local playersInRaid = GetNumGroupMembers()
+
+    local raidRosterTable = {}
+    if playersInRaid then
+        for playerCount = 1, playersInRaid, 1 do
+            local name, _, _, _, _ = GetRaidRosterInfo(playerCount)
+            local playerInfo = GuildRosterHandler:getMemberInfo(name)
+            raidRosterTable[playerCount] = playerInfo
+        end
+    end
+
+    return raidRosterTable
 end
 

@@ -45,23 +45,25 @@ local function modifyPlayerDkp(name, dkp)
     GuildRosterSetOfficerNote(guildIndex, newOfficerNote);
 end
 
-local function modifyRaidDkp(dkp)
-    if isInRaid(true) then
-        local raidRoster = getRaidRoster()
+local function modifyRaidDkp(dkp, bench)
+    if isInRaid() then
+        local raidRoster = GuildRosterHandler:getRaidRoster()
         for raider = 1, table.getn(raidRoster), 1 do
             modifyPlayerDkp(raidRoster[raider][1], dkp)
         end
-        local bench = getBench()
         for player, _ in pairs(bench) do
-           modifyPlayerDkp(player, dkp)
+            modifyPlayerDkp(player, dkp)
         end
-        raidAddAction(dkp)
+        local benchCopy = copyTable(bench)
+        raidAddAction(dkp, benchCopy)
         local warningMessage = "Jesus and all participating pals earned " .. dkp .. " DKP"
         if dkp < 0 then
             local name, _ = UnitName("player")
             warningMessage = name .. " had the audacity to pilfer " .. -dkp .. " DKP from jesus and all participating pals"
         end
         sendWarningMessage(warningMessage)
+    else
+        jpMsg("You must be in a raid!")
     end
 end
 
@@ -79,17 +81,25 @@ function raidDkpButtonOnClick(id)
         clearDkp()
     end
     local value = RaidDkpValues[RaidIdToName[id]]
-    modifyRaidDkp(value)
+    modifyRaidDkp(value, getBench())
 end
 
 local function subWarn(player, dkp)
     local warningMessage = "Subtracted " .. dkp .. " DKP from " .. player
-    sendWarningMessage(warningMessage)
+    if isInRaid() then
+        sendWarningMessage(warningMessage)
+    else
+        jpMsg(warningMessage)
+    end
 end
 
 local function addWarn(player, dkp)
     local warningMessage = "Added " .. dkp .. " DKP to " .. player
-    sendWarningMessage(warningMessage)
+    if isInRaid() then
+        sendWarningMessage(warningMessage)
+    else
+        jpMsg(warningMessage)
+    end
 end
 
 local function adjustPlayerDkp(neg)
@@ -132,7 +142,7 @@ function decay()
     end
     local actionMsg = UnitName("player") .. " performed a " .. DecayPercentage .. "% DKP decay."
     sendGuildMessage(actionMsg)
-    local amountMsg = "A total of ".. totalDecayedDkp .." DKP was subtracted from ".. rosterSize .." players."
+    local amountMsg = "A total of " .. totalDecayedDkp .. " DKP was subtracted from " .. rosterSize .. " players."
     sendGuildMessage(amountMsg)
 end
 
@@ -153,11 +163,12 @@ local function undoDecay()
 end
 
 function singlePlayerUndo(player, amount, sign)
-    modifyPlayerDkp(player, -amount)
     if sign < 0 then
+        modifyPlayerDkp(player, -amount)
         subWarn(player, amount)
     else
-        addWarn(player, -amount)
+        modifyPlayerDkp(player, amount)
+        addWarn(player, amount)
     end
 end
 
@@ -173,7 +184,7 @@ function undo()
     elseif lastAction == UNDO_ACTION_DECAY then
         undoDecay()
     elseif lastAction == UNDO_ACTION_RAIDADD then
-        modifyRaidDkp(-amountInLastAction)
+        modifyRaidDkp(-amountInLastAction, getLastActionBench())
     end
     resetLastAction()
 end

@@ -2,6 +2,7 @@ local LastAction
 local PlayerInLastAction
 local AmountInLastAction
 local GuildRosterInLastAction
+local BenchInLastAction
 
 function singlePlayerAction(action, player, amount)
     LastAction = action
@@ -9,9 +10,10 @@ function singlePlayerAction(action, player, amount)
     AmountInLastAction = amount
 end
 
-function raidAddAction(amount)
+function raidAddAction(amount, bench)
     LastAction = UNDO_ACTION_RAIDADD
     AmountInLastAction = amount
+    BenchInLastAction = bench
 end
 
 function decayAction(rosterPriorToDecay)
@@ -42,3 +44,6 @@ function getLastActionRoster()
     return GuildRosterInLastAction
 end
 
+function getLastActionBench()
+    return BenchInLastAction
+end

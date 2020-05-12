@@ -59,7 +59,11 @@
                     <AbsDimension x="283" y="24"/>
                 </Size>
                 <Anchors>
-                    <Anchor point="LEFT"/>
+                    <Anchor point="LEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="6"/>
+                        </Offset>
+                    </Anchor>
                 </Anchors>
                 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
                     <Color r="0" g="0" b="0" a="1"/>
