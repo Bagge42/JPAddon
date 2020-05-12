@@ -185,3 +185,26 @@ function classButtonOnClick(id)
     end
     updateEntries()
 end
+
+local function setDesaturations(nilOrOne)
+    for classCount = 1, 8, 1 do
+        local icon = getglobal("OuterFrameFilterClassButton" .. classCount .. "Icon")
+        icon:SetDesaturated(nilOrOne)
+    end
+end
+
+function deselectAllClasses()
+    for _, class in pairs(IdsToClasses) do
+       ToggledClasses[class] = nil
+    end
+    setDesaturations(1)
+    updateEntries()
+end
+
+function selectAllClasses()
+    for _, class in pairs(IdsToClasses) do
+       ToggledClasses[class] = true
+    end
+    setDesaturations(nil)
+    updateEntries()
+end

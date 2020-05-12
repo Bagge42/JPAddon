@@ -45,17 +45,24 @@ local function modifyPlayerDkp(name, dkp)
     GuildRosterSetOfficerNote(guildIndex, newOfficerNote);
 end
 
+local function collectPlayerNamesFromTablesNoDubs(roster, bench)
+    local playerNames = {}
+    for rosterCount = 1, table.getn(roster), 1 do
+        playerNames[roster[rosterCount][1]] = true
+    end
+    for benchPlayer, _ in pairs(bench) do
+        playerNames[benchPlayer] = true
+    end
+    return playerNames
+end
+
 local function modifyRaidDkp(dkp, bench)
     if isInRaid() then
-        local raidRoster = GuildRosterHandler:getRaidRoster()
-        for raider = 1, table.getn(raidRoster), 1 do
-            modifyPlayerDkp(raidRoster[raider][1], dkp)
-        end
-        for player, _ in pairs(bench) do
+        local playerNames = collectPlayerNamesFromTablesNoDubs(GuildRosterHandler:getRaidRoster(), bench)
+        for player, _ in pairs(playerNames) do
             modifyPlayerDkp(player, dkp)
         end
-        local benchCopy = copyTable(bench)
-        raidAddAction(dkp, benchCopy)
+        raidAddAction(dkp, copyTable(bench))
         local warningMessage = "Jesus and all participating pals earned " .. dkp .. " DKP"
         if dkp < 0 then
             local name, _ = UnitName("player")

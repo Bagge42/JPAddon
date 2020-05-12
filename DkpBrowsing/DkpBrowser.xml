@@ -90,6 +90,31 @@
             </OnClick>
         </Scripts>
     </Button>
+    <Button name="AllClassToggle" virtual="true">
+        <Size>
+            <AbsDimension x="40" y="24"/>
+        </Size>
+        <ButtonText>
+            <Anchors>
+                <Anchor point="CENTER"/>
+            </Anchors>
+        </ButtonText>
+        <NormalFont style="GameFontHighlight"/>
+        <Scripts>
+            <OnLoad>
+                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0)
+            </OnLoad>
+            <OnEnter>
+                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.4)
+            </OnEnter>
+            <OnLeave>
+                    self:GetScript("OnLoad")(self)
+            </OnLeave>
+        </Scripts>
+        <NormalTexture name="$parentBackground">
+            <Color r="1" g="1" b="1" a="1"/>
+        </NormalTexture>
+    </Button>
     <Frame name="OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="false">
         <Anchors>
             <Anchor point="RIGHT" relativePoint="CENTER">
@@ -124,59 +149,6 @@
             </OnDragStop>
         </Scripts>
         <Frames>
-            <Frame name="TitleFrame">
-                <Size>
-                    <AbsDimension x="646" y="24"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="TOPLEFT"/>
-                </Anchors>
-                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
-                    <Color r="0" g="0" b="0" a="1"/>
-                </Backdrop>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <FontString inherits="GameFontHighlight" text="TITLE">
-                            <Anchors>
-                                <Anchor point="RIGHT" relativeTo="TitleFrame" relativePoint="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="56" y="0"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </FontString>
-                    </Layer>
-                </Layers>
-                <Frames>
-                    <Button name="$parentClose" text="CLOSE_BUTTON">
-                        <Size>
-                            <AbsDimension x="20" y="20"/>
-                        </Size>
-                        <Anchors>
-                            <Anchor point="RIGHT">
-                                <Offset>
-                                    <AbsDimension x="0" y="5"/>
-                                </Offset>
-                            </Anchor>
-                        </Anchors>
-                        <ButtonText>
-                            <Anchors>
-                                <Anchor point="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="7" y="-2"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </ButtonText>
-                        <NormalFont style="GameFontHighlight"/>
-                        <Scripts>
-                            <OnClick>
-                                    self:GetParent():GetParent():Hide()
-                            </OnClick>
-                        </Scripts>
-                    </Button>
-                </Frames>
-            </Frame>
             <Frame name="$parentList">
                 <Size>
                     <AbsDimension x="283" y="225"/>
@@ -231,6 +203,100 @@
                             <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
                         </Anchors>
                     </Button>
+                </Frames>
+            </Frame>
+            <Frame name="TitleFrame">
+                <Size>
+                    <AbsDimension x="646" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontHighlight" text="TITLE">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="TitleFrame" relativePoint="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="56" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button name="$parentClose" text="CLOSE_BUTTON">
+                        <Size>
+                            <AbsDimension x="20" y="20"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="5"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <ButtonText>
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="7" y="-2"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </ButtonText>
+                        <NormalFont style="GameFontHighlight"/>
+                        <Scripts>
+                            <OnClick>
+                                    self:GetParent():GetParent():Hide()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentNone" text="NONE" inherits="AllClassToggle">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="OuterFrameList" relativePoint="TOPRIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="8"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                deselectAllClasses()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentAll" text="ALL" inherits="AllClassToggle">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentNone" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    selectAllClasses()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Frame name="$parentToggles">
+                        <Size>
+                            <AbsDimension x="40" y="24"/>
+                        </Size>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontHighlight" text="TOGGLES">
+                                    <Anchors>
+                                        <Anchor point="CENTER"/>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentAll" relativePoint="LEFT"/>
+                        </Anchors>
+                    </Frame>
                 </Frames>
             </Frame>
             <Frame name="$parentFilter">
