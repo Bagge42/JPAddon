@@ -42,6 +42,7 @@
             <Color r="0" g="0" b="0" a="0.6"/>
         </NormalTexture>
         <NormalFont style="GameFontHighlight"/>
+        <HighlightFont style="GameFontNormal"/>
         <ButtonText>
             <Anchors>
                 <Anchor point="CENTER"/>

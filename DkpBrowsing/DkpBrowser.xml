@@ -24,6 +24,7 @@
             </Anchors>
         </ButtonText>
         <NormalFont style="GameFontHighlight"/>
+        <HighlightFont style="GameFontNormal"/>
         <NormalTexture name="$parentBackground">
             <Color r="0" g="0" b="0" a="0.6"/>
         </NormalTexture>
@@ -100,6 +101,7 @@
             </Anchors>
         </ButtonText>
         <NormalFont style="GameFontHighlight"/>
+        <HighlightFont style="GameFontNormal"/>
         <Scripts>
             <OnLoad>
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0)
