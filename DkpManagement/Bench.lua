@@ -59,3 +59,9 @@ function updateBenchEntries()
         entryCounter = entryCounter + 1
     end
 end
+
+function clearBench()
+    Bench = {}
+    updateBenchEntries()
+    getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
+end
