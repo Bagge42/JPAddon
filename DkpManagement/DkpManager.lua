@@ -63,7 +63,6 @@ local function modifyRaidDkp(dkp, bench)
         for player, _ in pairs(playerNames) do
             modifyPlayerDkp(player, dkp)
         end
-        raidAddAction(dkp, copyTable(bench))
         local warningMessage = "Jesus and all participating pals earned " .. dkp .. " DKP"
         if dkp < 0 then
             local name, _ = UnitName("player")
@@ -113,11 +112,9 @@ end
 
 local function adjustPlayerDkp(player, dkp)
     if dkp < 0 then
-        singlePlayerAction(UNDO_ACTION_SUBBED, player, -dkp)
         subWarn(player, -dkp)
     else
         addWarn(player, dkp)
-        singlePlayerAction(UNDO_ACTION_ADDED, player, dkp)
     end
 
     modifyPlayerDkp(player, dkp)

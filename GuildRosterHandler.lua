@@ -111,11 +111,11 @@ function GuildRosterHandler:getRaidRoster()
     local playersInRaid = GetNumGroupMembers()
 
     local raidRosterTable = {}
-    if playersInRaid then
+    if playersInRaid > 0 then
         for playerCount = 1, playersInRaid, 1 do
             local name, _, _, _, _ = GetRaidRosterInfo(playerCount)
             local playerInfo = GuildRosterHandler:getMemberInfo(name)
-            raidRosterTable[playerCount] = playerInfo
+            raidRosterTable[table.getn(raidRosterTable) + 1] = playerInfo
         end
     end
 

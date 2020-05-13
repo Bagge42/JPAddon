@@ -1,6 +1,3 @@
-local _, guildRosterHandler = ...
-local GuildRosterHandler = guildRosterHandler.Handler
-
 function jpMsg(msg)
     DEFAULT_CHAT_FRAME:AddMessage("|c80BE0AFF" .. msg)
 end
