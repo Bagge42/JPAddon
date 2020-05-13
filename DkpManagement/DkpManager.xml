@@ -214,7 +214,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            decay()
+                            addDecayEvent()
                     </OnClick>
                 </Scripts>
             </Button>

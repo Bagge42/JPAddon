@@ -7,6 +7,7 @@ DkpManagement\Bench.lua
 DkpBrowsing\DkpBrowser.lua
 DkpBrowsing\DkpBrowser.xml
 DkpManagement\LastAction.lua
+DkpManagement\EventQueue.lua
 DkpManagement\DkpManager.lua
 DkpManagement\DkpManager.xml
 DkpManagement\Bench.xml

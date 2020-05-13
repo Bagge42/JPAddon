@@ -24,7 +24,9 @@ end
 function removeFromBench(entryId)
     local player = getglobal("BenchListEntry" .. entryId .. PLAYER):GetText()
     changeBenchState(player)
-    colorBenchButton(player)
+    if getSelectedPlayer() == player then
+        colorBenchButton(player)
+    end
 end
 
 function createBenchEntries()

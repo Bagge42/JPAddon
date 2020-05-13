@@ -6,6 +6,7 @@ local IdToButton = {}
 local RaidIdToName = { "Ony", "MC", "BWL", "AQ", "Naxx" }
 local RaidDkpValues = { ["Ony"] = 12, ["MC"] = 33, ["BWL"] = 27, ["AQ"] = 0, ["Naxx"] = 0 }
 local DecayPercentage = 20
+local RosterAtDecay = {}
 
 local function attachIcons()
     for raidId = 1, 5, 1 do
@@ -36,13 +37,13 @@ function createManagementButtons()
 end
 
 local function modifyPlayerDkp(name, dkp)
-    local playerInfo = GuildRosterHandler:getMemberInfo(name);
+    local playerInfo = GuildRosterHandler:getMemberInfo(name)
     local currentDkp = playerInfo[2]
     local newDkp = currentDkp + dkp
 
     local newOfficerNote = "<" .. newDkp .. ">"
     local guildIndex = GuildRosterHandler:getGuildIndex(name)
-    GuildRosterSetOfficerNote(guildIndex, newOfficerNote);
+    GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
 end
 
 local function collectPlayerNamesFromTablesNoDubs(roster, bench)
@@ -79,7 +80,7 @@ local function clearDkp()
     for member = 1, table.getn(roster), 1 do
         local newOfficerNote = "<" .. 0 .. ">"
         local guildIndex = GuildRosterHandler:getGuildIndex(roster[member][1])
-        GuildRosterSetOfficerNote(guildIndex, newOfficerNote);
+        GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
     end
 end
 
@@ -88,7 +89,8 @@ function raidDkpButtonOnClick(id)
         clearDkp()
     end
     local value = RaidDkpValues[RaidIdToName[id]]
-    modifyRaidDkp(value, getBench())
+    local benchAtClickTime = copyTable(getBench())
+    addEvent(function(event) modifyRaidDkp(event[3], event[4]) end, UNDO_ACTION_RAIDADD, value, benchAtClickTime)
 end
 
 local function subWarn(player, dkp)
@@ -109,37 +111,34 @@ local function addWarn(player, dkp)
     end
 end
 
-local function adjustPlayerDkp(neg)
-    local dkp = getglobal(PLAYER_MANAGEMENT .. "Value"):GetNumber()
-    local playerName = getSelectedPlayer()
-
-    if neg then
-        singlePlayerAction(UNDO_ACTION_SUBBED, playerName, dkp)
-        subWarn(playerName, dkp)
-        dkp = -dkp
+local function adjustPlayerDkp(player, dkp)
+    if dkp < 0 then
+        singlePlayerAction(UNDO_ACTION_SUBBED, player, -dkp)
+        subWarn(player, -dkp)
     else
-        addWarn(playerName, dkp)
-        singlePlayerAction(UNDO_ACTION_ADDED, playerName, dkp)
+        addWarn(player, dkp)
+        singlePlayerAction(UNDO_ACTION_ADDED, player, dkp)
     end
 
-    modifyPlayerDkp(playerName, dkp)
+    modifyPlayerDkp(player, dkp)
 end
 
 function adjustDkpOnClick(id)
+    local dkp = getglobal(PLAYER_MANAGEMENT .. "Value"):GetNumber()
+    local playerName = getSelectedPlayer()
     if id == 1 then
-        adjustPlayerDkp(false)
+        addEvent(function(event) adjustPlayerDkp(event[3], event[4]) end, UNDO_ACTION_ADDED, playerName, dkp)
     else
-        adjustPlayerDkp(true)
+        addEvent(function(event) adjustPlayerDkp(event[3], event[4]) end, UNDO_ACTION_SUBBED, playerName, -dkp)
     end
 end
 
-function decay()
-    local roster = GuildRosterHandler:getRoster()
-    local rosterSize = table.getn(roster)
+local function decay()
+    RosterAtDecay = copyTable(GuildRosterHandler:getRoster())
+    local rosterSize = table.getn(RosterAtDecay)
     local totalDecayedDkp = 0
-    decayAction(roster)
     for member = 1, rosterSize, 1 do
-        local memberEntry = roster[member]
+        local memberEntry = RosterAtDecay[member]
         local currentDkp = memberEntry[2]
         local decayedDkp = floor(currentDkp * (DecayPercentage / 100))
         if decayedDkp > 0 then
@@ -156,46 +155,48 @@ end
 local function setDkp(player, dkp)
     local newOfficerNote = "<" .. dkp .. ">"
     local guildIndex = GuildRosterHandler:getGuildIndex(player)
-    GuildRosterSetOfficerNote(guildIndex, newOfficerNote);
+    GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
 end
 
 local function undoDecay()
-    local rosterPriorToDecay = getLastActionRoster()
-    for member = 1, table.getn(rosterPriorToDecay), 1 do
-        local rosterEntry = rosterPriorToDecay[member]
+    for member = 1, table.getn(RosterAtDecay), 1 do
+        local rosterEntry = RosterAtDecay[member]
         setDkp(rosterEntry[1], rosterEntry[2])
     end
     local actionMsg = UnitName("player") .. " undid the decay, all dkp has been restored."
     sendGuildMessage(actionMsg)
 end
 
-function singlePlayerUndo(player, amount, sign)
-    if sign < 0 then
-        modifyPlayerDkp(player, -amount)
-        subWarn(player, amount)
+function singlePlayerUndo(player, amount)
+    modifyPlayerDkp(player, amount)
+    if amount < 0 then
+        subWarn(player, -amount)
     else
-        modifyPlayerDkp(player, amount)
         addWarn(player, amount)
     end
 end
 
 function undo()
-    local lastAction = getLastAction()
-    local amountInLastAction = getLastActionAmount()
-    if lastAction == nil then
+    local latestQueuedEvent = getLatestQueuedEvent()
+    if latestQueuedEvent == nil then
         return
-    elseif lastAction == UNDO_ACTION_SUBBED then
-        singlePlayerUndo(getLastActionPlayer(), amountInLastAction, 1)
-    elseif lastAction == UNDO_ACTION_ADDED then
-        singlePlayerUndo(getLastActionPlayer(), amountInLastAction, -1)
-    elseif lastAction == UNDO_ACTION_DECAY then
-        undoDecay()
-    elseif lastAction == UNDO_ACTION_RAIDADD then
-        modifyRaidDkp(-amountInLastAction, getLastActionBench())
     end
-    resetLastAction()
+    local nameOfLatestQueuedEvent = latestQueuedEvent[2]
+    if nameOfLatestQueuedEvent == UNDO_ACTION_SUBBED then
+        addEvent(function(event) singlePlayerUndo(event[3], event[4]) end, nil, latestQueuedEvent[3], -latestQueuedEvent[4])
+    elseif nameOfLatestQueuedEvent == UNDO_ACTION_ADDED then
+        addEvent(function(event) singlePlayerUndo(event[3], event[4]) end, nil, latestQueuedEvent[3], -latestQueuedEvent[4])
+    elseif nameOfLatestQueuedEvent == UNDO_ACTION_DECAY then
+        addEvent(function() undoDecay() end, nil)
+    elseif nameOfLatestQueuedEvent == UNDO_ACTION_RAIDADD then
+        addEvent(function(event) modifyRaidDkp(event[3], event[4]) end, nil, -latestQueuedEvent[3], latestQueuedEvent[4])
+    end
 end
 
 function resetPlayerEditBox()
     getglobal(PLAYER_MANAGEMENT .. "Value"):SetNumber("")
+end
+
+function addDecayEvent()
+    addEvent(function() decay() end, UNDO_ACTION_DECAY)
 end

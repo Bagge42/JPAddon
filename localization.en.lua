@@ -30,7 +30,7 @@ ALL = "All"
 NONE = "None"
 TOGGLES = "Select:"
 LOG = "Log"
-CLEAR_BENCH = "Clear"
+CLEAR_BENCH = "Clear bench"
 
 -- XML Frame naming related
 
