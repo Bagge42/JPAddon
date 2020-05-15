@@ -41,7 +41,7 @@ end
 
 function benchPlayer()
     local selectedPlayer = getSelectedPlayer()
-    changeBenchState(selectedPlayer)
+    changeBenchState(selectedPlayer, GuildRosterHandler:getPlayerClass(selectedPlayer))
     colorBenchButton(selectedPlayer)
 end
 

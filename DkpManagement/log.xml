@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Frame name="Log" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="false">
+        <Anchors>
+            <Anchor point="RIGHT" relativePoint="CENTER">
+                <Offset>
+                    <AbsDimension x="350" y="100"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Size>
+            <AbsDimension x="446" y="500"/>
+        </Size>
+        <Scripts>
+            <OnLoad>
+                    self:RegisterForDrag("LeftButton")
+            </OnLoad>
+            <OnDragStart>
+                    self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                    self:StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
+            <Color r="0" g="0" b="0" a="0.3"/>
+        </Backdrop>
+        <Frames>
+            <Frame name="$parentList">
+                <Size>
+                    <AbsDimension x="446" y="425"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-20"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Frames>
+                    <Button inherits="ListHeader" name="$parentPlayerHeader" id="1" text="LOG_TIME_HEADER">
+                        <Size>
+                            <AbsDimension x="115" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="0" y="-4"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </Button>
+                    <Button inherits="ListHeader" name="$parentAmountHeader" id="2" text="PLAYER_HEADER">
+                        <Size>
+                            <AbsDimension x="95" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
+                        </Anchors>
+                    </Button>
+                    <Button inherits="ListHeader" name="$parentChangeHeader" id="3" text="LOG_CHANGE_HEADER">
+                        <Size>
+                            <AbsDimension x="65" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentAmountHeader"/>
+                        </Anchors>
+                    </Button>
+                    <Button inherits="ListHeader" name="$parentTotalHeader" id="4" text="LOG_TOTAL_HEADER">
+                        <Size>
+                            <AbsDimension x="77" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChangeHeader"/>
+                        </Anchors>
+                    </Button>
+                    <Button inherits="ListHeader" name="$parentEventHeader" id="5" text="LOG_EVENT_HEADER">
+                        <Size>
+                            <AbsDimension x="94" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTotalHeader"/>
+                        </Anchors>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="$parentTitleFrame">
+                <Size>
+                    <AbsDimension x="446" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontHighlight" text="LOG_TITLE">
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="6" y="1"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button name="$parentClose" text="CLOSE_BUTTON">
+                        <Size>
+                            <AbsDimension x="20" y="20"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="5"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <ButtonText>
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="7" y="-2"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </ButtonText>
+                        <NormalFont style="GameFontHighlight"/>
+                        <Scripts>
+                            <OnClick>
+                                    self:GetParent():GetParent():Hide()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+        </Frames>
+    </Frame>
+</Ui>

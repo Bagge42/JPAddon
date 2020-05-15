@@ -1,4 +1,9 @@
+## Title: J&P DKP
+## Version: 1.5.0
+## Author: Jordål @ <EU - Gandling>
 ## Interface: 11303
+## SavedVariables: JP_Bench
+
 localization.en.lua
 Utils.lua
 GuildRosterHandler.lua
@@ -6,6 +11,7 @@ Selection.lua
 DkpManagement\Bench.lua
 DkpBrowsing\DkpBrowser.lua
 DkpBrowsing\DkpBrowser.xml
+DkpManagement\log.xml
 DkpManagement\EventQueue.lua
 DkpManagement\DkpManager.lua
 DkpManagement\DkpManager.xml

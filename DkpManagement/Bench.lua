@@ -1,24 +1,21 @@
-local _, guildRosterHandler = ...
-local GuildRosterHandler = guildRosterHandler.Handler
-
-local Bench = {}
+JP_Bench = {}
 local MaximumMembersShown = 10
 
 function isBenched(player)
-    return Bench[player] == true
+    return JP_Bench[player] ~= nil
 end
 
-function changeBenchState(player)
-    if Bench[player] then
-        Bench[player] = nil
+function changeBenchState(player, class)
+    if JP_Bench[player] then
+        JP_Bench[player] = nil
     else
-        Bench[player] = true
+        JP_Bench[player] = class
     end
     updateBenchEntries()
 end
 
 function getBench()
-    return Bench
+    return JP_Bench
 end
 
 function removeFromBench(entryId)
@@ -51,19 +48,25 @@ end
 function updateBenchEntries()
     clearBenchEntries()
     local entryCounter = 1
-    for member, _ in pairs(Bench) do
+    for member, class in pairs(JP_Bench) do
         local benchEntry = getglobal("BenchListEntry" .. entryCounter)
         benchEntry:Show()
         getglobal(benchEntry:GetName() .. BACKGROUND):Hide()
         local fontString = getglobal(benchEntry:GetName() .. PLAYER)
         fontString:SetText(member)
-        setClassColor(fontString, GuildRosterHandler:getPlayerClass(member))
+        setClassColor(fontString, class)
         entryCounter = entryCounter + 1
     end
 end
 
 function clearBench()
-    Bench = {}
+    JP_Bench = {}
     updateBenchEntries()
     getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
+end
+
+function loadBench(event, addonName)
+    if addonName == "jpdkp" then
+        updateBenchEntries()
+    end
 end

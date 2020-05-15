@@ -77,7 +77,11 @@
                 <Scripts>
                     <OnLoad>
                             createBenchEntries()
+                            self:RegisterEvent("ADDON_LOADED")
                     </OnLoad>
+                    <OnEvent>
+                        loadBench(event, ...)
+                    </OnEvent>
                 </Scripts>
                 <Size>
                     <AbsDimension x="80" y="207"/>

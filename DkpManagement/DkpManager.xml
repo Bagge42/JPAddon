@@ -227,7 +227,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-
+                            TransactionUIFrame:Show()
                     </OnClick>
                 </Scripts>
             </Button>

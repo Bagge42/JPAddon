@@ -63,7 +63,7 @@ local function modifyRaidDkp(dkp, bench)
         for player, _ in pairs(playerNames) do
             modifyPlayerDkp(player, dkp)
         end
-        local warningMessage = "Jesus and all participating pals earned " .. dkp .. " DKP"
+        local warningMessage = "Jesus and all participals earned " .. dkp .. " DKP"
         if dkp < 0 then
             local name, _ = UnitName("player")
             warningMessage = name .. " had the audacity to pilfer " .. -dkp .. " DKP from jesus and all participating pals"
@@ -84,9 +84,6 @@ local function clearDkp()
 end
 
 function raidDkpButtonOnClick(id)
-    if id == 5 then
-        clearDkp()
-    end
     local value = RaidDkpValues[RaidIdToName[id]]
     local benchAtClickTime = copyTable(getBench())
     addEvent(function(event) modifyRaidDkp(event[3], event[4]) end, UNDO_ACTION_RAIDADD, value, benchAtClickTime)
