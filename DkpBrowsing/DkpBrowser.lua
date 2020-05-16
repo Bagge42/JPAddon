@@ -1,16 +1,14 @@
-local _, guildRosterHandler = ...
-local GuildRosterHandler = guildRosterHandler.Handler
+_G.DkpBrowser = {}
+DkpBrowser = _G.DkpBrowser
+local GuildRosterHandler = _G.GuildRosterHandler
+local BrowserSelection = _G.BrowserSelection
+local Utils = _G.Utils
 
 local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
 local ToggledClasses = {}
 
-SLASH_DKP_COMMAND1 = "/jp"
-SlashCmdList["DKP_COMMAND"] = function(msg)
-    handleCommand(msg)
-end
-
-function handleCommand(msg)
+local function handleCommand(msg)
     if OuterFrame:IsVisible() then
         OuterFrame:Hide()
     else
@@ -18,44 +16,9 @@ function handleCommand(msg)
     end
 end
 
-function setClassColor(frame, class)
-    local r = 0
-    local g = 0
-    local b = 0
-    if class == DRUID then
-        r = 1.0
-        g = 0.49
-        b = 0.04
-    elseif class == HUNTER then
-        r = 0.67
-        g = 0.83
-        b = 0.45
-    elseif class == MAGE then
-        r = 0.41
-        g = 0.80
-        b = 0.94
-    elseif class == PRIEST then
-        r = 1
-        g = 1
-        b = 1
-    elseif class == ROGUE then
-        r = 1
-        g = 0.96
-        b = 0.41
-    elseif class == SHAMAN then
-        r = 0
-        g = 0.44
-        b = 0.87
-    elseif class == WARLOCK then
-        r = 0.58
-        g = 0.51
-        b = 0.79
-    else
-        r = 0.78
-        g = 0.61
-        b = 0.43
-    end
-    frame:SetTextColor(r, g, b)
+SLASH_DKP_COMMAND1 = "/jp"
+SlashCmdList["DKP_COMMAND"] = function(msg)
+    handleCommand(msg)
 end
 
 local function getToggledRoster(sortButtonId)
@@ -85,7 +48,7 @@ local function getNumberOfEntriesToFill(toggledRoster)
     return MaximumMembersShown
 end
 
-function updateEntries(sortButtonId)
+function updateBrowserEntries(sortButtonId)
     local toggledRoster
     if sortButtonId ~= nill and tonumber(sortButtonId) then
         toggledRoster = getToggledRoster(sortButtonId)
@@ -105,9 +68,9 @@ function updateEntries(sortButtonId)
             listEntry:Show()
             local playerFrame = getglobal(listEntry:GetName() .. PLAYER)
             playerFrame:SetText(name)
-            setClassColor(playerFrame, rosterEntry[3])
+            Utils:setClassColor(playerFrame, rosterEntry[3])
             getglobal(listEntry:GetName() .. AMOUNT):SetText(dkp)
-            if name == getSelectedPlayer() then
+            if name == BrowserSelection:getSelectedPlayer() then
                 getglobal(listEntry:GetName() .. BACKGROUND):Show()
             else
                 getglobal(listEntry:GetName() .. BACKGROUND):Hide()
@@ -118,7 +81,7 @@ function updateEntries(sortButtonId)
     end
 end
 
-function createEntries()
+function DkpBrowser:createEntries()
     local initialEntry = CreateFrame("Button", "$parentEntry1", OuterFrameList, LIST_ENTRY)
     initialEntry:SetID(1)
     initialEntry:SetPoint("TOPLEFT", 0, -28)
@@ -129,9 +92,9 @@ function createEntries()
     end
 end
 
-function updateRoster()
+function DkpBrowser:updateRoster()
     GuildRosterHandler:update()
-    updateEntries()
+    updateBrowserEntries()
 end
 
 local function attachIcon(button, left, right, top, bottom)
@@ -147,7 +110,7 @@ local function toggleAllFilters()
     end
 end
 
-function createFilterButtons()
+function DkpBrowser:createFilterButtons()
     local initialButton = CreateFrame("Button", "$parentClassButton1", OuterFrameFilter, CLASS_BUTTON)
     initialButton:SetID(1)
     initialButton:SetPoint("LEFT", OuterFrameFilter, "LEFT")
@@ -170,11 +133,11 @@ function createFilterButtons()
     toggleAllFilters()
 end
 
-function relayCommands()
-    jpMsg(INTRO)
+function DkpBrowser:relayCommands()
+    Utils:jpMsg(INTRO)
 end
 
-function classButtonOnClick(id)
+function DkpBrowser:classButtonOnClick(id)
     local icon = getglobal("OuterFrameFilterClassButton" .. id .. "Icon")
     if icon:IsDesaturated() then
         icon:SetDesaturated(nil)
@@ -183,7 +146,7 @@ function classButtonOnClick(id)
         icon:SetDesaturated(1)
         ToggledClasses[IdsToClasses[id]] = nil
     end
-    updateEntries()
+    updateBrowserEntries()
 end
 
 local function setDesaturations(nilOrOne)
@@ -193,18 +156,18 @@ local function setDesaturations(nilOrOne)
     end
 end
 
-function deselectAllClasses()
+function DkpBrowser:deselectAllClasses()
     for _, class in pairs(IdsToClasses) do
        ToggledClasses[class] = nil
     end
     setDesaturations(1)
-    updateEntries()
+    updateBrowserEntries()
 end
 
-function selectAllClasses()
+function DkpBrowser:selectAllClasses()
     for _, class in pairs(IdsToClasses) do
        ToggledClasses[class] = true
     end
     setDesaturations(nil)
-    updateEntries()
+    updateBrowserEntries()
 end

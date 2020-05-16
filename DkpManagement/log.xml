@@ -13,6 +13,7 @@
         <Scripts>
             <OnLoad>
                     self:RegisterForDrag("LeftButton")
+                    self:SetUserPlaced(1)
             </OnLoad>
             <OnDragStart>
                     self:StartMoving()

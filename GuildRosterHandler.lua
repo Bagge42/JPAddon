@@ -1,6 +1,6 @@
-local _, guildRosterHandler = ...
-guildRosterHandler.Handler = {}
-local GuildRosterHandler = guildRosterHandler.Handler
+_G.GuildRosterHandler = {}
+local GuildRosterHandler = _G.GuildRosterHandler
+local Utils = _G.Utils
 
 local CurrentIdUsed = 2
 local CurrentOrderUsed = DESCENDING
@@ -8,11 +8,6 @@ local Roster = {}
 local NameToRosterId = {}
 local GuildIndex = {}
 local GuildRosterNeedsUpdate = true
-
-local function removeRealmName(nameAndRealm)
-    local _, _, name = string.find(nameAndRealm, "([^-]*)-%s*")
-    return name
-end
 
 function GuildRosterHandler:update()
     if not CanViewOfficerNote() then
@@ -25,7 +20,7 @@ function GuildRosterHandler:update()
     for member = 1, NrOfGuildMembers, 1 do
         local nameAndRealm, rank, rankIndex, _, class, zone, _, officernote, online = GetGuildRosterInfo(member)
         if rank ~= ALT and rank ~= OFFICER_ALT then
-            local name = removeRealmName(nameAndRealm)
+            local name = Utils:removeRealmName(nameAndRealm)
             if name ~= "" then
                 local isOnline = 0
                 if online then
@@ -61,7 +56,7 @@ function GuildRosterHandler:getSortedRoster(id)
         CurrentIdUsed = id
         CurrentOrderUsed = ASCENDING
     end
-    local sortedRoster = copyTable(Roster)
+    local sortedRoster = Utils:copyTable(Roster)
     table.sort(sortedRoster, function(member1, member2)
         if CurrentOrderUsed == DESCENDING then
             return member1[CurrentIdUsed] > member2[CurrentIdUsed]
@@ -94,7 +89,7 @@ function GuildRosterHandler:getMemberInfo(memberName)
     if rosterId ~= nil then
         return Roster[rosterId]
     else
-        jpMsg(memberName .. " does not seem to be part of your guild")
+        Utils:jpMsg(memberName .. " does not seem to be part of your guild")
     end
 end
 

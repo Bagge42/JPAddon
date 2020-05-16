@@ -1,18 +1,12 @@
-local _, guildRosterHandler = ...
-local GuildRosterHandler = guildRosterHandler.Handler
+_G.BrowserSelection = {}
+local GuildRosterHandler = _G.GuildRosterHandler
+local BrowserSelection = _G.BrowserSelection
+local Utils = _G.Utils
 
 local CurrentSelection = ""
 local EntryIdOfSelection = 0
 
-function colorBenchButton(selectedPlayer)
-    if isBenched(selectedPlayer) then
-        getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(0, 1, 0, 0.5)
-    else
-        getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
-    end
-end
-
-function selectEntry(entryId)
+function BrowserSelection:selectEntry(entryId)
     if EntryIdOfSelection ~= 0 then
         getglobal(OUTER_FRAME_LIST_ENTRY .. EntryIdOfSelection .. BACKGROUND):Hide()
     end
@@ -25,27 +19,28 @@ function selectEntry(entryId)
         getglobal(PLAYER_MANAGEMENT):Show()
         local playerNameFrame = getglobal(PLAYER_MANAGEMENT .. "PlayerName")
         playerNameFrame:SetText(playerInEntry)
-        setClassColor(playerNameFrame, GuildRosterHandler:getPlayerClass(playerInEntry))
+        Utils:setClassColor(playerNameFrame, GuildRosterHandler:getPlayerClass(playerInEntry))
         getglobal(PLAYER_MANAGEMENT .. "Value"):SetFocus()
         getglobal(OUTER_FRAME_LIST_ENTRY .. entryId .. BACKGROUND):Show()
         CurrentSelection = playerInEntry
-        colorBenchButton(playerInEntry)
+        BrowserSelection:colorBenchButton(playerInEntry)
         EntryIdOfSelection = entryId
     end
 end
 
-function isSelected(entryId)
+function BrowserSelection:isSelected(entryId)
     local playerInEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. entryId .. PLAYER):GetText()
     return playerInEntry == CurrentSelection
 end
 
-function benchPlayer()
-    local selectedPlayer = getSelectedPlayer()
-    changeBenchState(selectedPlayer, GuildRosterHandler:getPlayerClass(selectedPlayer))
-    colorBenchButton(selectedPlayer)
-end
-
-function getSelectedPlayer()
+function BrowserSelection:getSelectedPlayer()
     return CurrentSelection
 end
 
+function BrowserSelection:colorBenchButton(selectedPlayer)
+    if isBenched(selectedPlayer) then
+        getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(0, 1, 0, 0.5)
+    else
+        getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
+    end
+end

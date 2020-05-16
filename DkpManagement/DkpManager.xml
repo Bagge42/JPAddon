@@ -5,7 +5,7 @@
         </Size>
         <Scripts>
             <OnClick>
-                    raidDkpButtonOnClick(self:GetID())
+                    _G.DkpManager:raidDkpButtonOnClick(self:GetID())
             </OnClick>
         </Scripts>
     </Button>
@@ -21,8 +21,8 @@
         <NormalFont style="GameFontHighlightLarge"/>
         <Scripts>
             <OnClick>
-                    adjustDkpOnClick(self:GetID())
-                    resetPlayerEditBox()
+                    _G.DkpManager:adjustDkpOnClick(self:GetID())
+                    _G.DkpManager:resetPlayerEditBox()
             </OnClick>
         </Scripts>
     </Button>
@@ -62,7 +62,7 @@
         </Size>
         <Scripts>
             <OnLoad>
-                createManagementButtons()
+                _G.DkpManager:createManagementButtons()
             </OnLoad>
         </Scripts>
         <Frames>
@@ -120,7 +120,7 @@
                         <NormalFont style="GameFontHighlight"/>
                         <Scripts>
                             <OnClick>
-                                benchPlayer()
+                                _G.Bench:benchPlayer()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -201,7 +201,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            undo()
+                            _G.DkpManager:undo()
                     </OnClick>
                 </Scripts>
             </Button>
@@ -214,7 +214,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            addDecayEvent()
+                            _G.DkpManager:addDecayEvent()
                     </OnClick>
                 </Scripts>
             </Button>

@@ -24,7 +24,7 @@
                     getglobal(self:GetName() .. BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
-                    removeFromBench(self:GetID())
+                    _G.Bench:removeFromBench(self:GetID())
             </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. BACKGROUND):Show()
@@ -76,11 +76,11 @@
             <Frame name="$parentList">
                 <Scripts>
                     <OnLoad>
-                            createBenchEntries()
+                            _G.Bench:createBenchEntries()
                             self:RegisterEvent("ADDON_LOADED")
                     </OnLoad>
                     <OnEvent>
-                        loadBench(event, ...)
+                        _G.Bench:loadBench(event, ...)
                     </OnEvent>
                 </Scripts>
                 <Size>
@@ -103,7 +103,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        clearBench()
+                        _G.Bench:clearBench()
                     </OnClick>
                 </Scripts>
             </Button>

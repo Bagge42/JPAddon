@@ -1,65 +1,47 @@
-local _, guildRosterHandler = ...
-local GuildRosterHandler = guildRosterHandler.Handler
+_G.EventQueue = {}
+local GuildRosterHandler = _G.GuildRosterHandler
+local Utils = _G.Utils
+local EventQueue = _G.EventQueue
 
 local EventInProgress = false
-local EventQueue = {}
+local Queue = {}
 local LatestEvent = {}
 
-function addEvent(event, name, arg1, arg2)
-    EventQueue[table.getn(EventQueue) + 1] = {event, name, arg1, arg2}
+function EventQueue:addEvent(event, name, arg1, arg2)
+    Queue[table.getn(Queue) + 1] = {event, name, arg1, arg2}
     if not EventInProgress then
-        executeEvent()
+        EventQueue:executeEvent()
     end
 end
 
-function getLatestQueuedEvent()
-    local queueSize = table.getn(EventQueue)
+function EventQueue:getLatestQueuedEvent()
+    local queueSize = table.getn(Queue)
     if queueSize > 0 then
-       return EventQueue[queueSize]
+       return Queue[queueSize]
     else
-        return copyTable(LatestEvent)
+        return Utils:copyTable(LatestEvent)
     end
 end
 
-function popEvent()
-    LatestEvent = EventQueue[1]
-    local lengthOfQueue = table.getn(EventQueue)
+local function popEvent()
+    LatestEvent = Queue[1]
+    local lengthOfQueue = table.getn(Queue)
 
     if lengthOfQueue > 1 then
         for eventCount = 2, lengthOfQueue, 1 do
-            EventQueue[eventCount - 1] = EventQueue[eventCount]
+            Queue[eventCount - 1] = Queue[eventCount]
         end
-        EventQueue[lengthOfQueue] = nil
+        Queue[lengthOfQueue] = nil
     else
-        EventQueue[1] = nil
+        Queue[1] = nil
     end
     return LatestEvent
-end
-
-local function waitForRosterUpdate()
-    GuildRosterHandler:sendUpdateRequest()
-    if GuildRosterHandler:waitingForUpdate() then
-        jpWait(1, waitForRosterUpdate)
-    else
-        EventInProgress = false
-        if table.getn(EventQueue) > 0 then
-           executeEvent()
-        end
-    end
-end
-
-function executeEvent()
-    EventInProgress = true
-    local event = popEvent()
-    event[1](event)
-    GuildRosterHandler:requestRosterUpdate()
-    waitForRosterUpdate()
 end
 
 -- Wait function from wowwiki --
 local waitTable = {}
 local waitFrame
-function jpWait(delay, func, ...)
+local function jpWait(delay, func, ...)
     if(type(delay)~="number" or type(func)~="function") then
         return false
     end
@@ -85,4 +67,24 @@ function jpWait(delay, func, ...)
     end
     tinsert(waitTable,{delay,func,{...}})
     return true
+end
+
+local function waitForRosterUpdate()
+    GuildRosterHandler:sendUpdateRequest()
+    if GuildRosterHandler:waitingForUpdate() then
+        jpWait(1, waitForRosterUpdate)
+    else
+        EventInProgress = false
+        if table.getn(Queue) > 0 then
+            EventQueue:executeEvent()
+        end
+    end
+end
+
+function EventQueue:executeEvent()
+    EventInProgress = true
+    local event = popEvent()
+    event[1](event)
+    GuildRosterHandler:requestRosterUpdate()
+    waitForRosterUpdate()
 end
