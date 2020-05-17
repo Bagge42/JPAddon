@@ -26,29 +26,6 @@
             </OnClick>
         </Scripts>
     </Button>
-    <Button name="HoverLight" virtual="true">
-        <Scripts>
-            <OnLoad>
-                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
-            </OnLoad>
-            <OnEnter>
-                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.4)
-            </OnEnter>
-            <OnLeave>
-                    self:GetScript("OnLoad")(self)
-            </OnLeave>
-        </Scripts>
-        <NormalTexture name="$parentBackground">
-            <Color r="0" g="0" b="0" a="0.6"/>
-        </NormalTexture>
-        <NormalFont style="GameFontHighlight"/>
-        <HighlightFont style="GameFontNormal"/>
-        <ButtonText>
-            <Anchors>
-                <Anchor point="CENTER"/>
-            </Anchors>
-        </ButtonText>
-    </Button>
     <Frame name="Management" parent="OuterFrame">
         <Anchors>
             <Anchor point="TOPLEFT" relativeTo="OuterFrameList" relativePoint="TOPRIGHT">
@@ -227,7 +204,11 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            TransactionUIFrame:Show()
+                        if not LogFrame:IsVisible() then
+                            LogFrame:Show()
+                        else
+                            LogFrame:Hide()
+                        end
                     </OnClick>
                 </Scripts>
             </Button>

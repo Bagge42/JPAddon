@@ -1,13 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Button name="BenchEntry" hidden="true" virtual="true">
         <Size>
-            <AbsDimension x="80" y="24"/>
+            <AbsDimension x="85" y="24"/>
         </Size>
         <Layers>
             <Layer>
                 <FontString name="$parentPlayer" justifyH="LEFT" inherits="GameFontHighlightSmall">
                     <Size>
-                        <AbsDimension x="80" y="24"/>
+                        <AbsDimension x="85" y="24"/>
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -46,12 +46,12 @@
             </Anchor>
         </Anchors>
         <Size>
-            <AbsDimension x="80" y="276"/>
+            <AbsDimension x="85" y="276"/>
         </Size>
         <Frames>
             <Frame name="$parentTitleFrame">
                 <Size>
-                    <AbsDimension x="80" y="24"/>
+                    <AbsDimension x="85" y="24"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT"/>
@@ -84,7 +84,7 @@
                     </OnEvent>
                 </Scripts>
                 <Size>
-                    <AbsDimension x="80" y="207"/>
+                    <AbsDimension x="85" y="207"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT">
@@ -96,7 +96,7 @@
             </Frame>
             <Button name="$parentClearBench" inherits="HoverLight" text="CLEAR_BENCH">
                 <Size>
-                    <AbsDimension x="80" y="45"/>
+                    <AbsDimension x="85" y="45"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOM"/>

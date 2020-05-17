@@ -35,7 +35,9 @@ LOG_TITLE = "Transaction log"
 LOG_EVENT_HEADER = "Event"
 LOG_TIME_HEADER = "Time"
 LOG_CHANGE_HEADER = "Change"
-LOG_TOTAL_HEADER = "New Total"
+LOG_TOTAL_HEADER = "New total"
+NEXT = "Next page"
+PREVIOUS = "Previous page"
 
 -- XML Frame naming related
 

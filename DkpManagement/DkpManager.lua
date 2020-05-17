@@ -5,6 +5,7 @@ local BrowserSelection = _G.BrowserSelection
 local Utils = _G.Utils
 local Bench = _G.Bench
 local EventQueue = _G.EventQueue
+local Log = _G.Log
 
 local ButtonIdToIcon = { "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas" }
 local IdToButton = {}
@@ -41,13 +42,14 @@ function DkpManager:createManagementButtons()
     attachIcons()
 end
 
-local function modifyPlayerDkp(name, dkp)
+local function modifyPlayerDkp(name, dkp, event)
     local playerInfo = GuildRosterHandler:getMemberInfo(name)
     local currentDkp = playerInfo[2]
     local newDkp = currentDkp + dkp
 
     local newOfficerNote = "<" .. newDkp .. ">"
     local guildIndex = GuildRosterHandler:getGuildIndex(name)
+    Log:addEntry(name, dkp, newDkp, event, playerInfo[3])
     GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
 end
 
@@ -66,7 +68,7 @@ local function modifyRaidDkp(dkp, bench)
     if Utils:isInRaid() then
         local playerNames = collectPlayerNamesFromTablesNoDubs(GuildRosterHandler:getRaidRoster(), bench)
         for player, _ in pairs(playerNames) do
-            modifyPlayerDkp(player, dkp)
+            modifyPlayerDkp(player, dkp, "RaidAdd")
         end
         local warningMessage = "Jesus and all participals earned " .. dkp .. " DKP"
         if dkp < 0 then
@@ -89,9 +91,6 @@ local function clearDkp()
 end
 
 function DkpManager:raidDkpButtonOnClick(id)
-    if id == 5 then
-       wtf()
-    end
     local value = RaidDkpValues[RaidIdToName[id]]
     local benchAtClickTime = Utils:copyTable(Bench:getBench())
     EventQueue:addEvent(function(event) modifyRaidDkp(event[3], event[4]) end, UNDO_ACTION_RAIDADD, value, benchAtClickTime)
@@ -116,13 +115,16 @@ local function addWarn(player, dkp)
 end
 
 local function adjustPlayerDkp(player, dkp)
+    local event = "Single"
     if dkp < 0 then
         subWarn(player, -dkp)
+        event = event .. "Sub"
     else
         addWarn(player, dkp)
+        event = event .. "Add"
     end
 
-    modifyPlayerDkp(player, dkp)
+    modifyPlayerDkp(player, dkp, event)
 end
 
 function DkpManager:adjustDkpOnClick(id)
@@ -145,7 +147,9 @@ local function decay()
         local decayedDkp = floor(currentDkp * (DecayPercentage / 100))
         if decayedDkp > 0 then
             totalDecayedDkp = totalDecayedDkp + decayedDkp
-            modifyPlayerDkp(memberEntry[1], -decayedDkp)
+            modifyPlayerDkp(memberEntry[1], -decayedDkp, "Decay")
+        else
+            Log:addEntry(memberEntry[1], 0, memberEntry[2], "Decay", memberEntry[3])
         end
     end
     local actionMsg = UnitName("player") .. " performed a " .. DecayPercentage .. "% DKP decay."
@@ -201,25 +205,4 @@ end
 
 function DkpManager:addDecayEvent()
     EventQueue:addEvent(function() decay() end, UNDO_ACTION_DECAY)
-end
-
-function wtf()
-    print("-- DkpManager --")
-    printda(DkpManager)
-    print("-- GuildRosterHandler --")
-    printda(GuildRosterHandler)
-    print("-- BrowserSelection --")
-    printda(BrowserSelection)
-    print("-- Utils --")
-    printda(Utils)
-    print("-- Bench --")
-    printda(Bench)
-    print("-- EventQueue --")
-    printda(EventQueue)
-end
-
-function printda(fd)
-    for k,v in pairs(fd) do
-        print(type(v))
-    end
 end

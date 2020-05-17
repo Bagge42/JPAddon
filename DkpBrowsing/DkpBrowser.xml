@@ -126,7 +126,7 @@
             </Anchor>
         </Anchors>
         <Size>
-            <AbsDimension x="646" y="300"/>
+            <AbsDimension x="651" y="300"/>
         </Size>
         <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
             <Color r="0" g="0" b="0" a="0.3"/>
@@ -209,7 +209,7 @@
             </Frame>
             <Frame name="TitleFrame">
                 <Size>
-                    <AbsDimension x="646" y="24"/>
+                    <AbsDimension x="651" y="24"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT"/>

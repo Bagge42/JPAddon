@@ -1,5 +1,5 @@
 _G.DkpBrowser = {}
-DkpBrowser = _G.DkpBrowser
+local DkpBrowser = _G.DkpBrowser
 local GuildRosterHandler = _G.GuildRosterHandler
 local BrowserSelection = _G.BrowserSelection
 local Utils = _G.Utils
