@@ -204,11 +204,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        if not LogFrame:IsVisible() then
-                            LogFrame:Show()
-                        else
-                            LogFrame:Hide()
-                        end
+                        _G.DkpManager:onLogClick()
                     </OnClick>
                 </Scripts>
             </Button>

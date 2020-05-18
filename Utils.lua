@@ -69,3 +69,11 @@ function Utils:setClassColor(frame, class)
     end
     frame:SetTextColor(r, g, b)
 end
+
+function Utils:getSizeOfTable(table)
+    local counter = 0
+    for k, v in pairs(table) do
+        counter = counter + 1
+    end
+    return counter
+end

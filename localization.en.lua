@@ -38,6 +38,7 @@ LOG_CHANGE_HEADER = "Change"
 LOG_TOTAL_HEADER = "New total"
 NEXT = "Next page"
 PREVIOUS = "Previous page"
+BACK = "Back to raids"
 
 -- XML Frame naming related
 
@@ -49,3 +50,10 @@ BACKGROUND = "Background"
 LIST_ENTRY = "ListEntry"
 CLASS_BUTTON = "ClassButton"
 BENCH_ENTRY = "BenchEntry"
+
+-- Resource paths --
+Ony = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia"
+BWL = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair"
+MC = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore"
+AQ = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj"
+Naxx = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas"

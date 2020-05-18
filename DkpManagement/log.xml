@@ -61,11 +61,7 @@
                         <AbsDimension x="65" y="24"/>
                     </Size>
                     <Anchors>
-                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayer">
-                            <Offset>
-                                <AbsDimension x="4" y="0"/>
-                            </Offset>
-                        </Anchor>
+                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayer"/>
                     </Anchors>
                 </FontString>
                 <FontString name="$parentTotal" justifyH="LEFT" inherits="GameFontNormalSmall">
@@ -73,11 +69,7 @@
                         <AbsDimension x="77" y="24"/>
                     </Size>
                     <Anchors>
-                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChange">
-                            <Offset>
-                                <AbsDimension x="4" y="0"/>
-                            </Offset>
-                        </Anchor>
+                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChange"/>
                     </Anchors>
                 </FontString>
                 <FontString name="$parentEvent" justifyH="LEFT" inherits="GameFontNormalSmall">
@@ -85,11 +77,7 @@
                         <AbsDimension x="94" y="24"/>
                     </Size>
                     <Anchors>
-                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTotal">
-                            <Offset>
-                                <AbsDimension x="4" y="0"/>
-                            </Offset>
-                        </Anchor>
+                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTotal"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -132,6 +120,26 @@
             </Anchors>
         </ButtonText>
     </Button>
+    <Button name="RaidSelect" inherits="HoverLight" virtual="true" hidden="true">
+        <Scripts>
+            <OnClick>
+                _G.Log:raidSelect(self:GetID())
+                self:GetParent():Hide()
+            </OnClick>
+        </Scripts>
+        <Size>
+            <AbsDimension x="89" y="80"/>
+        </Size>
+        <ButtonText>
+            <Anchors>
+                <Anchor point="TOP">
+                    <Offset>
+                        <AbsDimension x="-2" y="-4"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </ButtonText>
+    </Button>
     <Frame name="LogFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="false">
         <Anchors>
             <Anchor point="RIGHT" relativePoint="CENTER">
@@ -141,7 +149,7 @@
             </Anchor>
         </Anchors>
         <Size>
-            <AbsDimension x="446" y="500"/>
+            <AbsDimension x="445" y="500"/>
         </Size>
         <Scripts>
             <OnLoad>
@@ -161,7 +169,7 @@
         <Frames>
             <Frame name="$parentTitleFrame">
                 <Size>
-                    <AbsDimension x="446" y="24"/>
+                    <AbsDimension x="445" y="20"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT"/>
@@ -212,98 +220,131 @@
                     </Button>
                 </Frames>
             </Frame>
-            <Frame name="$parentList">
-                <Size>
-                    <AbsDimension x="446" y="456"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="TOP" relativeTo="$parentTitleFrame" relativePoint="BOTTOM"/>
-                </Anchors>
+            <Frame name="$parentSelectFrame">
                 <Scripts>
-<!--                    <OnLoad>-->
-<!--                            self:RegisterEvent("ADDON_LOADED")-->
-<!--                    </OnLoad>-->
-<!--                    <OnEvent>-->
-<!--                            _G.Log:loadLog(event, ...)-->
-<!--                    </OnEvent>-->
-                    <OnShow>
-                            _G.Log:createEntries()
-                            _G.Log:updateEntries()
-                    </OnShow>
+                    <OnLoad>
+                        _G.Log:createRaidEntries()
+                    </OnLoad>
                 </Scripts>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="LogFrameTitleFrame" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="445" y="480"/>
+                </Size>
+            </Frame>
+            <Frame name="$parentDisplayFrame" hidden="true">
                 <Frames>
-                    <Button inherits="LogHeader" name="$parentTimeHeader" id="1" text="LOG_TIME_HEADER">
+                    <Frame name="$parentList">
                         <Size>
-                            <AbsDimension x="115" y="24"/>
+                            <AbsDimension x="445" y="456"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="TOP" relativeTo="LogFrameTitleFrame" relativePoint="BOTTOM"/>
                         </Anchors>
+                        <Scripts>
+                            <!--                    <OnLoad>-->
+                            <!--                            self:RegisterEvent("ADDON_LOADED")-->
+                            <!--                    </OnLoad>-->
+                            <!--                    <OnEvent>-->
+                            <!--                            _G.Log:loadLog(event, ...)-->
+                            <!--                    </OnEvent>-->
+                            <OnLoad>
+                                    _G.Log:createEntries()
+                            </OnLoad>
+                        </Scripts>
+                        <Frames>
+                            <Button inherits="LogHeader" name="$parentTimeHeader" id="1" text="LOG_TIME_HEADER">
+                                <Size>
+                                    <AbsDimension x="115" y="24"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="TOPLEFT"/>
+                                </Anchors>
+                            </Button>
+                            <Button inherits="LogHeader" name="$parentPlayerHeader" id="2" text="PLAYER_HEADER">
+                                <Size>
+                                    <AbsDimension x="95" y="24"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTimeHeader"/>
+                                </Anchors>
+                            </Button>
+                            <Button inherits="LogHeader" name="$parentChangeHeader" id="3" text="LOG_CHANGE_HEADER">
+                                <Size>
+                                    <AbsDimension x="65" y="24"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
+                                </Anchors>
+                            </Button>
+                            <Button inherits="LogHeader" name="$parentTotalHeader" id="4" text="LOG_TOTAL_HEADER">
+                                <Size>
+                                    <AbsDimension x="77" y="24"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChangeHeader"/>
+                                </Anchors>
+                            </Button>
+                            <Button inherits="LogHeader" name="$parentEventHeader" id="5" text="LOG_EVENT_HEADER">
+                                <Size>
+                                    <AbsDimension x="94" y="24"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTotalHeader"/>
+                                </Anchors>
+                            </Button>
+                        </Frames>
+                    </Frame>
+                    <Button name="$parentBack" inherits="HoverLight" text="BACK">
+                        <Size>
+                            <AbsDimension x="105" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOMLEFT">
+                                <Offset>
+                                    <AbsDimension x="53" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    _G.Log:back()
+                            </OnClick>
+                        </Scripts>
                     </Button>
-                    <Button inherits="LogHeader" name="$parentPlayerHeader" id="2" text="PLAYER_HEADER">
+                    <Button name="$parentNext" inherits="HoverLight" text="NEXT">
+                        <Size>
+                            <AbsDimension x="75" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOMRIGHT">
+                                <Offset>
+                                    <AbsDimension x="-38" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    _G.Log:next()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentPrevious" inherits="HoverLight" text="PREVIOUS">
                         <Size>
                             <AbsDimension x="95" y="24"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTimeHeader"/>
+                            <Anchor point="RIGHT" relativeTo="$parentNext" relativePoint="LEFT"/>
                         </Anchors>
-                    </Button>
-                    <Button inherits="LogHeader" name="$parentChangeHeader" id="3" text="LOG_CHANGE_HEADER">
-                        <Size>
-                            <AbsDimension x="65" y="24"/>
-                        </Size>
-                        <Anchors>
-                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
-                        </Anchors>
-                    </Button>
-                    <Button inherits="LogHeader" name="$parentTotalHeader" id="4" text="LOG_TOTAL_HEADER">
-                        <Size>
-                            <AbsDimension x="77" y="24"/>
-                        </Size>
-                        <Anchors>
-                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChangeHeader"/>
-                        </Anchors>
-                    </Button>
-                    <Button inherits="LogHeader" name="$parentEventHeader" id="5" text="LOG_EVENT_HEADER">
-                        <Size>
-                            <AbsDimension x="94" y="24"/>
-                        </Size>
-                        <Anchors>
-                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTotalHeader"/>
-                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    _G.Log:previous()
+                            </OnClick>
+                        </Scripts>
                     </Button>
                 </Frames>
             </Frame>
-            <Button name="$parentNext" inherits="HoverLight" text="NEXT">
-                <Size>
-                    <AbsDimension x="75" y="20"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOMRIGHT">
-                        <Offset>
-                            <AbsDimension x="-38" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                        _G.Log:next()
-                    </OnClick>
-                </Scripts>
-            </Button>
-            <Button name="$parentPrevious" inherits="HoverLight" text="PREVIOUS">
-                <Size>
-                    <AbsDimension x="95" y="20"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="RIGHT" relativeTo="$parentNext" relativePoint="LEFT"/>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                            _G.Log:previous()
-                    </OnClick>
-                </Scripts>
-            </Button>
         </Frames>
     </Frame>
 </Ui>

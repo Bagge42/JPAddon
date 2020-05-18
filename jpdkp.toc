@@ -2,7 +2,7 @@
 ## Version: 1.5.0
 ## Author: Jordål @ <EU - Gandling>
 ## Interface: 11303
-## SavedVariables: JP_Bench
+## SavedVariables: JP_Bench, Log_History, Date_To_Id
 
 localization.en.lua
 Utils.lua

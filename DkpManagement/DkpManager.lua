@@ -7,7 +7,7 @@ local Bench = _G.Bench
 local EventQueue = _G.EventQueue
 local Log = _G.Log
 
-local ButtonIdToIcon = { "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj", "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas" }
+local ButtonIdToIcon = { Ony, MC, BWL, AQ, Naxx }
 local IdToButton = {}
 local RaidIdToName = { "Ony", "MC", "BWL", "AQ", "Naxx" }
 local RaidDkpValues = { ["Ony"] = 12, ["MC"] = 33, ["BWL"] = 27, ["AQ"] = 0, ["Naxx"] = 0 }
@@ -42,18 +42,18 @@ function DkpManager:createManagementButtons()
     attachIcons()
 end
 
-local function modifyPlayerDkp(name, dkp, event)
+local function modifyPlayerDkp(name, dkp, event, zone)
     local playerInfo = GuildRosterHandler:getMemberInfo(name)
     local currentDkp = playerInfo[2]
     local newDkp = currentDkp + dkp
 
     local newOfficerNote = "<" .. newDkp .. ">"
     local guildIndex = GuildRosterHandler:getGuildIndex(name)
-    Log:addEntry(name, dkp, newDkp, event, playerInfo[3])
+    Log:addEntry(name, dkp, newDkp, event, playerInfo[3], zone)
     GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
 end
 
-local function collectPlayerNamesFromTablesNoDubs(roster, bench)
+local function collectPlayerNamesFromTablesNoDups(roster, bench)
     local playerNames = {}
     for rosterCount = 1, table.getn(roster), 1 do
         playerNames[roster[rosterCount][1]] = true
@@ -64,18 +64,45 @@ local function collectPlayerNamesFromTablesNoDubs(roster, bench)
     return playerNames
 end
 
-local function modifyRaidDkp(dkp, bench)
+local function sendBenchWarning(bench)
+    local benchWarning = "Additional players marked as participals: "
+    for benchPlayer, _ in pairs(bench) do
+        benchWarning = benchWarning .. benchPlayer .. ", "
+    end
+    benchWarning = benchWarning:sub(1,-3)
+    Utils:sendWarningMessage(benchWarning)
+end
+
+local function sendRaidDkpWarning(jesusIsInRaid, dkp, nrOfPlayers)
+    local warningMessage = ""
+    if jesusIsInRaid then
+        warningMessage = "Jesus and all " .. (nrOfPlayers - 1)
+    else
+        warningMessage = "All " .. nrOfPlayers
+    end
+    warningMessage = warningMessage .. " participals earned " .. dkp .. " DKP"
+    if dkp < 0 then
+        local name, _ = UnitName("player")
+        warningMessage = name .. " had the audacity to pilfer " .. -dkp .. " DKP from jesus and all participating pals"
+    end
+    Utils:sendWarningMessage(warningMessage)
+end
+
+local function modifyRaidDkp(dkp, bench, zone)
     if Utils:isInRaid() then
-        local playerNames = collectPlayerNamesFromTablesNoDubs(GuildRosterHandler:getRaidRoster(), bench)
+        local jesusIsInRaid = false
+        local playerNames = collectPlayerNamesFromTablesNoDups(GuildRosterHandler:getRaidRoster(), bench)
         for player, _ in pairs(playerNames) do
-            modifyPlayerDkp(player, dkp, "RaidAdd")
+            modifyPlayerDkp(player, dkp, "RaidAdd", zone)
+            if player == "Stinkfist" then
+                jesusIsInRaid = true
+            end
         end
-        local warningMessage = "Jesus and all participals earned " .. dkp .. " DKP"
-        if dkp < 0 then
-            local name, _ = UnitName("player")
-            warningMessage = name .. " had the audacity to pilfer " .. -dkp .. " DKP from jesus and all participating pals"
+        sendRaidDkpWarning(jesusIsInRaid, dkp, Utils:getSizeOfTable(playerNames))
+        local sizeOfBench = Utils:getSizeOfTable(bench)
+        if sizeOfBench > 0 then
+            sendBenchWarning(bench)
         end
-        Utils:sendWarningMessage(warningMessage)
     else
         Utils:jpMsg("You must be in a raid!")
     end
@@ -93,7 +120,7 @@ end
 function DkpManager:raidDkpButtonOnClick(id)
     local value = RaidDkpValues[RaidIdToName[id]]
     local benchAtClickTime = Utils:copyTable(Bench:getBench())
-    EventQueue:addEvent(function(event) modifyRaidDkp(event[3], event[4]) end, UNDO_ACTION_RAIDADD, value, benchAtClickTime)
+    EventQueue:addEvent(function(event) modifyRaidDkp(event[4], event[5], event[3]) end, UNDO_ACTION_RAIDADD, GetRealZoneText(), value, benchAtClickTime)
 end
 
 local function subWarn(player, dkp)
@@ -114,7 +141,7 @@ local function addWarn(player, dkp)
     end
 end
 
-local function adjustPlayerDkp(player, dkp)
+local function adjustPlayerDkp(player, dkp, zone)
     local event = "Single"
     if dkp < 0 then
         subWarn(player, -dkp)
@@ -124,16 +151,16 @@ local function adjustPlayerDkp(player, dkp)
         event = event .. "Add"
     end
 
-    modifyPlayerDkp(player, dkp, event)
+    modifyPlayerDkp(player, dkp, event, zone)
 end
 
 function DkpManager:adjustDkpOnClick(id)
     local dkp = getglobal(PLAYER_MANAGEMENT .. "Value"):GetNumber()
     local playerName = BrowserSelection:getSelectedPlayer()
     if id == 1 then
-        EventQueue:addEvent(function(event) adjustPlayerDkp(event[3], event[4]) end, UNDO_ACTION_ADDED, playerName, dkp)
+        EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3]) end, UNDO_ACTION_ADDED, GetRealZoneText(), playerName, dkp)
     else
-        EventQueue:addEvent(function(event) adjustPlayerDkp(event[3], event[4]) end, UNDO_ACTION_SUBBED, playerName, -dkp)
+        EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3]) end, UNDO_ACTION_SUBBED, GetRealZoneText(), playerName, -dkp)
     end
 end
 
@@ -147,9 +174,9 @@ local function decay()
         local decayedDkp = floor(currentDkp * (DecayPercentage / 100))
         if decayedDkp > 0 then
             totalDecayedDkp = totalDecayedDkp + decayedDkp
-            modifyPlayerDkp(memberEntry[1], -decayedDkp, "Decay")
+            modifyPlayerDkp(memberEntry[1], -decayedDkp, "Decay", "Decay")
         else
-            Log:addEntry(memberEntry[1], 0, memberEntry[2], "Decay", memberEntry[3])
+            Log:addEntry(memberEntry[1], 0, memberEntry[2], "Decay", memberEntry[3], "Decay")
         end
     end
     local actionMsg = UnitName("player") .. " performed a " .. DecayPercentage .. "% DKP decay."
@@ -173,13 +200,26 @@ local function undoDecay()
     Utils:sendGuildMessage(actionMsg)
 end
 
-local function singlePlayerUndo(player, amount)
-    modifyPlayerDkp(player, amount)
+function DkpManager:onLogClick()
+    if not LogFrame:IsVisible() then
+        Log:updateRaidEntries()
+        LogFrame:Show()
+    else
+        LogFrame:Hide()
+    end
+end
+
+local function singlePlayerUndo(player, amount, zone)
+    local event = "Single"
     if amount < 0 then
+        event = event .. "Add"
         subWarn(player, -amount)
     else
+        event = event .. "Sub"
         addWarn(player, amount)
     end
+    event = event .. "Undo"
+    modifyPlayerDkp(player, amount, event, zone)
 end
 
 function DkpManager:undo()
@@ -189,13 +229,13 @@ function DkpManager:undo()
     end
     local nameOfLatestQueuedEvent = latestQueuedEvent[2]
     if nameOfLatestQueuedEvent == UNDO_ACTION_SUBBED then
-        EventQueue:addEvent(function(event) singlePlayerUndo(event[3], event[4]) end, nil, latestQueuedEvent[3], -latestQueuedEvent[4])
+        EventQueue:addEvent(function(event) singlePlayerUndo(event[4], event[5], event[3]) end, nil, latestQueuedEvent[3], latestQueuedEvent[4], -latestQueuedEvent[5])
     elseif nameOfLatestQueuedEvent == UNDO_ACTION_ADDED then
-        EventQueue:addEvent(function(event) singlePlayerUndo(event[3], event[4]) end, nil, latestQueuedEvent[3], -latestQueuedEvent[4])
+        EventQueue:addEvent(function(event) singlePlayerUndo(event[4], event[5], event[3]) end, nil, latestQueuedEvent[3], latestQueuedEvent[4], -latestQueuedEvent[5])
     elseif nameOfLatestQueuedEvent == UNDO_ACTION_DECAY then
-        EventQueue:addEvent(function() undoDecay() end, nil)
+        EventQueue:addEvent(function() undoDecay() end, nil, "Decay")
     elseif nameOfLatestQueuedEvent == UNDO_ACTION_RAIDADD then
-        EventQueue:addEvent(function(event) modifyRaidDkp(event[3], event[4]) end, nil, -latestQueuedEvent[3], latestQueuedEvent[4])
+        EventQueue:addEvent(function(event) modifyRaidDkp(event[4], event[5], event[3]) end, nil, latestQueuedEvent[3], -latestQueuedEvent[4], latestQueuedEvent[5])
     end
 end
 
@@ -204,5 +244,5 @@ function DkpManager:resetPlayerEditBox()
 end
 
 function DkpManager:addDecayEvent()
-    EventQueue:addEvent(function() decay() end, UNDO_ACTION_DECAY)
+    EventQueue:addEvent(function() decay() end, UNDO_ACTION_DECAY, "Decay")
 end
