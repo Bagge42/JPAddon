@@ -39,6 +39,7 @@ LOG_TOTAL_HEADER = "New total"
 NEXT = "Next page"
 PREVIOUS = "Previous page"
 BACK = "Back to raids"
+SNAPSHOT = "Create dkp snapshot"
 
 -- XML Frame naming related
 

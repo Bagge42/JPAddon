@@ -258,3 +258,12 @@ end
 function DkpManager:addDecayEvent()
     EventQueue:addEvent(function() decay() end, UNDO_ACTION_DECAY, "Decay")
 end
+
+function DkpManager:createDkpSnapshot()
+    local guildRoster = GuildRosterHandler:getRoster()
+    local zone = GetRealZoneText()
+    for memberCount = 1, table.getn(guildRoster), 1 do
+        local memberInfo = guildRoster[memberCount]
+        Log:addEntry(memberInfo[1], 0, memberInfo[2], "Snapshot", memberInfo[3], zone)
+    end
+end

@@ -53,6 +53,21 @@
                 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
                     <Color r="0" g="0" b="0" a="1"/>
                 </Backdrop>
+                <Frames>
+                    <Button name="$parentSnapshot" text="SNAPSHOT" inherits="AllClassToggle">
+                        <Size>
+                            <AbsDimension x="135" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPRIGHT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    _G.DkpManager:createDkpSnapshot()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
             </Frame>
             <Frame name="$parentPlayerManagement" hidden="true">
                 <Size>

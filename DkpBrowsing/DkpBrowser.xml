@@ -92,9 +92,6 @@
         </Scripts>
     </Button>
     <Button name="AllClassToggle" virtual="true">
-        <Size>
-            <AbsDimension x="40" y="24"/>
-        </Size>
         <ButtonText>
             <Anchors>
                 <Anchor point="CENTER"/>
@@ -259,6 +256,9 @@
                         </Scripts>
                     </Button>
                     <Button name="$parentNone" text="NONE" inherits="AllClassToggle">
+                        <Size>
+                            <AbsDimension x="40" y="24"/>
+                        </Size>
                         <Anchors>
                             <Anchor point="RIGHT" relativeTo="OuterFrameList" relativePoint="TOPRIGHT">
                                 <Offset>
@@ -273,6 +273,9 @@
                         </Scripts>
                     </Button>
                     <Button name="$parentAll" text="ALL" inherits="AllClassToggle">
+                        <Size>
+                            <AbsDimension x="40" y="24"/>
+                        </Size>
                         <Anchors>
                             <Anchor point="RIGHT" relativeTo="$parentNone" relativePoint="LEFT"/>
                         </Anchors>
