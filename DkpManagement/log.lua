@@ -1,11 +1,10 @@
-_G.Log = {}
 Log_History = {}
+_G.Log = {}
 Date_To_Id = {}
 local Log = _G.Log
 local Utils = _G.Utils
 local MaximumMembersShown = 24
 local MaximumRaidsShown = 30
-local LogIndex = 1
 local LogHistoryIndex = 0
 local ZoneIndex = 0
 local Icons = {
@@ -21,6 +20,7 @@ local Icons = {
 }
 local ButtonIdToKeys = {}
 local DataEntryIndex = 1
+local LatestButtonId
 
 local function getZoneNrIfExist(dateEntry, zone)
     for zoneCount = 1, #dateEntry, 1 do
@@ -57,7 +57,8 @@ function Log:addEntry(player, change, total, event, class, zone)
     local currentTime = time()
     local datestamp = date("%d/%m/%Y", currentTime)
     local timestamp = date("%H:%M:%S", currentTime)
-    local entry = { datestamp, timestamp, player, change, total, event, class, "hej" }
+    local executingOfficer = UnitName("player")
+    local entry = { datestamp, timestamp, player, change, total, event, class, executingOfficer }
     addToSubTable(datestamp, zone, entry)
 end
 
@@ -130,6 +131,7 @@ end
 
 function Log:updateRaidEntries()
     clearRaidEntries()
+    local LogHistoryIndexBeforeUpdate = LogHistoryIndex
     for raidIndex = 1, MaximumRaidsShown, 1 do
         local logHistoryKey = #Log_History - LogHistoryIndex
         local raidEntry = Log_History[logHistoryKey]
@@ -145,10 +147,10 @@ function Log:updateRaidEntries()
             logEntryFrame:Show()
             ButtonIdToKeys[raidIndex] = { logHistoryKey, zoneKey }
         else
-            LogHistoryIndex = 0
             break
         end
     end
+    LogHistoryIndex = LogHistoryIndexBeforeUpdate
 end
 
 function Log:createEntries()
@@ -175,7 +177,14 @@ end
 
 local function updateEntries(buttonId)
     clearEntries()
-    local keys = ButtonIdToKeys[buttonId]
+    local DataEntryIndexBeforeUpdate = DataEntryIndex
+    local keys
+    if not buttonId then
+        keys = ButtonIdToKeys[LatestButtonId]
+    else
+        keys = ButtonIdToKeys[buttonId]
+        LatestButtonId = buttonId
+    end
     local zoneEntries = Log_History[keys[1]][keys[2]]
     for index = 0, MaximumMembersShown - 1, 1 do
         local dataEntry = zoneEntries[DataEntryIndex]
@@ -197,20 +206,30 @@ local function updateEntries(buttonId)
             --            getglobal(listEntry:GetName() .. BACKGROUND):Hide()
             --        end
         else
-            DataEntryIndex = 0
             break
         end
     end
+    DataEntryIndex = DataEntryIndexBeforeUpdate
 end
 
-function Log:next()
-    LogIndex = LogIndex + MaximumMembersShown
+function Log:displayFrameNext()
+    DataEntryIndex = DataEntryIndex + MaximumMembersShown
     updateEntries()
 end
 
-function Log:previous()
-    LogIndex = LogIndex - MaximumMembersShown
+function Log:displayFramePrevious()
+    DataEntryIndex = DataEntryIndex - MaximumMembersShown
     updateEntries()
+end
+
+function Log:selectFrameNext()
+    LogHistoryIndex = LogHistoryIndex + MaximumRaidsShown
+    Log:updateRaidEntries()
+end
+
+function Log:selectFramePrevious()
+    LogHistoryIndex = LogHistoryIndex - MaximumRaidsShown
+    Log:updateRaidEntries()
 end
 
 function Log:back()
@@ -223,5 +242,10 @@ function Log:raidSelect(buttonId)
     DataEntryIndex = 1
     updateEntries(buttonId)
     getglobal("LogFrameDisplayFrame"):Show()
+end
+
+function Log:clearLog()
+    Log_History = {}
+    Date_To_Id = {}
 end
 

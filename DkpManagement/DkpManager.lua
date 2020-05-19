@@ -69,7 +69,7 @@ local function sendBenchWarning(bench)
     for benchPlayer, _ in pairs(bench) do
         benchWarning = benchWarning .. benchPlayer .. ", "
     end
-    benchWarning = benchWarning:sub(1,-3)
+    benchWarning = benchWarning:sub(1, -3)
     Utils:sendWarningMessage(benchWarning)
 end
 
@@ -88,12 +88,16 @@ local function sendRaidDkpWarning(jesusIsInRaid, dkp, nrOfPlayers)
     Utils:sendWarningMessage(warningMessage)
 end
 
-local function modifyRaidDkp(dkp, bench, zone)
+local function modifyRaidDkp(dkp, bench, zone, undo)
     if Utils:isInRaid() then
         local jesusIsInRaid = false
         local playerNames = collectPlayerNamesFromTablesNoDups(GuildRosterHandler:getRaidRoster(), bench)
         for player, _ in pairs(playerNames) do
-            modifyPlayerDkp(player, dkp, "RaidAdd", zone)
+            if undo then
+                modifyPlayerDkp(player, dkp, "RaidUndo", zone)
+            else
+                modifyPlayerDkp(player, dkp, "RaidAdd", zone)
+            end
             if player == "Stinkfist" then
                 jesusIsInRaid = true
             end
@@ -185,16 +189,20 @@ local function decay()
     Utils:sendGuildMessage(amountMsg)
 end
 
-local function setDkp(player, dkp)
-    local newOfficerNote = "<" .. dkp .. ">"
-    local guildIndex = GuildRosterHandler:getGuildIndex(player)
+local function setDkp(playerInfo)
+    local dkpAfterUndo = playerInfo[2]
+    local playerName = playerInfo[1]
+    local newOfficerNote = "<" .. dkpAfterUndo .. ">"
+    local dkpBeforeUndo = GuildRosterHandler:getMemberInfo(playerName)[2]
+    local guildIndex = GuildRosterHandler:getGuildIndex(playerName)
+    Log:addEntry(playerName, dkpAfterUndo - dkpBeforeUndo, dkpAfterUndo, "DecayUndo", playerInfo[3], "Decay")
     GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
 end
 
 local function undoDecay()
     for member = 1, table.getn(RosterAtDecay), 1 do
         local rosterEntry = RosterAtDecay[member]
-        setDkp(rosterEntry[1], rosterEntry[2])
+        setDkp(rosterEntry)
     end
     local actionMsg = UnitName("player") .. " undid the decay, all dkp has been restored."
     Utils:sendGuildMessage(actionMsg)
@@ -222,6 +230,10 @@ local function singlePlayerUndo(player, amount, zone)
     modifyPlayerDkp(player, amount, event, zone)
 end
 
+local function raidUndo(dkp, bench, zone)
+    modifyRaidDkp(dkp, bench, zone, true)
+end
+
 function DkpManager:undo()
     local latestQueuedEvent = EventQueue:getLatestQueuedEvent()
     if latestQueuedEvent == nil then
@@ -235,7 +247,7 @@ function DkpManager:undo()
     elseif nameOfLatestQueuedEvent == UNDO_ACTION_DECAY then
         EventQueue:addEvent(function() undoDecay() end, nil, "Decay")
     elseif nameOfLatestQueuedEvent == UNDO_ACTION_RAIDADD then
-        EventQueue:addEvent(function(event) modifyRaidDkp(event[4], event[5], event[3]) end, nil, latestQueuedEvent[3], -latestQueuedEvent[4], latestQueuedEvent[5])
+        EventQueue:addEvent(function(event) raidUndo(event[4], event[5], event[3]) end, nil, latestQueuedEvent[3], -latestQueuedEvent[4], latestQueuedEvent[5])
     end
 end
 

@@ -128,7 +128,7 @@
             </OnClick>
         </Scripts>
         <Size>
-            <AbsDimension x="89" y="80"/>
+            <AbsDimension x="89" y="78"/>
         </Size>
         <ButtonText>
             <Anchors>
@@ -140,7 +140,7 @@
             </Anchors>
         </ButtonText>
     </Button>
-    <Frame name="LogFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="false">
+    <Frame name="LogFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
         <Anchors>
             <Anchor point="RIGHT" relativePoint="CENTER">
                 <Offset>
@@ -232,6 +232,34 @@
                 <Size>
                     <AbsDimension x="445" y="480"/>
                 </Size>
+                <Frames>
+                    <Button name="$parentNext" inherits="HoverLight" text="NEXT">
+                        <Size>
+                            <AbsDimension x="75" y="18"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOMRIGHT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    _G.Log:selectFrameNext()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentPrevious" inherits="HoverLight" text="PREVIOUS">
+                        <Size>
+                            <AbsDimension x="95" y="18"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentNext" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    _G.Log:selectFramePrevious()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
             </Frame>
             <Frame name="$parentDisplayFrame" hidden="true">
                 <Frames>
@@ -326,7 +354,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.Log:next()
+                                    _G.Log:displayFrameNext()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -339,7 +367,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.Log:previous()
+                                    _G.Log:displayFramePrevious()
                             </OnClick>
                         </Scripts>
                     </Button>

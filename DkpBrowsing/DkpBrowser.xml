@@ -117,7 +117,7 @@
             <Color r="1" g="1" b="1" a="0.5"/>
         </NormalTexture>
     </Button>
-    <Frame name="OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="false">
+    <Frame name="OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
         <Anchors>
             <Anchor point="RIGHT" relativePoint="CENTER">
                 <Offset>
