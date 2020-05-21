@@ -112,14 +112,14 @@ local function modifyRaidDkp(dkp, bench, zone, undo)
     end
 end
 
-local function clearDkp()
-    local roster = GuildRosterHandler:getRoster()
-    for member = 1, table.getn(roster), 1 do
-        local newOfficerNote = "<" .. 0 .. ">"
-        local guildIndex = GuildRosterHandler:getGuildIndex(roster[member][1])
-        GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
-    end
-end
+--local function clearDkp()
+--    local roster = GuildRosterHandler:getRoster()
+--    for member = 1, table.getn(roster), 1 do
+--        local newOfficerNote = "<" .. 0 .. ">"
+--        local guildIndex = GuildRosterHandler:getGuildIndex(roster[member][1])
+--        GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
+--    end
+--end
 
 function DkpManager:raidDkpButtonOnClick(id)
     local value = RaidDkpValues[RaidIdToName[id]]
@@ -252,7 +252,9 @@ function DkpManager:undo()
 end
 
 function DkpManager:resetPlayerEditBox()
-    getglobal(PLAYER_MANAGEMENT .. "Value"):SetNumber("")
+    local editBox = getglobal(PLAYER_MANAGEMENT .. "Value")
+    editBox:SetNumber("")
+    editBox:ClearFocus()
 end
 
 function DkpManager:addDecayEvent()
