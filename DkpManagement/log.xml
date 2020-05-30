@@ -155,6 +155,8 @@
             <OnLoad>
                     self:RegisterForDrag("LeftButton")
                     self:SetUserPlaced(1)
+                    self:RegisterEvent("CHAT_MSG_ADDON")
+                    C_ChatInfo.RegisterAddonMessagePrefix(ADDON_PREFIX)
             </OnLoad>
             <OnDragStart>
                     self:StartMoving()
@@ -162,6 +164,9 @@
             <OnDragStop>
                     self:StopMovingOrSizing()
             </OnDragStop>
+            <OnEvent>
+                    _G.Log:onSyncAttempt(event, ...)
+            </OnEvent>
         </Scripts>
         <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
             <Color r="0" g="0" b="0" a="0.3"/>

@@ -189,7 +189,7 @@
                     </Button>
                     <EditBox name="$parentValue" numeric="true" font="GameFontHighlight" autoFocus="false">
                         <Size>
-                            <AbsDimension x="48" y="48"/>
+                            <AbsDimension x="64" y="48"/>
                         </Size>
                         <Anchors>
                             <Anchor point="CENTER">

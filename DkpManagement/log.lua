@@ -8,11 +8,11 @@ local MaximumRaidsShown = 30
 local LogHistoryIndex = 0
 local ZoneIndex = 0
 local Icons = {
-    ["Ony"] = Ony,
-    ["MC"] = MC,
-    ["BWL"] = BWL,
-    ["AQ"] = AQ,
-    ["Naxx"] = Naxx,
+    ["Onyxia's Lair"] = Ony,
+    ["Molten Core"] = MC,
+    ["Blackwing Lair"] = BWL,
+    ["Ahn'Qiraj"] = AQ,
+    ["Naxxramas"] = Naxx,
     ["Orgrimmar"] = "Interface\\ICONS\\Spell_Arcane_TeleportOrgrimmar",
     ["Thunder Bluff"] = "Interface\\ICONS\\Spell_Arcane_TeleportThunderBluff",
     ["Undercity"] = "Interface\\ICONS\\Spell_Arcane_TeleportUnderCity",
@@ -53,6 +53,30 @@ local function addToSubTable(datestamp, zone, entry)
     end
 end
 
+local function sendSyncMsg(zone, dataEntry)
+    local msg = LOG_MSG_ENTRY .. "&" .. zone
+    for _, data in pairs(dataEntry) do
+        msg = msg .. "&" .. data
+    end
+    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "GUILD")
+end
+
+local function addEntryFromSync(zone, datestamp, timestamp, player, change, total, event, class, executingOfficer)
+    local entry = { datestamp, timestamp, player, change, total, event, class, executingOfficer }
+    addToSubTable(datestamp, zone, entry)
+end
+
+function Log:onSyncAttempt(event, ...)
+    local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
+
+    if prefix == ADDON_PREFIX then
+        local _, zone, datestamp, timestamp, player, change, total, event, class, executingOfficer = string.split("&", msg)
+        if Utils:isMsgTypeAndNotFromSelf(msg, LOG_MSG_ENTRY, sender) then
+            addEntryFromSync(zone, datestamp, timestamp, player, change, total, event, class, executingOfficer)
+        end
+    end
+end
+
 function Log:addEntry(player, change, total, event, class, zone)
     local currentTime = time()
     local datestamp = date("%d/%m/%Y", currentTime)
@@ -60,10 +84,11 @@ function Log:addEntry(player, change, total, event, class, zone)
     local executingOfficer = UnitName("player")
     local entry = { datestamp, timestamp, player, change, total, event, class, executingOfficer }
     addToSubTable(datestamp, zone, entry)
+    sendSyncMsg(zone, entry)
 end
 
 local function textureNeedsCropping(texture)
-    if texture == Ony or texture == MC or texture == BWL or texture == AQ or texture == Naxx then
+    if (texture == Ony) or (texture == MC) or (texture == BWL) or (texture == AQ) or (texture == Naxx) then
         return true
     end
     return false
@@ -244,8 +269,16 @@ function Log:raidSelect(buttonId)
     getglobal("LogFrameDisplayFrame"):Show()
 end
 
-function Log:clearLog()
-    Log_History = {}
-    Date_To_Id = {}
+function Log:clearLog(date)
+    if date == "Everything" then
+        Log_History = {}
+        Date_To_Id = {}
+    else
+        local id = Date_To_Id[date]
+        if id then
+            Log_History[id] = nil
+            Date_To_Id[date] = nil
+        end
+    end
 end
 

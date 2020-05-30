@@ -69,6 +69,11 @@ function Bench:clearBench()
     getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
 end
 
+function Bench:sendClearBenchMsg()
+    local msg = BENCH_MSG_CLEAR
+    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "GUILD")
+end
+
 function Bench:loadBench(event, addonName)
     if addonName == "jpdkp" then
         updateBenchEntries()
@@ -77,6 +82,22 @@ end
 
 function Bench:benchPlayer()
     local selectedPlayer = BrowserSelection:getSelectedPlayer()
-    changeBenchState(selectedPlayer, GuildRosterHandler:getPlayerClass(selectedPlayer))
+    local playerClass = GuildRosterHandler:getPlayerClass(selectedPlayer)
+    changeBenchState(selectedPlayer, playerClass)
+    local msg = BENCH_MSG_BENCH_PLAYER .. "&" .. selectedPlayer .. "&" .. playerClass
+    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "GUILD")
     BrowserSelection:colorBenchButton(selectedPlayer)
+end
+
+function Bench:onSyncAttempt(event, ...)
+    local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
+
+    if (prefix == ADDON_PREFIX) then
+        local _, player, class = string.split("&", msg)
+        if Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_BENCH_PLAYER, sender) then
+            changeBenchState(player, class)
+        elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_CLEAR, sender) then
+            Bench:clearBench()
+        end
+    end
 end

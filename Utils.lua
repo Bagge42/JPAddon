@@ -77,3 +77,11 @@ function Utils:getSizeOfTable(table)
     end
     return counter
 end
+
+function Utils:isMsgTypeAndNotFromSelf(msg, msgType, sender)
+    local type = string.split("&", msg)
+    if (type == msgType) and not (Utils:removeRealmName(sender) == UnitName("player")) then
+        return true
+    end
+    return false
+end

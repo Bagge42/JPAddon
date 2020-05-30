@@ -40,6 +40,7 @@ NEXT = "Next page"
 PREVIOUS = "Previous page"
 BACK = "Back to raids"
 SNAPSHOT = "Create dkp snapshot"
+ADDON_PREFIX = "J&P"
 
 -- XML Frame naming related
 
@@ -58,3 +59,8 @@ BWL = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair"
 MC = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore"
 AQ = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj"
 Naxx = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas"
+
+-- Addon messages --
+BENCH_MSG_BENCH_PLAYER = "BenchPlayer"
+BENCH_MSG_CLEAR = "ClearBench"
+LOG_MSG_ENTRY = "LogEntry"

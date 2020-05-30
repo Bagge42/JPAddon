@@ -89,7 +89,7 @@ function GuildRosterHandler:getMemberInfo(memberName)
     if rosterId ~= nil then
         return Roster[rosterId]
     else
-        Utils:jpMsg(memberName .. " does not seem to be part of your guild")
+        Utils:jpMsg(memberName .. " is not part of the dkp roster")
     end
 end
 
