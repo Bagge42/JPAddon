@@ -1,11 +1,11 @@
-_G.DkpManager = {}
-local DkpManager = _G.DkpManager
-local GuildRosterHandler = _G.GuildRosterHandler
-local BrowserSelection = _G.BrowserSelection
-local Utils = _G.Utils
-local Bench = _G.Bench
-local EventQueue = _G.EventQueue
-local Log = _G.Log
+_G.JP_DkpManager = {}
+local DkpManager = _G.JP_DkpManager
+local GuildRosterHandler = _G.JP_GuildRosterHandler
+local BrowserSelection = _G.JP_BrowserSelection
+local Utils = _G.JP_Utils
+local Bench = _G.JP_Bench
+local EventQueue = _G.JP_EventQueue
+local Log = _G.JP_Log
 
 local ButtonIdToIcon = { Ony, MC, BWL, AQ, Naxx }
 local IdToButton = {}
@@ -28,13 +28,13 @@ local function attachIcons()
 end
 
 function DkpManager:createManagementButtons()
-    local initialButton = CreateFrame("Button", "$parentRaidButton1", Management, "RaidDkpButton")
+    local initialButton = CreateFrame("Button", "$parentRaidButton1", JP_Management, "JP_RaidDkpButton")
     initialButton:SetID(1)
-    initialButton:SetPoint("TOPLEFT", Management, "TOPLEFT", 5, -23)
+    initialButton:SetPoint("TOPLEFT", JP_Management, "TOPLEFT", 5, -23)
     IdToButton[1] = initialButton
 
     for raidCount = 2, 5, 1 do
-        local raidButton = CreateFrame("Button", "$parentRaidButton" .. raidCount, Management, "RaidDkpButton")
+        local raidButton = CreateFrame("Button", "$parentRaidButton" .. raidCount, JP_Management, "JP_RaidDkpButton")
         raidButton:SetID(raidCount)
         raidButton:SetPoint("LEFT", "$parentRaidButton" .. (raidCount - 1), "RIGHT", 3, 0)
         IdToButton[raidCount] = raidButton
@@ -209,11 +209,11 @@ local function undoDecay()
 end
 
 function DkpManager:onLogClick()
-    if not LogFrame:IsVisible() then
+    if not getglobal(LOG_FRAME):IsVisible() then
         Log:updateRaidEntries()
-        LogFrame:Show()
+        getglobal(LOG_FRAME):Show()
     else
-        LogFrame:Hide()
+        getglobal(LOG_FRAME):Hide()
     end
 end
 

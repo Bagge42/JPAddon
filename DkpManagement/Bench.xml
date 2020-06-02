@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Button name="BenchEntry" hidden="true" virtual="true">
+    <Button name="JP_BenchEntry" hidden="true" virtual="true">
         <Size>
             <AbsDimension x="85" y="24"/>
         </Size>
@@ -24,7 +24,7 @@
                     getglobal(self:GetName() .. BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
-                    _G.Bench:removeFromBench(self:GetID())
+                    _G.JP_Bench:removeFromBench(self:GetID())
             </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. BACKGROUND):Show()
@@ -37,9 +37,9 @@
             <Color r="0" g="0" b="0.5" a="0.33"/>
         </NormalTexture>
     </Button>
-    <Frame name="Bench" parent="OuterFrame">
+    <Frame name="JP_BenchFrame" parent="JP_OuterFrame">
         <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="Management" relativePoint="TOPRIGHT">
+            <Anchor point="TOPLEFT" relativeTo="JP_Management" relativePoint="TOPRIGHT">
                 <Offset>
                     <AbsDimension x="0" y="0"/>
                 </Offset>
@@ -53,7 +53,7 @@
                     self:RegisterEvent("CHAT_MSG_ADDON")
             </OnLoad>
             <OnEvent>
-                    _G.Bench:onSyncAttempt(event, ...)
+                    _G.JP_Bench:onSyncAttempt(event, ...)
             </OnEvent>
         </Scripts>
         <Frames>
@@ -84,11 +84,11 @@
             <Frame name="$parentList">
                 <Scripts>
                     <OnLoad>
-                            _G.Bench:createBenchEntries()
+                            _G.JP_Bench:createBenchEntries()
                             self:RegisterEvent("ADDON_LOADED")
                     </OnLoad>
                     <OnEvent>
-                        _G.Bench:loadBench(event, ...)
+                        _G.JP_Bench:loadBench(event, ...)
                     </OnEvent>
                 </Scripts>
                 <Size>
@@ -102,17 +102,34 @@
                     </Anchor>
                 </Anchors>
             </Frame>
-            <Button name="$parentClearBench" inherits="HoverLight" text="CLEAR_BENCH">
+            <Button name="$parentShareBench" inherits="JP_HoverLight" text="SHARE_BENCH">
                 <Size>
-                    <AbsDimension x="85" y="45"/>
+                    <AbsDimension x="43" y="45"/>
                 </Size>
                 <Anchors>
-                    <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOM"/>
+                    <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="-21" y="0"/>
+                        </Offset>
+                    </Anchor>
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        _G.Bench:clearBench()
-                        _G.Bench:sendClearBenchMsg()
+                            _G.JP_Bench:shareBench()
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parentClearBench" inherits="JP_HoverLight" text="CLEAR_BENCH">
+                <Size>
+                    <AbsDimension x="42" y="45"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentShareBench" relativePoint="RIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            _G.JP_Bench:clearBench()
+                            _G.JP_Bench:sendClearBenchMsg()
                     </OnClick>
                 </Scripts>
             </Button>

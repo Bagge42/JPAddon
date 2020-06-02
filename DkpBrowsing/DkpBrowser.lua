@@ -1,18 +1,18 @@
-_G.DkpBrowser = {}
-local DkpBrowser = _G.DkpBrowser
-local GuildRosterHandler = _G.GuildRosterHandler
-local BrowserSelection = _G.BrowserSelection
-local Utils = _G.Utils
+_G.JP_DkpBrowser = {}
+local DkpBrowser = _G.JP_DkpBrowser
+local GuildRosterHandler = _G.JP_GuildRosterHandler
+local BrowserSelection = _G.JP_BrowserSelection
+local Utils = _G.JP_Utils
 
 local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
 local ToggledClasses = {}
 
 local function handleCommand(msg)
-    if OuterFrame:IsVisible() then
-        OuterFrame:Hide()
+    if JP_OuterFrame:IsVisible() then
+        JP_OuterFrame:Hide()
     else
-        OuterFrame:Show()
+        JP_OuterFrame:Show()
     end
 end
 
@@ -55,12 +55,12 @@ function updateBrowserEntries(sortButtonId)
     else
         toggledRoster = getToggledRoster()
     end
-    FauxScrollFrame_Update(OuterFrameListScrollFrame, table.getn(toggledRoster), MaximumMembersShown, 24,
+    FauxScrollFrame_Update(JP_OuterFrameListScrollFrame, table.getn(toggledRoster), MaximumMembersShown, 24,
         OUTER_FRAME_LIST_ENTRY, 267, 283)
     clearEntries()
     local numberToFillIn = getNumberOfEntriesToFill(toggledRoster)
     for member = 1, numberToFillIn, 1 do
-        local rosterEntry = toggledRoster[member + OuterFrameListScrollFrame.offset]
+        local rosterEntry = toggledRoster[member + JP_OuterFrameListScrollFrame.offset]
         local name = rosterEntry[1]
         local dkp = rosterEntry[2]
         local listEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. member)
@@ -82,11 +82,11 @@ function updateBrowserEntries(sortButtonId)
 end
 
 function DkpBrowser:createEntries()
-    local initialEntry = CreateFrame("Button", "$parentEntry1", OuterFrameList, LIST_ENTRY)
+    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_OuterFrameList, LIST_ENTRY)
     initialEntry:SetID(1)
     initialEntry:SetPoint("TOPLEFT", 0, -28)
     for entryNr = 2, MaximumMembersShown, 1 do
-        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, OuterFrameList, LIST_ENTRY)
+        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_OuterFrameList, LIST_ENTRY)
         followingEntries:SetID(entryNr)
         followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
     end
@@ -111,20 +111,20 @@ local function toggleAllFilters()
 end
 
 function DkpBrowser:createFilterButtons()
-    local initialButton = CreateFrame("Button", "$parentClassButton1", OuterFrameFilter, CLASS_BUTTON)
+    local initialButton = CreateFrame("Button", "$parentClassButton1", JP_OuterFrameFilter, CLASS_BUTTON)
     initialButton:SetID(1)
-    initialButton:SetPoint("LEFT", OuterFrameFilter, "LEFT")
+    initialButton:SetPoint("LEFT", JP_OuterFrameFilter, "LEFT")
     attachIcon(initialButton, 0, 0.25, 0, 0.25)
 
     for firstRowCount = 2, 4, 1 do
-        local firstImageRow = CreateFrame("Button", "$parentClassButton" .. firstRowCount, OuterFrameFilter, CLASS_BUTTON)
+        local firstImageRow = CreateFrame("Button", "$parentClassButton" .. firstRowCount, JP_OuterFrameFilter, CLASS_BUTTON)
         firstImageRow:SetID(firstRowCount)
         firstImageRow:SetPoint("LEFT", "$parentClassButton" .. (firstRowCount - 1), "RIGHT")
         attachIcon(firstImageRow, 0 + 0.25 * (firstRowCount - 1), 0.25 * firstRowCount, 0, 0.25)
     end
 
     for secondRowCount = 5, 8, 1 do
-        local secondImageRow = CreateFrame("Button", "$parentClassButton" .. secondRowCount, OuterFrameFilter, CLASS_BUTTON)
+        local secondImageRow = CreateFrame("Button", "$parentClassButton" .. secondRowCount, JP_OuterFrameFilter, CLASS_BUTTON)
         secondImageRow:SetID(secondRowCount)
         secondImageRow:SetPoint("LEFT", "$parentClassButton" .. (secondRowCount - 1), "RIGHT")
         attachIcon(secondImageRow, 0 + 0.25 * (secondRowCount - 4 - 1), 0.25 * (secondRowCount - 4), 0.25, 0.50)
@@ -138,7 +138,7 @@ function DkpBrowser:relayCommands()
 end
 
 function DkpBrowser:classButtonOnClick(id)
-    local icon = getglobal("OuterFrameFilterClassButton" .. id .. "Icon")
+    local icon = getglobal("JP_OuterFrameFilterClassButton" .. id .. "Icon")
     if icon:IsDesaturated() then
         icon:SetDesaturated(nil)
         ToggledClasses[IdsToClasses[id]] = true
@@ -151,7 +151,7 @@ end
 
 local function setDesaturations(nilOrOne)
     for classCount = 1, 8, 1 do
-        local icon = getglobal("OuterFrameFilterClassButton" .. classCount .. "Icon")
+        local icon = getglobal("JP_OuterFrameFilterClassButton" .. classCount .. "Icon")
         icon:SetDesaturated(nilOrOne)
     end
 end

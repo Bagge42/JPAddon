@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Button name="LogHeader" virtual="true">
+    <Button name="JP_LogHeader" virtual="true">
         <Scripts>
             <OnLoad>
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
@@ -26,7 +26,7 @@
             <Color r="0" g="0" b="0" a="0.6"/>
         </NormalTexture>
     </Button>
-    <Button name="LogEntry" hidden="true" virtual="true">
+    <Button name="JP_LogEntry" hidden="true" virtual="true">
         <Size>
             <AbsDimension x="446" y="18"/>
         </Size>
@@ -97,7 +97,7 @@
             <Color r="0" g="0" b="0.5" a="0.33"/>
         </NormalTexture>
     </Button>
-    <Button name="HoverLight" virtual="true">
+    <Button name="JP_HoverLight" virtual="true">
         <Scripts>
             <OnLoad>
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
@@ -120,10 +120,10 @@
             </Anchors>
         </ButtonText>
     </Button>
-    <Button name="RaidSelect" inherits="HoverLight" virtual="true" hidden="true">
+    <Button name="JP_RaidSelect" inherits="JP_HoverLight" virtual="true" hidden="true">
         <Scripts>
             <OnClick>
-                _G.Log:raidSelect(self:GetID())
+                _G.JP_Log:raidSelect(self:GetID())
                 self:GetParent():Hide()
             </OnClick>
         </Scripts>
@@ -140,7 +140,7 @@
             </Anchors>
         </ButtonText>
     </Button>
-    <Frame name="LogFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
+    <Frame name="JP_LogFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
         <Anchors>
             <Anchor point="RIGHT" relativePoint="CENTER">
                 <Offset>
@@ -156,6 +156,7 @@
                     self:RegisterForDrag("LeftButton")
                     self:SetUserPlaced(1)
                     self:RegisterEvent("CHAT_MSG_ADDON")
+                    self:RegisterEvent("ADDON_LOADED")
                     C_ChatInfo.RegisterAddonMessagePrefix(ADDON_PREFIX)
             </OnLoad>
             <OnDragStart>
@@ -165,7 +166,8 @@
                     self:StopMovingOrSizing()
             </OnDragStop>
             <OnEvent>
-                    _G.Log:onSyncAttempt(event, ...)
+                    _G.JP_Log:onSyncAttempt(event, ...)
+                    _G.JP_Log:loadLog(event, ...)
             </OnEvent>
         </Scripts>
         <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
@@ -196,49 +198,23 @@
                     </Layer>
                 </Layers>
                 <Frames>
-                    <Button name="$parentClose" text="CLOSE_BUTTON">
-                        <Size>
-                            <AbsDimension x="20" y="20"/>
-                        </Size>
-                        <Anchors>
-                            <Anchor point="RIGHT">
-                                <Offset>
-                                    <AbsDimension x="0" y="5"/>
-                                </Offset>
-                            </Anchor>
-                        </Anchors>
-                        <ButtonText>
-                            <Anchors>
-                                <Anchor point="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="7" y="-2"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </ButtonText>
-                        <NormalFont style="GameFontHighlight"/>
-                        <Scripts>
-                            <OnClick>
-                                    self:GetParent():GetParent():Hide()
-                            </OnClick>
-                        </Scripts>
-                    </Button>
+                    <Button name="$parentClose" inherits="JP_CloseButton"/>
                 </Frames>
             </Frame>
             <Frame name="$parentSelectFrame">
                 <Scripts>
                     <OnLoad>
-                        _G.Log:createRaidEntries()
+                        _G.JP_Log:createRaidEntries()
                     </OnLoad>
                 </Scripts>
                 <Anchors>
-                    <Anchor point="TOP" relativeTo="LogFrameTitleFrame" relativePoint="BOTTOM"/>
+                    <Anchor point="TOP" relativeTo="JP_LogFrameTitleFrame" relativePoint="BOTTOM"/>
                 </Anchors>
                 <Size>
                     <AbsDimension x="445" y="480"/>
                 </Size>
                 <Frames>
-                    <Button name="$parentNext" inherits="HoverLight" text="NEXT">
+                    <Button name="$parentNext" inherits="JP_HoverLight" text="NEXT">
                         <Size>
                             <AbsDimension x="75" y="18"/>
                         </Size>
@@ -247,11 +223,11 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.Log:selectFrameNext()
+                                    _G.JP_Log:selectFrameNext()
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentPrevious" inherits="HoverLight" text="PREVIOUS">
+                    <Button name="$parentPrevious" inherits="JP_HoverLight" text="PREVIOUS">
                         <Size>
                             <AbsDimension x="95" y="18"/>
                         </Size>
@@ -260,7 +236,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.Log:selectFramePrevious()
+                                    _G.JP_Log:selectFramePrevious()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -273,21 +249,15 @@
                             <AbsDimension x="445" y="456"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="TOP" relativeTo="LogFrameTitleFrame" relativePoint="BOTTOM"/>
+                            <Anchor point="TOP" relativeTo="JP_LogFrameTitleFrame" relativePoint="BOTTOM"/>
                         </Anchors>
                         <Scripts>
-                            <!--                    <OnLoad>-->
-                            <!--                            self:RegisterEvent("ADDON_LOADED")-->
-                            <!--                    </OnLoad>-->
-                            <!--                    <OnEvent>-->
-                            <!--                            _G.Log:loadLog(event, ...)-->
-                            <!--                    </OnEvent>-->
                             <OnLoad>
-                                    _G.Log:createEntries()
+                                    _G.JP_Log:createEntries()
                             </OnLoad>
                         </Scripts>
                         <Frames>
-                            <Button inherits="LogHeader" name="$parentTimeHeader" id="1" text="LOG_TIME_HEADER">
+                            <Button inherits="JP_LogHeader" name="$parentTimeHeader" id="1" text="LOG_TIME_HEADER">
                                 <Size>
                                     <AbsDimension x="115" y="24"/>
                                 </Size>
@@ -295,7 +265,7 @@
                                     <Anchor point="TOPLEFT"/>
                                 </Anchors>
                             </Button>
-                            <Button inherits="LogHeader" name="$parentPlayerHeader" id="2" text="PLAYER_HEADER">
+                            <Button inherits="JP_LogHeader" name="$parentPlayerHeader" id="2" text="PLAYER_HEADER">
                                 <Size>
                                     <AbsDimension x="95" y="24"/>
                                 </Size>
@@ -303,7 +273,7 @@
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTimeHeader"/>
                                 </Anchors>
                             </Button>
-                            <Button inherits="LogHeader" name="$parentChangeHeader" id="3" text="LOG_CHANGE_HEADER">
+                            <Button inherits="JP_LogHeader" name="$parentChangeHeader" id="3" text="LOG_CHANGE_HEADER">
                                 <Size>
                                     <AbsDimension x="65" y="24"/>
                                 </Size>
@@ -311,7 +281,7 @@
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
                                 </Anchors>
                             </Button>
-                            <Button inherits="LogHeader" name="$parentTotalHeader" id="4" text="LOG_TOTAL_HEADER">
+                            <Button inherits="JP_LogHeader" name="$parentTotalHeader" id="4" text="LOG_TOTAL_HEADER">
                                 <Size>
                                     <AbsDimension x="77" y="24"/>
                                 </Size>
@@ -319,7 +289,7 @@
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChangeHeader"/>
                                 </Anchors>
                             </Button>
-                            <Button inherits="LogHeader" name="$parentEventHeader" id="5" text="LOG_EVENT_HEADER">
+                            <Button inherits="JP_LogHeader" name="$parentEventHeader" id="5" text="LOG_EVENT_HEADER">
                                 <Size>
                                     <AbsDimension x="94" y="24"/>
                                 </Size>
@@ -329,7 +299,7 @@
                             </Button>
                         </Frames>
                     </Frame>
-                    <Button name="$parentBack" inherits="HoverLight" text="BACK">
+                    <Button name="$parentBack" inherits="JP_HoverLight" text="BACK">
                         <Size>
                             <AbsDimension x="105" y="24"/>
                         </Size>
@@ -342,11 +312,11 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.Log:back()
+                                    _G.JP_Log:back()
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentNext" inherits="HoverLight" text="NEXT">
+                    <Button name="$parentNext" inherits="JP_HoverLight" text="NEXT">
                         <Size>
                             <AbsDimension x="75" y="24"/>
                         </Size>
@@ -359,11 +329,11 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.Log:displayFrameNext()
+                                    _G.JP_Log:displayFrameNext()
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentPrevious" inherits="HoverLight" text="PREVIOUS">
+                    <Button name="$parentPrevious" inherits="JP_HoverLight" text="PREVIOUS">
                         <Size>
                             <AbsDimension x="95" y="24"/>
                         </Size>
@@ -372,7 +342,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.Log:displayFramePrevious()
+                                    _G.JP_Log:displayFramePrevious()
                             </OnClick>
                         </Scripts>
                     </Button>

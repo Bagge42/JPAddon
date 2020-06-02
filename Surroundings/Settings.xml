@@ -1,0 +1,53 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Frame name="JP_CenterFrame" parent="JP_OuterFrame" virtual="true">
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="JP_OuterFrameList" relativePoint="TOPRIGHT">
+                <Offset>
+                    <AbsDimension x="0" y="-4"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Size>
+            <AbsDimension x="283" y="276"/>
+        </Size>
+    </Frame>
+    <Frame name="JP_TitleFrame" virtual="true">
+        <Size>
+            <AbsDimension x="283" y="24"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT"/>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+            <Color r="0" g="0" b="0" a="1"/>
+        </Backdrop>
+    </Frame>
+    <Frame name="JP_SettingsFrame" inherits="JP_CenterFrame" hidden="true">
+        <Frames>
+            <Frame name="$parentTitleFrame" inherits="JP_TitleFrame">
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontHighlight" text="SETTINGS_TITLE">
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="6" y="1"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button name="$parentClose" inherits="JP_CloseButton">
+                        <Scripts>
+                            <OnClick>
+                                _G.JP_Settings:onSettingsClick()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+        </Frames>
+    </Frame>
+</Ui>

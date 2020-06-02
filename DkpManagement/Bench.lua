@@ -1,17 +1,18 @@
-JP_Bench = {}
-_G.Bench = {}
-local Bench = _G.Bench
-local BrowserSelection = _G.BrowserSelection
+JP_Current_Bench = {}
+_G.JP_Bench = {}
+local Bench = _G.JP_Bench
+local BrowserSelection = _G.JP_BrowserSelection
+local GuildRosterHandler = _G.JP_GuildRosterHandler
 local MaximumMembersShown = 10
-local Utils = _G.Utils
+local Utils = _G.JP_Utils
 
 function isBenched(player)
-    return JP_Bench[player] ~= nil
+    return JP_Current_Bench[player] ~= nil
 end
 
 local function clearBenchEntries()
     for member = 1, MaximumMembersShown, 1 do
-        local benchEntry = getglobal("BenchListEntry" .. member)
+        local benchEntry = getglobal("JP_BenchFrameListEntry" .. member)
         getglobal(benchEntry:GetName() .. PLAYER):SetText("")
         benchEntry:Hide()
     end
@@ -20,8 +21,8 @@ end
 local function updateBenchEntries()
     clearBenchEntries()
     local entryCounter = 1
-    for member, class in pairs(JP_Bench) do
-        local benchEntry = getglobal("BenchListEntry" .. entryCounter)
+    for member, class in pairs(JP_Current_Bench) do
+        local benchEntry = getglobal("JP_BenchFrameListEntry" .. entryCounter)
         benchEntry:Show()
         getglobal(benchEntry:GetName() .. BACKGROUND):Hide()
         local fontString = getglobal(benchEntry:GetName() .. PLAYER)
@@ -32,51 +33,64 @@ local function updateBenchEntries()
 end
 
 local function changeBenchState(player, class)
-    if JP_Bench[player] then
-        JP_Bench[player] = nil
+    if JP_Current_Bench[player] then
+        JP_Current_Bench[player] = nil
     else
-        JP_Bench[player] = class
+        JP_Current_Bench[player] = class
     end
     updateBenchEntries()
 end
 
 function Bench:getBench()
-    return JP_Bench
+    return JP_Current_Bench
 end
 
 function Bench:removeFromBench(entryId)
-    local player = getglobal("BenchListEntry" .. entryId .. PLAYER):GetText()
+    local player = getglobal("JP_BenchFrameListEntry" .. entryId .. PLAYER):GetText()
     changeBenchState(player)
     if BrowserSelection:getSelectedPlayer() == player then
         BrowserSelection:colorBenchButton(player)
     end
+    local playerClass = GuildRosterHandler:getPlayerClass(player)
+    local msg = BENCH_MSG_CHANGE_STATE .. "&" .. player .. "&" .. playerClass
+    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "RAID")
 end
 
 function Bench:createBenchEntries()
-    local initialEntry = CreateFrame("Button", "$parentEntry1", BenchList, BENCH_ENTRY)
+    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_BenchFrameList, BENCH_ENTRY)
     initialEntry:SetID(1)
     initialEntry:SetPoint("TOPLEFT")
     for entryNr = 2, MaximumMembersShown, 1 do
-        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, BenchList, BENCH_ENTRY)
+        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_BenchFrameList, BENCH_ENTRY)
         followingEntries:SetID(entryNr)
         followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
     end
 end
 
 function Bench:clearBench()
-    JP_Bench = {}
+    JP_Current_Bench = {}
     updateBenchEntries()
     getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
 end
 
 function Bench:sendClearBenchMsg()
     local msg = BENCH_MSG_CLEAR
-    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "GUILD")
+    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "RAID")
+end
+
+local function hideBench()
+    JP_BenchFrame:Hide()
+    JP_OuterFrame:SetSize(566, 300)
+    JP_OuterFrameTitleFrame:SetSize(566, 24)
+    JP_Current_Settings["BenchHidden"] = true
 end
 
 function Bench:loadBench(event, addonName)
     if addonName == "jpdkp" then
         updateBenchEntries()
+        if JP_Current_Settings["BenchHidden"] then
+            hideBench()
+        end
     end
 end
 
@@ -84,8 +98,8 @@ function Bench:benchPlayer()
     local selectedPlayer = BrowserSelection:getSelectedPlayer()
     local playerClass = GuildRosterHandler:getPlayerClass(selectedPlayer)
     changeBenchState(selectedPlayer, playerClass)
-    local msg = BENCH_MSG_BENCH_PLAYER .. "&" .. selectedPlayer .. "&" .. playerClass
-    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "GUILD")
+    local msg = BENCH_MSG_CHANGE_STATE .. "&" .. selectedPlayer .. "&" .. playerClass
+    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "RAID")
     BrowserSelection:colorBenchButton(selectedPlayer)
 end
 
@@ -93,11 +107,39 @@ function Bench:onSyncAttempt(event, ...)
     local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
 
     if (prefix == ADDON_PREFIX) then
-        local _, player, class = string.split("&", msg)
-        if Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_BENCH_PLAYER, sender) then
+        if Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_CHANGE_STATE, sender) then
+            local _, player, class = string.split("&", msg)
             changeBenchState(player, class)
         elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_CLEAR, sender) then
             Bench:clearBench()
+        elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_SHARE, sender) then
+            for name, _ in string.gmatch(msg, "([^&]*)") do
+               if (name ~= BENCH_MSG_SHARE) then
+                   JP_Current_Bench[name] = true
+               end
+            end
+            updateBenchEntries()
         end
+    end
+end
+
+function Bench:shareBench()
+    local msg = BENCH_MSG_SHARE
+    for name, benchValue in pairs(JP_Current_Bench) do
+       if benchValue then
+          msg = msg .. "&" .. name
+       end
+    end
+    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "RAID")
+end
+
+function Bench:showHideBench()
+    if not JP_BenchFrame:IsVisible() then
+        JP_BenchFrame:Show()
+        JP_OuterFrame:SetSize(651, 300)
+        JP_OuterFrameTitleFrame:SetSize(651, 24)
+        JP_Current_Settings["BenchHidden"] = false
+    else
+        hideBench()
     end
 end

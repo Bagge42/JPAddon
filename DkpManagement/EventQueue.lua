@@ -1,7 +1,7 @@
-_G.EventQueue = {}
-local GuildRosterHandler = _G.GuildRosterHandler
-local Utils = _G.Utils
-local EventQueue = _G.EventQueue
+_G.JP_EventQueue = {}
+local GuildRosterHandler = _G.JP_GuildRosterHandler
+local Utils = _G.JP_Utils
+local EventQueue = _G.JP_EventQueue
 
 local EventInProgress = false
 local Queue = {}

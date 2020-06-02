@@ -1,5 +1,5 @@
-_G.Utils = {}
-local Utils = _G.Utils
+_G.JP_Utils = {}
+local Utils = _G.JP_Utils
 
 function Utils:jpMsg(msg)
     DEFAULT_CHAT_FRAME:AddMessage("|c80BE0AFF" .. msg)
@@ -72,7 +72,7 @@ end
 
 function Utils:getSizeOfTable(table)
     local counter = 0
-    for k, v in pairs(table) do
+    for _, _ in pairs(table) do
         counter = counter + 1
     end
     return counter
@@ -80,7 +80,7 @@ end
 
 function Utils:isMsgTypeAndNotFromSelf(msg, msgType, sender)
     local type = string.split("&", msg)
-    if (type == msgType) and not (Utils:removeRealmName(sender) == UnitName("player")) then
+    if (type == msgType) and (Utils:removeRealmName(sender) ~= UnitName("player")) then
         return true
     end
     return false

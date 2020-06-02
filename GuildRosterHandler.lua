@@ -1,6 +1,6 @@
-_G.GuildRosterHandler = {}
-local GuildRosterHandler = _G.GuildRosterHandler
-local Utils = _G.Utils
+_G.JP_GuildRosterHandler = {}
+local GuildRosterHandler = _G.JP_GuildRosterHandler
+local Utils = _G.JP_Utils
 
 local CurrentIdUsed = 2
 local CurrentOrderUsed = DESCENDING

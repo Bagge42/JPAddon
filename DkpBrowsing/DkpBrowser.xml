@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Button name="ListHeader" virtual="true">
+    <Button name="JP_ListHeader" virtual="true">
         <Scripts>
             <OnLoad>
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
@@ -29,7 +29,7 @@
             <Color r="0" g="0" b="0" a="0.6"/>
         </NormalTexture>
     </Button>
-    <Button name="ListEntry" hidden="true" virtual="true">
+    <Button name="JP_ListEntry" hidden="true" virtual="true">
         <Size>
             <AbsDimension x="267" y="24"/>
         </Size>
@@ -66,13 +66,13 @@
                     getglobal(self:GetName() .. BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
-                    _G.BrowserSelection:selectEntry(self:GetID())
+                    _G.JP_BrowserSelection:selectEntry(self:GetID())
             </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. BACKGROUND):Show()
             </OnEnter>
             <OnLeave>
-                    if not _G.BrowserSelection:isSelected(self:GetID()) then
+                    if not _G.JP_BrowserSelection:isSelected(self:GetID()) then
                         getglobal(self:GetName() .. BACKGROUND):Hide()
                     end
             </OnLeave>
@@ -81,17 +81,40 @@
             <Color r="0" g="0" b="0.5" a="0.33"/>
         </NormalTexture>
     </Button>
-    <Button name="ClassButton" virtual="true">
+    <Button name="JP_ClassButton" virtual="true">
         <Size>
             <AbsDimension x="32" y="32"/>
         </Size>
         <Scripts>
             <OnClick>
-                    _G.DkpBrowser:classButtonOnClick(self:GetID())
+                    _G.JP_DkpBrowser:classButtonOnClick(self:GetID())
             </OnClick>
         </Scripts>
     </Button>
-    <Button name="AllClassToggle" virtual="true">
+    <Button name="JP_CloseButton" text="CLOSE_BUTTON" virtual="true">
+        <Size>
+            <AbsDimension x="24" y="24"/>
+        </Size>
+        <Anchors>
+            <Anchor point="RIGHT"/>
+        </Anchors>
+        <ButtonText>
+            <Anchors>
+                <Anchor point="CENTER">
+                    <Offset>
+                        <AbsDimension x="2" y="1"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </ButtonText>
+        <NormalFont style="GameFontHighlight"/>
+        <Scripts>
+            <OnClick>
+                    self:GetParent():GetParent():Hide()
+            </OnClick>
+        </Scripts>
+    </Button>
+    <Button name="JP_AllClassToggle" virtual="true">
         <ButtonText>
             <Anchors>
                 <Anchor point="CENTER"/>
@@ -114,7 +137,7 @@
             <Color r="1" g="1" b="1" a="0.5"/>
         </NormalTexture>
     </Button>
-    <Frame name="OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
+    <Frame name="JP_OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
         <Anchors>
             <Anchor point="RIGHT" relativePoint="CENTER">
                 <Offset>
@@ -130,15 +153,15 @@
         </Backdrop>
         <Scripts>
             <OnLoad>
-                    _G.DkpBrowser:relayCommands()
-                    _G.DkpBrowser:createEntries()
-                    _G.DkpBrowser:createFilterButtons()
+                    _G.JP_DkpBrowser:relayCommands()
+                    _G.JP_DkpBrowser:createEntries()
+                    _G.JP_DkpBrowser:createFilterButtons()
                     self:RegisterEvent("GUILD_ROSTER_UPDATE")
                     self:SetUserPlaced(1)
                     self:RegisterForDrag("LeftButton")
             </OnLoad>
             <OnEvent>
-                    _G.DkpBrowser:updateRoster()
+                    _G.JP_DkpBrowser:updateRoster()
             </OnEvent>
             <OnDragStart>
                     self:StartMoving()
@@ -161,7 +184,7 @@
                 </Anchors>
                 <Scripts>
                     <OnMouseWheel>
-                            ScrollFrameTemplate_OnMouseWheel(OuterFrameListScrollFrame, delta)
+                            ScrollFrameTemplate_OnMouseWheel(JP_OuterFrameListScrollFrame, delta)
                     </OnMouseWheel>
                 </Scripts>
                 <Frames>
@@ -182,7 +205,7 @@
                             </OnVerticalScroll>
                         </Scripts>
                     </ScrollFrame>
-                    <Button inherits="ListHeader" name="$parentPlayerHeader" id="1" text="PLAYER_HEADER">
+                    <Button inherits="JP_ListHeader" name="$parentPlayerHeader" id="1" text="PLAYER_HEADER">
                         <Size>
                             <AbsDimension x="188" y="24"/>
                         </Size>
@@ -194,7 +217,7 @@
                             </Anchor>
                         </Anchors>
                     </Button>
-                    <Button inherits="ListHeader" name="$parentAmountHeader" id="2" text="AMOUNT_HEADER">
+                    <Button inherits="JP_ListHeader" name="$parentAmountHeader" id="2" text="AMOUNT_HEADER">
                         <Size>
                             <AbsDimension x="95" y="24"/>
                         </Size>
@@ -204,7 +227,7 @@
                     </Button>
                 </Frames>
             </Frame>
-            <Frame name="TitleFrame">
+            <Frame name="$parentTitleFrame">
                 <Size>
                     <AbsDimension x="651" y="24"/>
                 </Size>
@@ -218,7 +241,7 @@
                     <Layer level="ARTWORK">
                         <FontString inherits="GameFontHighlight" text="TITLE">
                             <Anchors>
-                                <Anchor point="RIGHT" relativeTo="TitleFrame" relativePoint="LEFT">
+                                <Anchor point="RIGHT" relativeTo="JP_OuterFrameTitleFrame" relativePoint="LEFT">
                                     <Offset>
                                         <AbsDimension x="56" y="0"/>
                                     </Offset>
@@ -228,39 +251,39 @@
                     </Layer>
                 </Layers>
                 <Frames>
-                    <Button name="$parentClose" text="CLOSE_BUTTON">
+                    <Button name="$parentClose" inherits="JP_CloseButton"/>
+                    <Button name="$parentOptions" text="SETTINGS" inherits="JP_AllClassToggle">
                         <Size>
-                            <AbsDimension x="20" y="20"/>
+                            <AbsDimension x="58" y="24"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="RIGHT">
-                                <Offset>
-                                    <AbsDimension x="0" y="5"/>
-                                </Offset>
-                            </Anchor>
+                            <Anchor point="RIGHT" relativeTo="$parentClose" relativePoint="LEFT"/>
                         </Anchors>
-                        <ButtonText>
-                            <Anchors>
-                                <Anchor point="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="7" y="-2"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </ButtonText>
-                        <NormalFont style="GameFontHighlight"/>
                         <Scripts>
                             <OnClick>
-                                    self:GetParent():GetParent():Hide()
+                                _G.JP_Settings:onSettingsClick()
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentNone" text="NONE" inherits="AllClassToggle">
+                    <Button name="$parentBench" text="BENCH_TITLE" inherits="JP_AllClassToggle">
+                        <Size>
+                            <AbsDimension x="58" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentOptions" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    _G.JP_Bench:showHideBench()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentNone" text="NONE" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="40" y="24"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="RIGHT" relativeTo="OuterFrameList" relativePoint="TOPRIGHT">
+                            <Anchor point="RIGHT" relativeTo="JP_OuterFrameList" relativePoint="TOPRIGHT">
                                 <Offset>
                                     <AbsDimension x="0" y="8"/>
                                 </Offset>
@@ -268,11 +291,11 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                _G.DkpBrowser:deselectAllClasses()
+                                _G.JP_DkpBrowser:deselectAllClasses()
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentAll" text="ALL" inherits="AllClassToggle">
+                    <Button name="$parentAll" text="ALL" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="40" y="24"/>
                         </Size>
@@ -281,7 +304,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.DkpBrowser:selectAllClasses()
+                                    _G.JP_DkpBrowser:selectAllClasses()
                             </OnClick>
                         </Scripts>
                     </Button>

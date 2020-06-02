@@ -1,15 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Button name="RaidDkpButton" virtual="true">
+    <Button name="JP_RaidDkpButton" virtual="true">
         <Size>
             <AbsDimension x="52" y="45"/>
         </Size>
         <Scripts>
             <OnClick>
-                    _G.DkpManager:raidDkpButtonOnClick(self:GetID())
+                    _G.JP_DkpManager:raidDkpButtonOnClick(self:GetID())
             </OnClick>
         </Scripts>
     </Button>
-    <Button name="AdjustDkp" virtual="true">
+    <Button name="JP_AdjustDkp" virtual="true">
         <Size>
             <AbsDimension x="53" y="48"/>
         </Size>
@@ -22,8 +22,8 @@
         <HighlightFont style="GameFontNormalLarge"/>
         <Scripts>
             <OnClick>
-                    _G.DkpManager:adjustDkpOnClick(self:GetID())
-                    _G.DkpManager:resetPlayerEditBox()
+                    _G.JP_DkpManager:adjustDkpOnClick(self:GetID())
+                    _G.JP_DkpManager:resetPlayerEditBox()
             </OnClick>
             <OnLoad>
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0)
@@ -39,35 +39,29 @@
             <Color r="1" g="1" b="1" a="0.5"/>
         </NormalTexture>
     </Button>
-    <Frame name="Management" parent="OuterFrame">
-        <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="OuterFrameList" relativePoint="TOPRIGHT">
-                <Offset>
-                    <AbsDimension x="0" y="-4"/>
-                </Offset>
-            </Anchor>
-        </Anchors>
-        <Size>
-            <AbsDimension x="283" y="276"/>
-        </Size>
+    <Frame name="JP_Management" inherits="JP_CenterFrame">
         <Scripts>
             <OnLoad>
-                _G.DkpManager:createManagementButtons()
+                _G.JP_DkpManager:createManagementButtons()
             </OnLoad>
         </Scripts>
         <Frames>
-            <Frame name="$parentTitleFrame">
-                <Size>
-                    <AbsDimension x="283" y="24"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="TOPLEFT"/>
-                </Anchors>
-                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
-                    <Color r="0" g="0" b="0" a="1"/>
-                </Backdrop>
+            <Frame name="$parentTitleFrame" inherits="JP_TitleFrame">
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontHighlight" text="MANAGEMENT_TITLE">
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="6" y="1"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
                 <Frames>
-                    <Button name="$parentSnapshot" text="SNAPSHOT" inherits="AllClassToggle">
+                    <Button name="$parentSnapshot" text="SNAPSHOT" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="135" y="24"/>
                         </Size>
@@ -76,7 +70,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.DkpManager:createDkpSnapshot()
+                                    _G.JP_DkpManager:createDkpSnapshot()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -106,7 +100,7 @@
                     </Layer>
                 </Layers>
                 <Frames>
-                    <Button name="$parentSub" text="SUB_BUTTON" inherits="AdjustDkp" id="2">
+                    <Button name="$parentSub" text="SUB_BUTTON" inherits="JP_AdjustDkp" id="2">
                         <Anchors>
                             <Anchor point="RIGHT">
                                 <Offset>
@@ -124,7 +118,7 @@
                             </Anchors>
                         </ButtonText>
                     </Button>
-                    <Button name="$parentAdd" text="ADD_BUTTON" inherits="AdjustDkp" id="1">
+                    <Button name="$parentAdd" text="ADD_BUTTON" inherits="JP_AdjustDkp" id="1">
                         <Anchors>
                             <Anchor point="RIGHT" relativeTo="$parentSub" relativePoint="LEFT"/>
                         </Anchors>
@@ -183,7 +177,7 @@
                         <NormalFont style="GameFontHighlight"/>
                         <Scripts>
                             <OnClick>
-                                    _G.Bench:benchPlayer()
+                                    _G.JP_Bench:benchPlayer()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -212,7 +206,7 @@
                     </EditBox>
                 </Frames>
             </Frame>
-            <Button name="$parentUndo" text="UNDO" inherits="HoverLight">
+            <Button name="$parentUndo" text="UNDO" inherits="JP_HoverLight">
                 <Size>
                     <AbsDimension x="135" y="45"/>
                 </Size>
@@ -221,11 +215,11 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            _G.DkpManager:undo()
+                            _G.JP_DkpManager:undo()
                     </OnClick>
                 </Scripts>
             </Button>
-            <Button name="$parentDecay" text="DECAY" inherits="HoverLight">
+            <Button name="$parentDecay" text="DECAY" inherits="JP_HoverLight">
                 <Size>
                     <AbsDimension x="74" y="45"/>
                 </Size>
@@ -234,11 +228,11 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            _G.DkpManager:addDecayEvent()
+                            _G.JP_DkpManager:addDecayEvent()
                     </OnClick>
                 </Scripts>
             </Button>
-            <Button name="$parentLog" text="LOG" inherits="HoverLight">
+            <Button name="$parentLog" text="LOG" inherits="JP_HoverLight">
                 <Size>
                     <AbsDimension x="74" y="45"/>
                 </Size>
@@ -247,7 +241,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                        _G.DkpManager:onLogClick()
+                        _G.JP_DkpManager:onLogClick()
                     </OnClick>
                 </Scripts>
             </Button>
