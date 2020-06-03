@@ -5,6 +5,7 @@ _G.JP_Log = {}
 JP_Log_Date_To_Id = {}
 local Log = _G.JP_Log
 local Utils = _G.JP_Utils
+local GuildRosterHandler = _G.JP_GuildRosterHandler
 local MaximumMembersShown = 24
 local MaximumRaidsShown = 30
 local LogHistoryIndex = 0
@@ -156,6 +157,21 @@ local function getZoneTexture(zone)
     end
 end
 
+local function updateRaidNavigateButtons(nrOfEntries)
+    local previousButton = getglobal("JP_LogFrameSelectFramePrevious")
+    local nextButton = getglobal("JP_LogFrameSelectFrameNext")
+    if LogHistoryIndex == 0 then
+        previousButton:Hide()
+    else
+        previousButton:Show()
+    end
+    if ((DataEntryIndex + MaximumMembersShown) >= nrOfEntries ) then
+        nextButton:Hide()
+    else
+        nextButton:Show()
+    end
+end
+
 function Log:updateRaidEntries()
     clearRaidEntries()
     local LogHistoryIndexBeforeUpdate = LogHistoryIndex
@@ -178,12 +194,13 @@ function Log:updateRaidEntries()
         end
     end
     LogHistoryIndex = LogHistoryIndexBeforeUpdate
+    updateRaidNavigateButtons(#JP_Log_History)
 end
 
 function Log:createEntries()
     local initialEntry = CreateFrame("Button", "$parentEntry1", JP_LogFrameDisplayFrameList, "JP_LogEntry")
     initialEntry:SetID(1)
-    initialEntry:SetPoint("TOP", JP_LogFrameDisplayFrameListChangeHeader, "BOTTOM", -19.5, 0)
+    initialEntry:SetPoint("TOPLEFT", 0, -24)
     for entryNr = 2, MaximumMembersShown, 1 do
         local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_LogFrameDisplayFrameList, "JP_LogEntry")
         followingEntries:SetID(entryNr)
@@ -199,54 +216,77 @@ local function clearEntries()
         getglobal(listEntry:GetName() .. "Change"):SetText("")
         getglobal(listEntry:GetName() .. "Total"):SetText("")
         getglobal(listEntry:GetName() .. "Event"):SetText("")
+        getglobal(listEntry:GetName() .. "Modifier"):SetText("")
+    end
+end
+
+local function insertModifierInfo(logEntryFrame, modifierName)
+    local modifierFrame = getglobal(logEntryFrame:GetName() .. "Modifier")
+    modifierFrame:SetText(modifierName)
+    local officerClass = GuildRosterHandler:getPlayerClass(modifierName)
+    if officerClass then
+        Utils:setClassColor(modifierFrame, officerClass)
+    else
+        modifierFrame:SetTextColor(0.53, 0.10, 0.65, 1)
+    end
+end
+
+local function insertDataInEntry(data, entryIndex)
+    local logEntryFrame = getglobal("JP_LogFrameDisplayFrameListEntry" .. entryIndex)
+    getglobal(logEntryFrame:GetName() .. "Time"):SetText(data[2])
+    local playerFrame = getglobal(logEntryFrame:GetName() .. PLAYER)
+    playerFrame:SetText(data[3])
+    Utils:setClassColor(playerFrame, data[7])
+    getglobal(logEntryFrame:GetName() .. "Change"):SetText(data[4])
+    getglobal(logEntryFrame:GetName() .. "Total"):SetText(data[5])
+    getglobal(logEntryFrame:GetName() .. "Event"):SetText(data[6])
+    insertModifierInfo(logEntryFrame, data[8])
+    logEntryFrame:Show()
+end
+
+local function updateEntryNavigateButtons(nrOfEntries)
+    local previousButton = getglobal("JP_LogFrameDisplayFramePrevious")
+    local nextButton = getglobal("JP_LogFrameDisplayFrameNext")
+    if DataEntryIndex == 1 then
+        previousButton:Hide()
+    else
+        previousButton:Show()
+    end
+    if ((DataEntryIndex + MaximumMembersShown) >= nrOfEntries ) then
+        nextButton:Hide()
+    else
+        nextButton:Show()
     end
 end
 
 local function updateEntries(buttonId)
     clearEntries()
+    LatestButtonId = buttonId
     local DataEntryIndexBeforeUpdate = DataEntryIndex
-    local keys
-    if not buttonId then
-        keys = ButtonIdToKeys[LatestButtonId]
-    else
-        keys = ButtonIdToKeys[buttonId]
-        LatestButtonId = buttonId
-    end
+    local keys = ButtonIdToKeys[buttonId]
     local zoneEntries = JP_Log_History[keys[1]][keys[2]]
     for index = 0, MaximumMembersShown - 1, 1 do
         local dataEntry = zoneEntries[DataEntryIndex]
         if dataEntry then
             local data = dataEntry[2]
-            local logEntryFrame = getglobal("JP_LogFrameDisplayFrameListEntry" .. (index + 1))
-            getglobal(logEntryFrame:GetName() .. "Time"):SetText(data[2])
-            local playerFrame = getglobal(logEntryFrame:GetName() .. PLAYER)
-            playerFrame:SetText(data[3])
-            Utils:setClassColor(playerFrame, data[7])
-            getglobal(logEntryFrame:GetName() .. "Change"):SetText(data[4])
-            getglobal(logEntryFrame:GetName() .. "Total"):SetText(data[5])
-            getglobal(logEntryFrame:GetName() .. "Event"):SetText(data[6])
-            logEntryFrame:Show()
+            insertDataInEntry(data, (index + 1))
             DataEntryIndex = DataEntryIndex + 1
-            --        if name == BrowserSelection:getSelectedPlayer() then
-            --            getglobal(listEntry:GetName() .. BACKGROUND):Show()
-            --        else
-            --            getglobal(listEntry:GetName() .. BACKGROUND):Hide()
-            --        end
         else
             break
         end
     end
     DataEntryIndex = DataEntryIndexBeforeUpdate
+    updateEntryNavigateButtons(#zoneEntries)
 end
 
 function Log:displayFrameNext()
     DataEntryIndex = DataEntryIndex + MaximumMembersShown
-    updateEntries()
+    updateEntries(LatestButtonId)
 end
 
 function Log:displayFramePrevious()
     DataEntryIndex = DataEntryIndex - MaximumMembersShown
-    updateEntries()
+    updateEntries(LatestButtonId)
 end
 
 function Log:selectFrameNext()

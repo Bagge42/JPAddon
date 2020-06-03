@@ -28,18 +28,18 @@
     </Button>
     <Button name="JP_LogEntry" hidden="true" virtual="true">
         <Size>
-            <AbsDimension x="446" y="18"/>
+            <AbsDimension x="445" y="18"/>
         </Size>
         <Layers>
             <Layer>
                 <FontString name="$parentTime" justifyH="LEFT" inherits="GameFontNormalSmall">
                     <Size>
-                        <AbsDimension x="110" y="18"/>
+                        <AbsDimension x="70" y="18"/>
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT">
                             <Offset>
-                                <AbsDimension x="4" y="0"/>
+                                <AbsDimension x="3" y="0"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -58,7 +58,7 @@
                 </FontString>
                 <FontString name="$parentChange" justifyH="LEFT" inherits="GameFontNormalSmall">
                     <Size>
-                        <AbsDimension x="65" y="24"/>
+                        <AbsDimension x="56" y="24"/>
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayer"/>
@@ -66,7 +66,7 @@
                 </FontString>
                 <FontString name="$parentTotal" justifyH="LEFT" inherits="GameFontNormalSmall">
                     <Size>
-                        <AbsDimension x="77" y="24"/>
+                        <AbsDimension x="56" y="24"/>
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChange"/>
@@ -74,10 +74,18 @@
                 </FontString>
                 <FontString name="$parentEvent" justifyH="LEFT" inherits="GameFontNormalSmall">
                     <Size>
-                        <AbsDimension x="94" y="24"/>
+                        <AbsDimension x="74" y="24"/>
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTotal"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentModifier" justifyH="LEFT" inherits="GameFontNormalSmall">
+                    <Size>
+                        <AbsDimension x="94" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentEvent"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -259,7 +267,7 @@
                         <Frames>
                             <Button inherits="JP_LogHeader" name="$parentTimeHeader" id="1" text="LOG_TIME_HEADER">
                                 <Size>
-                                    <AbsDimension x="115" y="24"/>
+                                    <AbsDimension x="70" y="24"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="TOPLEFT"/>
@@ -275,7 +283,7 @@
                             </Button>
                             <Button inherits="JP_LogHeader" name="$parentChangeHeader" id="3" text="LOG_CHANGE_HEADER">
                                 <Size>
-                                    <AbsDimension x="65" y="24"/>
+                                    <AbsDimension x="56" y="24"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
@@ -283,7 +291,7 @@
                             </Button>
                             <Button inherits="JP_LogHeader" name="$parentTotalHeader" id="4" text="LOG_TOTAL_HEADER">
                                 <Size>
-                                    <AbsDimension x="77" y="24"/>
+                                    <AbsDimension x="56" y="24"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChangeHeader"/>
@@ -291,10 +299,18 @@
                             </Button>
                             <Button inherits="JP_LogHeader" name="$parentEventHeader" id="5" text="LOG_EVENT_HEADER">
                                 <Size>
-                                    <AbsDimension x="94" y="24"/>
+                                    <AbsDimension x="74" y="24"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTotalHeader"/>
+                                </Anchors>
+                            </Button>
+                            <Button inherits="JP_LogHeader" name="$parentModifierHeader" id="6" text="LOG_MODIFIER_HEADER">
+                                <Size>
+                                    <AbsDimension x="94" y="24"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentEventHeader"/>
                                 </Anchors>
                             </Button>
                         </Frames>

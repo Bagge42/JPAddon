@@ -8,6 +8,7 @@ local Roster = {}
 local NameToRosterId = {}
 local GuildIndex = {}
 local GuildRosterNeedsUpdate = true
+local AltRoster = {}
 
 function GuildRosterHandler:update()
     if not CanViewOfficerNote() then
@@ -19,8 +20,8 @@ function GuildRosterHandler:update()
 
     for member = 1, NrOfGuildMembers, 1 do
         local nameAndRealm, rank, rankIndex, _, class, zone, _, officernote, online = GetGuildRosterInfo(member)
+        local name = Utils:removeRealmName(nameAndRealm)
         if rank ~= ALT and rank ~= OFFICER_ALT then
-            local name = Utils:removeRealmName(nameAndRealm)
             if name ~= "" then
                 local isOnline = 0
                 if online then
@@ -38,6 +39,8 @@ function GuildRosterHandler:update()
                 NameToRosterId[name] = rosterId
                 guildRoster[rosterId] = { name, (1 * dkp), class, rank, isOnline, zone, rankIndex }
             end
+        else
+            AltRoster[name] = class
         end
     end
 
@@ -99,7 +102,13 @@ end
 
 function GuildRosterHandler:getPlayerClass(player)
     local rosterId = NameToRosterId[player]
-    return Roster[rosterId][3]
+    if rosterId then
+        return Roster[rosterId][3]
+    elseif AltRoster[player] then
+        return AltRoster[player]
+    else
+        return
+    end
 end
 
 function GuildRosterHandler:getRaidRoster()
