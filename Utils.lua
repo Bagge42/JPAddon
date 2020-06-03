@@ -85,3 +85,13 @@ function Utils:isMsgTypeAndNotFromSelf(msg, msgType, sender)
     end
     return false
 end
+
+function Utils:isOfficer()
+    return CanEditOfficerNote()
+end
+
+function Utils:sendOfficerAddonMsg(msg, targetChannel)
+    if Utils:isOfficer() then
+        C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel)
+    end
+end

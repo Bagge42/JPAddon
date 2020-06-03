@@ -53,7 +53,7 @@ function Bench:removeFromBench(entryId)
     end
     local playerClass = GuildRosterHandler:getPlayerClass(player)
     local msg = BENCH_MSG_CHANGE_STATE .. "&" .. player .. "&" .. playerClass
-    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "RAID")
+    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 function Bench:createBenchEntries()
@@ -75,13 +75,13 @@ end
 
 function Bench:sendClearBenchMsg()
     local msg = BENCH_MSG_CLEAR
-    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "RAID")
+    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 local function hideBench()
-    JP_BenchFrame:Hide()
-    JP_OuterFrame:SetSize(566, 300)
-    JP_OuterFrameTitleFrame:SetSize(566, 24)
+    getglobal("JP_BenchFrame"):Hide()
+    getglobal("JP_OuterFrame"):SetSize(566, 300)
+    getglobal("JP_OuterFrameTitleFrame"):SetSize(566, 24)
     JP_Current_Settings["BenchHidden"] = true
 end
 
@@ -99,7 +99,7 @@ function Bench:benchPlayer()
     local playerClass = GuildRosterHandler:getPlayerClass(selectedPlayer)
     changeBenchState(selectedPlayer, playerClass)
     local msg = BENCH_MSG_CHANGE_STATE .. "&" .. selectedPlayer .. "&" .. playerClass
-    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "RAID")
+    Utils:sendOfficerAddonMsg(msg, "RAID")
     BrowserSelection:colorBenchButton(selectedPlayer)
 end
 
@@ -130,14 +130,14 @@ function Bench:shareBench()
           msg = msg .. "&" .. name
        end
     end
-    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "RAID")
+    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 function Bench:showHideBench()
-    if not JP_BenchFrame:IsVisible() then
-        JP_BenchFrame:Show()
-        JP_OuterFrame:SetSize(651, 300)
-        JP_OuterFrameTitleFrame:SetSize(651, 24)
+    if not getglobal("JP_BenchFrame"):IsVisible() then
+        getglobal("JP_BenchFrame"):Show()
+        getglobal("JP_OuterFrame"):SetSize(651, 300)
+        getglobal("JP_OuterFrameTitleFrame"):SetSize(651, 24)
         JP_Current_Settings["BenchHidden"] = false
     else
         hideBench()

@@ -278,9 +278,22 @@
                             </OnClick>
                         </Scripts>
                     </Button>
+                    <Button name="$parentLog" text="LOG" inherits="JP_AllClassToggle">
+                        <Size>
+                            <AbsDimension x="48" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentBench" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    _G.JP_DkpManager:onLogClick()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
                     <Button name="$parentNone" text="NONE" inherits="JP_AllClassToggle">
                         <Size>
-                            <AbsDimension x="40" y="24"/>
+                            <AbsDimension x="48" y="24"/>
                         </Size>
                         <Anchors>
                             <Anchor point="RIGHT" relativeTo="JP_OuterFrameList" relativePoint="TOPRIGHT">

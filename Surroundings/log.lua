@@ -60,7 +60,7 @@ local function sendSyncMsg(zone, dataEntry)
     for _, data in pairs(dataEntry) do
         msg = msg .. "&" .. data
     end
-    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, "GUILD")
+    Utils:sendOfficerAddonMsg(msg, "GUILD")
 end
 
 local function addEntryFromSync(zone, datestamp, timestamp, player, change, total, event, class, executingOfficer)

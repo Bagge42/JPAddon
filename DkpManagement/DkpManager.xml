@@ -224,24 +224,15 @@
                     <AbsDimension x="74" y="45"/>
                 </Size>
                 <Anchors>
-                    <Anchor point="LEFT" relativeTo="$parentUndo" relativePoint="RIGHT"/>
+                    <Anchor point="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="-36.5" y="0"/>
+                        </Offset>
+                    </Anchor>
                 </Anchors>
                 <Scripts>
                     <OnClick>
                             _G.JP_DkpManager:addDecayEvent()
-                    </OnClick>
-                </Scripts>
-            </Button>
-            <Button name="$parentLog" text="LOG" inherits="JP_HoverLight">
-                <Size>
-                    <AbsDimension x="74" y="45"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="LEFT" relativeTo="$parentDecay" relativePoint="RIGHT"/>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                        _G.JP_DkpManager:onLogClick()
                     </OnClick>
                 </Scripts>
             </Button>

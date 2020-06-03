@@ -8,17 +8,30 @@ local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
 local ToggledClasses = {}
 
-local function handleCommand(msg)
-    if JP_OuterFrame:IsVisible() then
-        JP_OuterFrame:Hide()
+local function showHideJp(msg)
+    local outerFrame = getglobal("JP_OuterFrame")
+    if outerFrame:IsVisible() then
+        outerFrame:Hide()
     else
-        JP_OuterFrame:Show()
+        outerFrame:Show()
+        if not Utils:isOfficer() then
+            outerFrame:SetSize(368, 300)
+            getglobal("JP_Management"):Hide()
+            getglobal("JP_OuterFrameTitleFrame"):SetSize(368, 24)
+            getglobal("JP_BenchFrame"):SetPoint("TOPLEFT", "JP_OuterFrameList", "TOPRIGHT", 0, -4)
+            getglobal("JP_BenchFrameShareBench"):Hide()
+            getglobal("JP_BenchFrameClearBench"):Hide()
+            getglobal("JP_OuterFrameTitleFrameBench"):Hide()
+            getglobal("JP_OuterFrameTitleFrameOptions"):Hide()
+            getglobal("JP_OuterFrameTitleFrameLog"):SetPoint("RIGHT", "JP_OuterFrameTitleFrameClose", "LEFT")
+            getglobal("JP_OuterFrameTitleFrameNone"):SetPoint("RIGHT", "JP_OuterFrameTitleFrameLog", "LEFT")
+        end
     end
 end
 
 SLASH_DKP_COMMAND1 = "/jp"
 SlashCmdList["DKP_COMMAND"] = function(msg)
-    handleCommand(msg)
+    showHideJp(msg)
 end
 
 local function getToggledRoster(sortButtonId)
@@ -158,7 +171,7 @@ end
 
 function DkpBrowser:deselectAllClasses()
     for _, class in pairs(IdsToClasses) do
-       ToggledClasses[class] = nil
+        ToggledClasses[class] = nil
     end
     setDesaturations(1)
     updateBrowserEntries()
@@ -166,7 +179,7 @@ end
 
 function DkpBrowser:selectAllClasses()
     for _, class in pairs(IdsToClasses) do
-       ToggledClasses[class] = true
+        ToggledClasses[class] = true
     end
     setDesaturations(nil)
     updateBrowserEntries()
