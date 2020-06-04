@@ -6,12 +6,11 @@ local Utils = _G.JP_Utils
 local Bench = _G.JP_Bench
 local EventQueue = _G.JP_EventQueue
 local Log = _G.JP_Log
+local Settings = _G.JP_Settings
 
-local ButtonIdToIcon = { Ony, MC, BWL, AQ, Naxx }
+local ButtonIdToIcon = { ONY_RES, MC_RES, BWL_RES, AQ_RES, NAXX_RES }
 local IdToButton = {}
-local RaidIdToName = { "Ony", "MC", "BWL", "AQ", "Naxx" }
-local RaidDkpValues = { ["Ony"] = 12, ["MC"] = 33, ["BWL"] = 27, ["AQ"] = 0, ["Naxx"] = 0 }
-local DecayPercentage = 20
+local RaidIdToName = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME }
 local RosterAtDecay = {}
 
 local function attachIcons()
@@ -21,10 +20,14 @@ local function attachIcons()
         button.icon:SetAllPoints(button)
         button.icon:SetTexture(ButtonIdToIcon[raidId])
         button.icon:SetTexCoord(0, 0.70, 0, 0.75)
-        if RaidDkpValues[RaidIdToName[raidId]] == 0 then
+        if Settings:getSetting(RaidIdToName[raidId]) == 0 then
             button.icon:SetDesaturation(1)
         end
     end
+end
+
+function DkpManager:settingsLoaded()
+    attachIcons()
 end
 
 function DkpManager:createManagementButtons()
@@ -39,7 +42,7 @@ function DkpManager:createManagementButtons()
         raidButton:SetPoint("LEFT", "$parentRaidButton" .. (raidCount - 1), "RIGHT", 3, 0)
         IdToButton[raidCount] = raidButton
     end
-    attachIcons()
+    Settings:subscribeToSettings("JP_DkpManager")
 end
 
 local function modifyPlayerDkp(name, dkp, event, zone)
@@ -102,8 +105,8 @@ local function modifyRaidDkp(dkp, bench, zone, undo)
                 jesusIsInRaid = true
             end
         end
-        sendRaidDkpWarning(jesusIsInRaid, dkp, Utils:getSizeOfTable(playerNames))
-        local sizeOfBench = Utils:getSizeOfTable(bench)
+        sendRaidDkpWarning(jesusIsInRaid, dkp, Utils:getTableSize(playerNames))
+        local sizeOfBench = Utils:getTableSize(bench)
         if sizeOfBench > 0 then
             sendBenchWarning(bench)
         end
@@ -122,7 +125,7 @@ end
 --end
 
 function DkpManager:raidDkpButtonOnClick(id)
-    local value = RaidDkpValues[RaidIdToName[id]]
+    local value = Settings:getSetting(RaidIdToName[id])
     local benchAtClickTime = Utils:copyTable(Bench:getBench())
     EventQueue:addEvent(function(event) modifyRaidDkp(event[4], event[5], event[3]) end, UNDO_ACTION_RAIDADD, GetRealZoneText(), value, benchAtClickTime)
 end
@@ -172,10 +175,11 @@ local function decay()
     RosterAtDecay = Utils:copyTable(GuildRosterHandler:getRoster())
     local rosterSize = table.getn(RosterAtDecay)
     local totalDecayedDkp = 0
+    local decayPercentage = Settings:getSetting(DECAY_SETTING_NAME)
     for member = 1, rosterSize, 1 do
         local memberEntry = RosterAtDecay[member]
         local currentDkp = memberEntry[2]
-        local decayedDkp = floor(currentDkp * (DecayPercentage / 100))
+        local decayedDkp = floor(currentDkp * (decayPercentage / 100))
         if decayedDkp > 0 then
             totalDecayedDkp = totalDecayedDkp + decayedDkp
             modifyPlayerDkp(memberEntry[1], -decayedDkp, "Decay", "Decay")
@@ -183,7 +187,7 @@ local function decay()
             Log:addEntry(memberEntry[1], 0, memberEntry[2], "Decay", memberEntry[3], "Decay")
         end
     end
-    local actionMsg = UnitName("player") .. " performed a " .. DecayPercentage .. "% DKP decay."
+    local actionMsg = UnitName("player") .. " performed a " .. decayPercentage .. "% DKP decay."
     Utils:sendGuildMessage(actionMsg)
     local amountMsg = "A total of " .. totalDecayedDkp .. " DKP was subtracted from " .. rosterSize .. " players."
     Utils:sendGuildMessage(amountMsg)

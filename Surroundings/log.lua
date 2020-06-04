@@ -11,11 +11,11 @@ local MaximumRaidsShown = 30
 local LogHistoryIndex = 0
 local ZoneIndex = 0
 local Icons = {
-    ["Onyxia's Lair"] = Ony,
-    ["Molten Core"] = MC,
-    ["Blackwing Lair"] = BWL,
-    ["Ahn'Qiraj"] = AQ,
-    ["Naxxramas"] = Naxx,
+    [ONY_NAME] = ONY_RES,
+    [MC_NAME] = MC_RES,
+    [BWL_NAME] = BWL_RES,
+    [AQ_NAME] = AQ_RES,
+    [NAXX_NAME] = NAXX_RES,
     ["Orgrimmar"] = "Interface\\ICONS\\Spell_Arcane_TeleportOrgrimmar",
     ["Thunder Bluff"] = "Interface\\ICONS\\Spell_Arcane_TeleportThunderBluff",
     ["Undercity"] = "Interface\\ICONS\\Spell_Arcane_TeleportUnderCity",
@@ -91,7 +91,7 @@ function Log:addEntry(player, change, total, event, class, zone)
 end
 
 local function textureNeedsCropping(texture)
-    if (texture == Ony) or (texture == MC) or (texture == BWL) or (texture == AQ) or (texture == Naxx) then
+    if (texture == ONY_RES) or (texture == MC_RES) or (texture == BWL_RES) or (texture == AQ_RES) or (texture == NAXX_RES) then
         return true
     end
     return false
@@ -328,7 +328,7 @@ function Log:loadLog(event, ...)
     local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
 
     if (prefix == ADDON_PREFIX) and (event == "ADDON_LOADED") then
-        if (Utils:getSizeOfTable(Log_History) > Utils:getSizeOfTable(JP_Log_History)) then
+        if (Utils:getTableSize(Log_History) > Utils:getTableSize(JP_Log_History)) then
             for dateId, table in pairs(Log_History) do
                 JP_Log_History[dateId] = table
             end

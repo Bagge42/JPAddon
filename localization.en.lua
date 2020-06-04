@@ -47,6 +47,7 @@ SNAPSHOT = "Create dkp snapshot"
 ADDON_PREFIX = "jpdkp"
 BENCH_MSG_SHARE = "ShareBench"
 SETTINGS = "Settings"
+SETTING_INFO = "Press enter or escape after edit to save"
 
 -- XML Frame naming related
 
@@ -60,15 +61,24 @@ CLASS_BUTTON = "JP_ClassButton"
 BENCH_ENTRY = "JP_BenchEntry"
 MANAGEMENT = "JP_Management"
 LOG_FRAME = "JP_LogFrame"
+DECAY_SETTING_NAME = "DecayPercentage"
 
 -- Resource paths --
-Ony = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia"
-BWL = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair"
-MC = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore"
-AQ = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj"
-Naxx = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas"
+ONY_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia"
+BWL_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair"
+MC_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore"
+AQ_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj"
+NAXX_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas"
+
+-- Raid names --
+ONY_NAME = "Onyxia's Lair"
+MC_NAME = "Molten Core"
+BWL_NAME = "Blackwing Lair"
+AQ_NAME = "Temple of Ahn'Qiraj"
+NAXX_NAME = "Naxxramas"
 
 -- Addon messages --
-BENCH_MSG_CHANGE_STATE = "ChangeBenchState"
+BENCH_MSG_ADD = "AddToBench"
+BENCH_MSG_REMOVE = "RemoveFromBench"
 BENCH_MSG_CLEAR = "ClearBench"
 LOG_MSG_ENTRY = "LogEntry"

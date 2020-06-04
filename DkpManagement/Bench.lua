@@ -46,13 +46,16 @@ function Bench:getBench()
 end
 
 function Bench:removeFromBench(entryId)
+    if not Utils:isOfficer() then
+        return
+    end
+
     local player = getglobal("JP_BenchFrameListEntry" .. entryId .. PLAYER):GetText()
     changeBenchState(player)
     if BrowserSelection:getSelectedPlayer() == player then
         BrowserSelection:colorBenchButton(player)
     end
-    local playerClass = GuildRosterHandler:getPlayerClass(player)
-    local msg = BENCH_MSG_CHANGE_STATE .. "&" .. player .. "&" .. playerClass
+    local msg = BENCH_MSG_REMOVE .. "&" .. player
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
@@ -98,7 +101,7 @@ function Bench:benchPlayer()
     local selectedPlayer = BrowserSelection:getSelectedPlayer()
     local playerClass = GuildRosterHandler:getPlayerClass(selectedPlayer)
     changeBenchState(selectedPlayer, playerClass)
-    local msg = BENCH_MSG_CHANGE_STATE .. "&" .. selectedPlayer .. "&" .. playerClass
+    local msg = BENCH_MSG_ADD .. "&" .. selectedPlayer .. "&" .. playerClass
     Utils:sendOfficerAddonMsg(msg, "RAID")
     BrowserSelection:colorBenchButton(selectedPlayer)
 end
@@ -107,12 +110,17 @@ function Bench:onSyncAttempt(event, ...)
     local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
 
     if (prefix == ADDON_PREFIX) then
-        if Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_CHANGE_STATE, sender) then
+        if Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_ADD, sender) then
             local _, player, class = string.split("&", msg)
             changeBenchState(player, class)
+        elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_REMOVE, sender) then
+            local _, player = string.split("&", msg)
+            JP_Current_Bench[player] = nil
+            updateBenchEntries()
         elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_CLEAR, sender) then
             Bench:clearBench()
         elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_SHARE, sender) then
+            Bench:clearBench()
             for name, _ in string.gmatch(msg, "([^&]*)") do
                if (name ~= BENCH_MSG_SHARE) then
                    JP_Current_Bench[name] = true

@@ -22,6 +22,28 @@
             <Color r="0" g="0" b="0" a="1"/>
         </Backdrop>
     </Frame>
+    <Frame name="JP_SettingEntry" virtual="true">
+        <Size>
+            <AbsDimension x="283" y="24"/>
+        </Size>
+    </Frame>
+    <Frame name="JP_SettingEditBox" virtual="true">
+        <Size>
+            <AbsDimension x="36" y="24"/>
+        </Size>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+            <Color r="0" g="0" b="0" a="0.7"/>
+        </Backdrop>
+        <Scripts>
+            <OnEscapePressed>
+                self:ClearFocus()
+                _G.JP_Settings:saveSetting(self:GetID())
+            </OnEscapePressed>
+            <OnEnterPressed>
+                self:GetScript("OnEscapePressed")(self)
+            </OnEnterPressed>
+        </Scripts>
+    </Frame>
     <Frame name="JP_SettingsFrame" inherits="JP_CenterFrame" hidden="true">
         <Frames>
             <Frame name="$parentTitleFrame" inherits="JP_TitleFrame">
@@ -41,9 +63,16 @@
                 <Frames>
                     <Button name="$parentClose" inherits="JP_CloseButton">
                         <Scripts>
+                            <OnLoad>
+                                    _G.JP_Settings:onLoad()
+                                    self:RegisterEvent("ADDON_LOADED")
+                            </OnLoad>
                             <OnClick>
-                                _G.JP_Settings:onSettingsClick()
+                                    _G.JP_Settings:onSettingsClick()
                             </OnClick>
+                            <OnEvent>
+                                    _G.JP_Settings:settingsLoaded(event, ...)
+                            </OnEvent>
                         </Scripts>
                     </Button>
                 </Frames>

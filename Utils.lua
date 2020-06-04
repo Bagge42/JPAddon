@@ -70,7 +70,7 @@ function Utils:setClassColor(frame, class)
     frame:SetTextColor(r, g, b)
 end
 
-function Utils:getSizeOfTable(table)
+function Utils:getTableSize(table)
     local counter = 0
     for _, _ in pairs(table) do
         counter = counter + 1
