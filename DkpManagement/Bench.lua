@@ -115,8 +115,10 @@ function Bench:onSyncAttempt(event, ...)
             changeBenchState(player, class)
         elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_REMOVE, sender) then
             local _, player = string.split("&", msg)
-            JP_Current_Bench[player] = nil
-            updateBenchEntries()
+            if JP_Current_Bench[player] then
+                JP_Current_Bench[player] = nil
+                updateBenchEntries()
+            end
         elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_CLEAR, sender) then
             Bench:clearBench()
         elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_SHARE, sender) then

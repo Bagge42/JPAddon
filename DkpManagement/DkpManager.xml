@@ -42,6 +42,7 @@
     <Frame name="JP_Management" inherits="JP_CenterFrame">
         <Scripts>
             <OnLoad>
+                _G.JP_DkpManager:onLoad()
                 _G.JP_DkpManager:createManagementButtons()
             </OnLoad>
         </Scripts>

@@ -4,6 +4,7 @@ local Settings = _G.JP_Settings
 local Utils = _G.JP_Utils
 
 local ClassesWaitingForSettings = {}
+local ClassesListeningToChanges = {}
 local EditBoxTable = {}
 local SettingsLoaded = false
 local SettingTexts = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME, DECAY_SETTING_NAME }
@@ -98,10 +99,18 @@ function Settings:settingsLoaded(event, ...)
     SettingsLoaded = true
 end
 
+local function sendSettingChange(settingName, newValue)
+    for classListening, _ in pairs(ClassesListeningToChanges) do
+        getglobal(classListening):settingChanged(settingName, newValue)
+    end
+end
+
 function Settings:saveSetting(id)
     local settingValue = getglobal("JP_SettingsFrameSetting" .. id .. "EditBox"):GetNumber()
-    JP_Current_Settings[SettingTexts[id]] = settingValue
-    EditBoxTable[SettingTexts[id]] = settingValue
+    local settingName = SettingTexts[id]
+    JP_Current_Settings[settingName] = settingValue
+    EditBoxTable[settingName] = settingValue
+    sendSettingChange(settingName, settingValue)
 end
 
 function Settings:getSetting(settingName)
@@ -114,4 +123,8 @@ function Settings:subscribeToSettings(nameOfClass)
     else
         ClassesWaitingForSettings[nameOfClass] = true
     end
+end
+
+function Settings:subscribeToSettingChanges(nameOfClass)
+    ClassesListeningToChanges[nameOfClass] = true
 end

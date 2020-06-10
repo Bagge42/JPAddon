@@ -11,6 +11,7 @@ local Settings = _G.JP_Settings
 local ButtonIdToIcon = { ONY_RES, MC_RES, BWL_RES, AQ_RES, NAXX_RES }
 local IdToButton = {}
 local RaidIdToName = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME }
+local RaidNameToId = { [ONY_NAME] = 1, [MC_NAME] = 2, [BWL_NAME] = 3, [AQ_NAME] = 4, [NAXX_NAME] = 5,}
 local RosterAtDecay = {}
 
 local function attachIcons()
@@ -21,13 +22,37 @@ local function attachIcons()
         button.icon:SetTexture(ButtonIdToIcon[raidId])
         button.icon:SetTexCoord(0, 0.70, 0, 0.75)
         if Settings:getSetting(RaidIdToName[raidId]) == 0 then
-            button.icon:SetDesaturation(1)
+            button.icon:SetDesaturated(1)
         end
     end
 end
 
 function DkpManager:settingsLoaded()
     attachIcons()
+end
+
+function DkpManager:onLoad()
+    Settings:subscribeToSettingChanges("JP_DkpManager")
+end
+
+local function isRaidSetting(settingName)
+    for _, raidName in pairs(RaidIdToName) do
+       if raidName == settingName then
+           return true
+       end
+    end
+    return false
+end
+
+function DkpManager:settingChanged(settingName, settingValue)
+    if isRaidSetting(settingName) then
+        local raidButtonIcon = getglobal("JP_ManagementRaidButton" .. RaidNameToId[settingName] .. "Icon")
+        if (settingValue == 0) then
+            raidButtonIcon:SetDesaturated(1)
+        elseif raidButtonIcon:IsDesaturated() then
+            raidButtonIcon:SetDesaturated(false)
+        end
+    end
 end
 
 function DkpManager:createManagementButtons()
