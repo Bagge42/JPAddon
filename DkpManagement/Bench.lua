@@ -10,6 +10,13 @@ function isBenched(player)
     return JP_Current_Bench[player] ~= nil
 end
 
+function Bench:printBench()
+    for name, class in pairs(JP_Current_Bench) do
+        print(name)
+        print(class)
+    end
+end
+
 local function clearBenchEntries()
     for member = 1, MaximumMembersShown, 1 do
         local benchEntry = getglobal("JP_BenchFrameListEntry" .. member)
@@ -106,41 +113,65 @@ function Bench:benchPlayer()
     BrowserSelection:colorBenchButton(selectedPlayer)
 end
 
-function Bench:onSyncAttempt(event, ...)
-    local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
+local function requestUpdate()
+    local msg = BENCH_MSG_REQUEST
+    Utils:sendAddonMsg(msg, "RAID")
+end
 
+local function sendBench(target)
+    local msg = BENCH_MSG_SHARE
+    for name, _ in pairs(JP_Current_Bench) do
+        msg = msg .. "&" .. name
+    end
+    Utils:sendAddonMsg(msg, "WHISPER", target)
+end
+
+local function onSyncAttempt(prefix, msg, sender)
     if (prefix == ADDON_PREFIX) then
-        if Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_ADD, sender) then
+        if Utils:isSelf(sender) then
+            return
+        end
+
+        if Utils:isMsgType(msg, BENCH_MSG_ADD) then
             local _, player, class = string.split("&", msg)
             changeBenchState(player, class)
-        elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_REMOVE, sender) then
+            Bench:printBench()
+        elseif Utils:isMsgType(msg, BENCH_MSG_REMOVE) then
             local _, player = string.split("&", msg)
             if JP_Current_Bench[player] then
                 JP_Current_Bench[player] = nil
                 updateBenchEntries()
             end
-        elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_CLEAR, sender) then
+        elseif Utils:isMsgType(msg, BENCH_MSG_CLEAR) then
             Bench:clearBench()
-        elseif Utils:isMsgTypeAndNotFromSelf(msg, BENCH_MSG_SHARE, sender) then
+        elseif Utils:isMsgType(msg, BENCH_MSG_REQUEST) then
+            if (Utils:getTableSize(JP_Current_Bench) > 0) then
+                sendBench(sender)
+            end
+        elseif Utils:isMsgType(msg, BENCH_MSG_SHARE) then
             Bench:clearBench()
             for name, _ in string.gmatch(msg, "([^&]*)") do
-               if (name ~= BENCH_MSG_SHARE) then
-                   JP_Current_Bench[name] = true
-               end
+                if (name ~= BENCH_MSG_SHARE) then
+                    local class = GuildRosterHandler:getPlayerClass(name)
+                    JP_Current_Bench[name] = class
+                end
             end
             updateBenchEntries()
         end
     end
 end
 
-function Bench:shareBench()
-    local msg = BENCH_MSG_SHARE
-    for name, benchValue in pairs(JP_Current_Bench) do
-       if benchValue then
-          msg = msg .. "&" .. name
-       end
+function Bench:onEvent(event, ...)
+    local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
+
+    if (event == "CHAT_MSG_ADDON") then
+        onSyncAttempt(prefix, msg, sender)
+    elseif (event == "GROUP_JOINED") then
+        Bench:clearBench()
+        requestUpdate()
+    elseif (event == "GROUP_LEFT") then
+        Bench:clearBench()
     end
-    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 function Bench:showHideBench()

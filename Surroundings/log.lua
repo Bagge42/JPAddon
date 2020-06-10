@@ -1,5 +1,3 @@
-Log_History = {}
-Date_To_Id = {}
 JP_Log_History = {}
 _G.JP_Log = {}
 JP_Log_Date_To_Id = {}
@@ -320,23 +318,6 @@ function Log:clearLog(date)
         if id then
             JP_Log_History[id] = nil
             JP_Log_Date_To_Id[date] = nil
-        end
-    end
-end
-
-function Log:loadLog(event, ...)
-    local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
-
-    if (prefix == ADDON_PREFIX) and (event == "ADDON_LOADED") then
-        if (Utils:getTableSize(Log_History) > Utils:getTableSize(JP_Log_History)) then
-            for dateId, table in pairs(Log_History) do
-                JP_Log_History[dateId] = table
-            end
-            for date, id in pairs(Date_To_Id) do
-                JP_Log_Date_To_Id[date] = id
-            end
-            local infoMsg = "Moved your log files to a new table"
-            Utils:jpMsg(infoMsg)
         end
     end
 end

@@ -86,6 +86,21 @@ function Utils:isMsgTypeAndNotFromSelf(msg, msgType, sender)
     return false
 end
 
+function Utils:isSelf(sender)
+    if (Utils:removeRealmName(sender) == UnitName("player")) then
+        return true
+    end
+    return false
+end
+
+function Utils:isMsgType(msg, msgType)
+    local type = string.split("&", msg)
+    if (type == msgType) then
+        return true
+    end
+    return false
+end
+
 function Utils:isOfficer()
     return CanEditOfficerNote()
 end
@@ -94,4 +109,8 @@ function Utils:sendOfficerAddonMsg(msg, targetChannel)
     if Utils:isOfficer() then
         C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel)
     end
+end
+
+function Utils:sendAddonMsg(msg, targetChannel, targetPlayer)
+    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel, targetPlayer)
 end

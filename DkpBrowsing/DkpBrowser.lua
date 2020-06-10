@@ -8,7 +8,7 @@ local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
 local ToggledClasses = {}
 
-local function showHideJp(msg)
+local function showHideJp()
     local outerFrame = getglobal("JP_OuterFrame")
     if outerFrame:IsVisible() then
         outerFrame:Hide()
@@ -19,7 +19,6 @@ local function showHideJp(msg)
             getglobal("JP_Management"):Hide()
             getglobal("JP_OuterFrameTitleFrame"):SetSize(368, 24)
             getglobal("JP_BenchFrame"):SetPoint("TOPLEFT", "JP_OuterFrameList", "TOPRIGHT", 0, -4)
-            getglobal("JP_BenchFrameShareBench"):Hide()
             getglobal("JP_BenchFrameClearBench"):Hide()
             getglobal("JP_OuterFrameTitleFrameBench"):Hide()
             getglobal("JP_OuterFrameTitleFrameOptions"):Hide()
@@ -31,7 +30,7 @@ end
 
 SLASH_DKP_COMMAND1 = "/jp"
 SlashCmdList["DKP_COMMAND"] = function(msg)
-    showHideJp(msg)
+    showHideJp()
 end
 
 local function getToggledRoster(sortButtonId)

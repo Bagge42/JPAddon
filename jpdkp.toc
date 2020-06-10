@@ -2,7 +2,7 @@
 ## Version: 1.6.8
 ## Author: Jordål @ <EU - Gandling>
 ## Interface: 11303
-## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id, Log_History, Date_To_Id
+## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id
 
 localization.en.lua
 Utils.lua

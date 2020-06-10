@@ -175,7 +175,6 @@
             </OnDragStop>
             <OnEvent>
                     _G.JP_Log:onSyncAttempt(event, ...)
-                    _G.JP_Log:loadLog(event, ...)
             </OnEvent>
         </Scripts>
         <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">

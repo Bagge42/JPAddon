@@ -51,9 +51,11 @@
         <Scripts>
             <OnLoad>
                     self:RegisterEvent("CHAT_MSG_ADDON")
+                    self:RegisterEvent("GROUP_LEFT")
+                    self:RegisterEvent("GROUP_JOINED")
             </OnLoad>
             <OnEvent>
-                    _G.JP_Bench:onSyncAttempt(event, ...)
+                    _G.JP_Bench:onEvent(event, ...)
             </OnEvent>
         </Scripts>
         <Frames>
@@ -102,29 +104,29 @@
                     </Anchor>
                 </Anchors>
             </Frame>
-            <Button name="$parentShareBench" inherits="JP_HoverLight" text="SHARE_BENCH">
-                <Size>
-                    <AbsDimension x="43" y="45"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOM">
-                        <Offset>
-                            <AbsDimension x="-21" y="0"/>
-                        </Offset>
-                    </Anchor>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                            _G.JP_Bench:shareBench()
-                    </OnClick>
-                </Scripts>
-            </Button>
+<!--            <Button name="$parentShareBench" inherits="JP_HoverLight" text="SHARE_BENCH">-->
+<!--                <Size>-->
+<!--                    <AbsDimension x="43" y="45"/>-->
+<!--                </Size>-->
+<!--                <Anchors>-->
+<!--                    <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOM">-->
+<!--                        <Offset>-->
+<!--                            <AbsDimension x="-21" y="0"/>-->
+<!--                        </Offset>-->
+<!--                    </Anchor>-->
+<!--                </Anchors>-->
+<!--                <Scripts>-->
+<!--                    <OnClick>-->
+<!--                            _G.JP_Bench:shareBench()-->
+<!--                    </OnClick>-->
+<!--                </Scripts>-->
+<!--            </Button>-->
             <Button name="$parentClearBench" inherits="JP_HoverLight" text="CLEAR_BENCH">
                 <Size>
-                    <AbsDimension x="42" y="45"/>
+                    <AbsDimension x="85" y="45"/>
                 </Size>
                 <Anchors>
-                    <Anchor point="LEFT" relativeTo="$parentShareBench" relativePoint="RIGHT"/>
+                    <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOM"/>
                 </Anchors>
                 <Scripts>
                     <OnClick>
