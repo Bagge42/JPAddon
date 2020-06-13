@@ -24,7 +24,7 @@
                     getglobal(self:GetName() .. BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
-                    _G.JP_Bench:removeFromBench(self:GetID())
+                    Jp.Bench:removeFromBench(self:GetID())
             </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. BACKGROUND):Show()
@@ -55,7 +55,7 @@
                     self:RegisterEvent("GROUP_JOINED")
             </OnLoad>
             <OnEvent>
-                    _G.JP_Bench:onEvent(event, ...)
+                    Jp.Bench:onEvent(event, ...)
             </OnEvent>
         </Scripts>
         <Frames>
@@ -86,11 +86,11 @@
             <Frame name="$parentList">
                 <Scripts>
                     <OnLoad>
-                            _G.JP_Bench:createBenchEntries()
+                            Jp.Bench:createBenchEntries()
                             self:RegisterEvent("ADDON_LOADED")
                     </OnLoad>
                     <OnEvent>
-                        _G.JP_Bench:loadBench(event, ...)
+                        Jp.Bench:loadBench(event, ...)
                     </OnEvent>
                 </Scripts>
                 <Size>
@@ -117,7 +117,7 @@
 <!--                </Anchors>-->
 <!--                <Scripts>-->
 <!--                    <OnClick>-->
-<!--                            _G.JP_Bench:shareBench()-->
+<!--                            Jp.Bench:shareBench()-->
 <!--                    </OnClick>-->
 <!--                </Scripts>-->
 <!--            </Button>-->
@@ -130,8 +130,8 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            _G.JP_Bench:clearBench()
-                            _G.JP_Bench:sendClearBenchMsg()
+                            Jp.Bench:clearBench()
+                            Jp.Bench:sendClearBenchMsg()
                     </OnClick>
                 </Scripts>
             </Button>

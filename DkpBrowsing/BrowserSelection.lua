@@ -1,7 +1,8 @@
-_G.JP_BrowserSelection = {}
-local GuildRosterHandler = _G.JP_GuildRosterHandler
-local BrowserSelection = _G.JP_BrowserSelection
-local Utils = _G.JP_Utils
+local Jp = _G.Jp
+local GuildRosterHandler = Jp.GuildRosterHandler
+local Utils = Jp.Utils
+local BrowserSelection = {}
+Jp.BrowserSelection = BrowserSelection
 
 local CurrentSelection = ""
 local EntryIdOfSelection = 0

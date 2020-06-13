@@ -131,7 +131,7 @@
     <Button name="JP_RaidSelect" inherits="JP_HoverLight" virtual="true" hidden="true">
         <Scripts>
             <OnClick>
-                _G.JP_Log:raidSelect(self:GetID())
+                Jp.Log:raidSelect(self:GetID())
                 self:GetParent():Hide()
             </OnClick>
         </Scripts>
@@ -174,7 +174,7 @@
                     self:StopMovingOrSizing()
             </OnDragStop>
             <OnEvent>
-                    _G.JP_Log:onSyncAttempt(event, ...)
+                    Jp.Log:onSyncAttempt(event, ...)
             </OnEvent>
         </Scripts>
         <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
@@ -211,7 +211,7 @@
             <Frame name="$parentSelectFrame">
                 <Scripts>
                     <OnLoad>
-                        _G.JP_Log:createRaidEntries()
+                        Jp.Log:createRaidEntries()
                     </OnLoad>
                 </Scripts>
                 <Anchors>
@@ -230,7 +230,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_Log:selectFrameNext()
+                                    Jp.Log:selectFrameNext()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -243,7 +243,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_Log:selectFramePrevious()
+                                    Jp.Log:selectFramePrevious()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -260,7 +260,7 @@
                         </Anchors>
                         <Scripts>
                             <OnLoad>
-                                    _G.JP_Log:createEntries()
+                                    Jp.Log:createEntries()
                             </OnLoad>
                         </Scripts>
                         <Frames>
@@ -327,7 +327,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_Log:back()
+                                    Jp.Log:back()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -344,7 +344,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_Log:displayFrameNext()
+                                    Jp.Log:displayFrameNext()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -357,7 +357,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_Log:displayFramePrevious()
+                                    Jp.Log:displayFramePrevious()
                             </OnClick>
                         </Scripts>
                     </Button>

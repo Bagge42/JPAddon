@@ -1,7 +1,8 @@
 JP_Current_Settings = {}
-_G.JP_Settings = {}
-local Settings = _G.JP_Settings
-local Utils = _G.JP_Utils
+local Jp = _G.Jp
+local Utils = Jp.Utils
+local Settings = {}
+Jp.Settings = Settings
 
 local ClassesWaitingForSettings = {}
 local ClassesListeningToChanges = {}
@@ -85,8 +86,8 @@ local function insertSettings()
 end
 
 local function sendSettings()
-    for waitingClass, _ in pairs(ClassesWaitingForSettings) do
-        getglobal(waitingClass):settingsLoaded()
+    for _ , waitingClass in pairs(ClassesWaitingForSettings) do
+        waitingClass:settingsLoaded()
     end
 end
 
@@ -94,14 +95,14 @@ function Settings:settingsLoaded(event, ...)
     local addonPrefix = select(1, ...)
     if (addonPrefix == ADDON_PREFIX) and (event == "ADDON_LOADED") then
         insertSettings()
+        sendSettings()
+        SettingsLoaded = true
     end
-    sendSettings()
-    SettingsLoaded = true
 end
 
 local function sendSettingChange(settingName, newValue)
     for classListening, _ in pairs(ClassesListeningToChanges) do
-        getglobal(classListening):settingChanged(settingName, newValue)
+        classListening:settingChanged(settingName, newValue)
     end
 end
 
@@ -117,14 +118,14 @@ function Settings:getSetting(settingName)
     return EditBoxTable[settingName]
 end
 
-function Settings:subscribeToSettings(nameOfClass)
+function Settings:subscribeToSettings(class)
     if SettingsLoaded then
-        getglobal(nameOfClass):settingsLoaded()
+        class:settingsLoaded()
     else
-        ClassesWaitingForSettings[nameOfClass] = true
+        table.insert(ClassesWaitingForSettings, class)
     end
 end
 
-function Settings:subscribeToSettingChanges(nameOfClass)
-    ClassesListeningToChanges[nameOfClass] = true
+function Settings:subscribeToSettingChanges(class)
+    table.insert(ClassesListeningToChanges, class)
 end

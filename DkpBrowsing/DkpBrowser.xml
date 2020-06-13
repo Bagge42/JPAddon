@@ -66,13 +66,13 @@
                     getglobal(self:GetName() .. BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
-                    _G.JP_BrowserSelection:selectEntry(self:GetID())
+                    Jp.BrowserSelection:selectEntry(self:GetID())
             </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. BACKGROUND):Show()
             </OnEnter>
             <OnLeave>
-                    if not _G.JP_BrowserSelection:isSelected(self:GetID()) then
+                    if not Jp.BrowserSelection:isSelected(self:GetID()) then
                         getglobal(self:GetName() .. BACKGROUND):Hide()
                     end
             </OnLeave>
@@ -87,7 +87,7 @@
         </Size>
         <Scripts>
             <OnClick>
-                    _G.JP_DkpBrowser:classButtonOnClick(self:GetID())
+                    Jp.DkpBrowser:classButtonOnClick(self:GetID())
             </OnClick>
         </Scripts>
     </Button>
@@ -153,15 +153,15 @@
         </Backdrop>
         <Scripts>
             <OnLoad>
-                    _G.JP_DkpBrowser:relayCommands()
-                    _G.JP_DkpBrowser:createEntries()
-                    _G.JP_DkpBrowser:createFilterButtons()
+                    Jp.DkpBrowser:relayCommands()
+                    Jp.DkpBrowser:createEntries()
+                    Jp.DkpBrowser:createFilterButtons()
                     self:RegisterEvent("GUILD_ROSTER_UPDATE")
                     self:SetUserPlaced(1)
                     self:RegisterForDrag("LeftButton")
             </OnLoad>
             <OnEvent>
-                    _G.JP_DkpBrowser:updateRoster()
+                    Jp.DkpBrowser:updateRoster()
             </OnEvent>
             <OnDragStart>
                     self:StartMoving()
@@ -261,7 +261,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                _G.JP_Settings:onSettingsClick()
+                                Jp.Settings:onSettingsClick()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -274,7 +274,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_Bench:showHideBench()
+                                    Jp.Bench:showHideBench()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -287,7 +287,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_DkpManager:onLogClick()
+                                    Jp.DkpManager:onLogClick()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -304,7 +304,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                _G.JP_DkpBrowser:deselectAllClasses()
+                                Jp.DkpBrowser:deselectAllClasses()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -317,7 +317,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_DkpBrowser:selectAllClasses()
+                                    Jp.DkpBrowser:selectAllClasses()
                             </OnClick>
                         </Scripts>
                     </Button>

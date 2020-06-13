@@ -37,7 +37,7 @@
         <Scripts>
             <OnEscapePressed>
                 self:ClearFocus()
-                _G.JP_Settings:saveSetting(self:GetID())
+                Jp.Settings:saveSetting(self:GetID())
             </OnEscapePressed>
             <OnEnterPressed>
                 self:GetScript("OnEscapePressed")(self)
@@ -64,14 +64,14 @@
                     <Button name="$parentClose" inherits="JP_CloseButton">
                         <Scripts>
                             <OnLoad>
-                                    _G.JP_Settings:onLoad()
+                                    Jp.Settings:onLoad()
                                     self:RegisterEvent("ADDON_LOADED")
                             </OnLoad>
                             <OnClick>
-                                    _G.JP_Settings:onSettingsClick()
+                                    Jp.Settings:onSettingsClick()
                             </OnClick>
                             <OnEvent>
-                                    _G.JP_Settings:settingsLoaded(event, ...)
+                                    Jp.Settings:settingsLoaded(event, ...)
                             </OnEvent>
                         </Scripts>
                     </Button>

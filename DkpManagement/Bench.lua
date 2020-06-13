@@ -1,10 +1,11 @@
 JP_Current_Bench = {}
-_G.JP_Bench = {}
-local Bench = _G.JP_Bench
-local BrowserSelection = _G.JP_BrowserSelection
-local GuildRosterHandler = _G.JP_GuildRosterHandler
+local Jp = _G.Jp
+local Bench = {}
+local BrowserSelection = Jp.BrowserSelection
+local GuildRosterHandler = Jp.GuildRosterHandler
 local MaximumMembersShown = 10
-local Utils = _G.JP_Utils
+local Utils = Jp.Utils
+Jp.Bench = Bench
 
 function isBenched(player)
     return JP_Current_Bench[player] ~= nil
@@ -135,7 +136,6 @@ local function onSyncAttempt(prefix, msg, sender)
         if Utils:isMsgType(msg, BENCH_MSG_ADD) then
             local _, player, class = string.split("&", msg)
             changeBenchState(player, class)
-            Bench:printBench()
         elseif Utils:isMsgType(msg, BENCH_MSG_REMOVE) then
             local _, player = string.split("&", msg)
             if JP_Current_Bench[player] then

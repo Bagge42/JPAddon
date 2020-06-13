@@ -5,7 +5,7 @@
         </Size>
         <Scripts>
             <OnClick>
-                    _G.JP_DkpManager:raidDkpButtonOnClick(self:GetID())
+                    Jp.DkpManager:raidDkpButtonOnClick(self:GetID())
             </OnClick>
         </Scripts>
     </Button>
@@ -22,8 +22,8 @@
         <HighlightFont style="GameFontNormalLarge"/>
         <Scripts>
             <OnClick>
-                    _G.JP_DkpManager:adjustDkpOnClick(self:GetID())
-                    _G.JP_DkpManager:resetPlayerEditBox()
+                    Jp.DkpManager:adjustDkpOnClick(self:GetID())
+                    Jp.DkpManager:resetPlayerEditBox()
             </OnClick>
             <OnLoad>
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0)
@@ -42,8 +42,8 @@
     <Frame name="JP_Management" inherits="JP_CenterFrame">
         <Scripts>
             <OnLoad>
-                _G.JP_DkpManager:onLoad()
-                _G.JP_DkpManager:createManagementButtons()
+                Jp.DkpManager:onLoad()
+                Jp.DkpManager:createManagementButtons()
             </OnLoad>
         </Scripts>
         <Frames>
@@ -71,7 +71,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_DkpManager:createDkpSnapshot()
+                                    Jp.DkpManager:createDkpSnapshot()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -178,7 +178,7 @@
                         <NormalFont style="GameFontHighlight"/>
                         <Scripts>
                             <OnClick>
-                                    _G.JP_Bench:benchPlayer()
+                                    Jp.Bench:benchPlayer()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -216,7 +216,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            _G.JP_DkpManager:undo()
+                            Jp.DkpManager:undo()
                     </OnClick>
                 </Scripts>
             </Button>
@@ -233,7 +233,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            _G.JP_DkpManager:addDecayEvent()
+                            Jp.DkpManager:addDecayEvent()
                     </OnClick>
                 </Scripts>
             </Button>

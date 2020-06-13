@@ -1,8 +1,9 @@
-_G.JP_DkpBrowser = {}
-local DkpBrowser = _G.JP_DkpBrowser
-local GuildRosterHandler = _G.JP_GuildRosterHandler
-local BrowserSelection = _G.JP_BrowserSelection
-local Utils = _G.JP_Utils
+local Jp = _G.Jp
+local DkpBrowser = {}
+local GuildRosterHandler = Jp.GuildRosterHandler
+local BrowserSelection = Jp.BrowserSelection
+local Utils = Jp.Utils
+Jp.DkpBrowser = DkpBrowser
 
 local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }

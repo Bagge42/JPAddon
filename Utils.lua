@@ -1,5 +1,7 @@
-_G.JP_Utils = {}
-local Utils = _G.JP_Utils
+_G.Jp = {}
+local Jp = _G.Jp
+local Utils = {}
+Jp.Utils = Utils
 
 function Utils:jpMsg(msg)
     DEFAULT_CHAT_FRAME:AddMessage("|c80BE0AFF" .. msg)

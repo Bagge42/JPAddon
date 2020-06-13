@@ -1,9 +1,11 @@
 JP_Log_History = {}
-_G.JP_Log = {}
 JP_Log_Date_To_Id = {}
-local Log = _G.JP_Log
-local Utils = _G.JP_Utils
-local GuildRosterHandler = _G.JP_GuildRosterHandler
+local Jp = _G.Jp
+local Utils = Jp.Utils
+local GuildRosterHandler = Jp.GuildRosterHandler
+local Log = {}
+Jp.Log = Log
+
 local MaximumMembersShown = 24
 local MaximumRaidsShown = 30
 local LogHistoryIndex = 0
@@ -163,7 +165,7 @@ local function updateRaidNavigateButtons(nrOfEntries)
     else
         previousButton:Show()
     end
-    if ((DataEntryIndex + MaximumMembersShown) >= nrOfEntries ) then
+    if ((DataEntryIndex + MaximumMembersShown) >= nrOfEntries) then
         nextButton:Hide()
     else
         nextButton:Show()
@@ -250,7 +252,7 @@ local function updateEntryNavigateButtons(nrOfEntries)
     else
         previousButton:Show()
     end
-    if ((DataEntryIndex + MaximumMembersShown) >= nrOfEntries ) then
+    if ((DataEntryIndex + MaximumMembersShown) >= nrOfEntries) then
         nextButton:Hide()
     else
         nextButton:Show()

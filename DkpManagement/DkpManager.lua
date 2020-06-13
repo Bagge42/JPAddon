@@ -1,12 +1,13 @@
-_G.JP_DkpManager = {}
-local DkpManager = _G.JP_DkpManager
-local GuildRosterHandler = _G.JP_GuildRosterHandler
-local BrowserSelection = _G.JP_BrowserSelection
-local Utils = _G.JP_Utils
-local Bench = _G.JP_Bench
-local EventQueue = _G.JP_EventQueue
-local Log = _G.JP_Log
-local Settings = _G.JP_Settings
+local Jp = _G.Jp
+local GuildRosterHandler = Jp.GuildRosterHandler
+local BrowserSelection = Jp.BrowserSelection
+local Utils = Jp.Utils
+local Bench = Jp.Bench
+local EventQueue = Jp.EventQueue
+local Log = Jp.Log
+local Settings = Jp.Settings
+local DkpManager = {}
+Jp.DkpManager = DkpManager
 
 local ButtonIdToIcon = { ONY_RES, MC_RES, BWL_RES, AQ_RES, NAXX_RES }
 local IdToButton = {}
@@ -32,7 +33,7 @@ function DkpManager:settingsLoaded()
 end
 
 function DkpManager:onLoad()
-    Settings:subscribeToSettingChanges("JP_DkpManager")
+    Settings:subscribeToSettingChanges(DkpManager)
 end
 
 local function isRaidSetting(settingName)
@@ -67,7 +68,7 @@ function DkpManager:createManagementButtons()
         raidButton:SetPoint("LEFT", "$parentRaidButton" .. (raidCount - 1), "RIGHT", 3, 0)
         IdToButton[raidCount] = raidButton
     end
-    Settings:subscribeToSettings("JP_DkpManager")
+    Settings:subscribeToSettings(DkpManager)
 end
 
 local function modifyPlayerDkp(name, dkp, event, zone)
