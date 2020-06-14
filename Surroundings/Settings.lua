@@ -11,15 +11,6 @@ local SettingsLoaded = false
 local SettingTexts = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME, DECAY_SETTING_NAME }
 local DefaultSettings = { [SettingTexts[1]] = 12, [SettingTexts[2]] = 33, [SettingTexts[3]] = 27, [SettingTexts[4]] = 0, [SettingTexts[5]] = 0, [SettingTexts[6]] = 20 }
 
-function printSettings()
-    for k, v in pairs(JP_Current_Settings) do
-       print("Key")
-        print(k)
-        print("Val")
-        print(v)
-    end
-end
-
 function Settings:onSettingsClick()
     local isOfficer = Utils:isOfficer()
     local settings = getglobal("JP_SettingsFrame")
