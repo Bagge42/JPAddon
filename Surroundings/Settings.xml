@@ -44,6 +44,11 @@
             </OnEnterPressed>
         </Scripts>
     </Frame>
+    <CheckButton name="JP_SettingCheckButton" inherits="ChatConfigCheckButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="36" y="24"/>
+        </Size>
+    </CheckButton>
     <Frame name="JP_SettingsFrame" inherits="JP_CenterFrame" hidden="true">
         <Frames>
             <Frame name="$parentTitleFrame" inherits="JP_TitleFrame">

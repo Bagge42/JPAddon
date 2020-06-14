@@ -3,11 +3,14 @@ local DkpBrowser = {}
 local GuildRosterHandler = Jp.GuildRosterHandler
 local BrowserSelection = Jp.BrowserSelection
 local Utils = Jp.Utils
+local Settings = Jp.Settings
 Jp.DkpBrowser = DkpBrowser
 
 local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
 local ToggledClasses = {}
+local auctionInProgress = false
+local biddingRoundRoster = {}
 
 local function showHideJp()
     local outerFrame = getglobal("JP_OuterFrame")
@@ -36,9 +39,11 @@ end
 
 local function getToggledRoster(sortButtonId)
     local toggledRoster = {}
-    local guildRoster = GuildRosterHandler:getSortedRoster(sortButtonId)
+    local guildRoster = GuildRosterHandler:getSortedRoster(sortButtonId, biddingRoundRoster)
     for member = 1, table.getn(guildRoster), 1 do
         if ToggledClasses[guildRoster[member][3]] then
+            toggledRoster[table.getn(toggledRoster) + 1] = guildRoster[member]
+        elseif biddingRoundRoster[guildRoster[member][1]] then
             toggledRoster[table.getn(toggledRoster) + 1] = guildRoster[member]
         end
     end
@@ -49,6 +54,7 @@ local function clearEntries()
     for member = 1, MaximumMembersShown, 1 do
         local listEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. member)
         getglobal(listEntry:GetName() .. PLAYER):SetText("")
+        getglobal(listEntry:GetName() .. "Bid"):SetText("")
         getglobal(listEntry:GetName() .. AMOUNT):SetText("")
     end
 end
@@ -61,7 +67,14 @@ local function getNumberOfEntriesToFill(toggledRoster)
     return MaximumMembersShown
 end
 
-function updateBrowserEntries(sortButtonId)
+local function setBidText(player, entry)
+    local bid = biddingRoundRoster[player]
+    if bid then
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):SetText(bid)
+    end
+end
+
+function JP_UpdateBrowserEntries(sortButtonId)
     local toggledRoster
     if sortButtonId ~= nill and tonumber(sortButtonId) then
         toggledRoster = getToggledRoster(sortButtonId)
@@ -82,6 +95,7 @@ function updateBrowserEntries(sortButtonId)
             local playerFrame = getglobal(listEntry:GetName() .. PLAYER)
             playerFrame:SetText(name)
             Utils:setClassColor(playerFrame, rosterEntry[3])
+            setBidText(name, member)
             getglobal(listEntry:GetName() .. AMOUNT):SetText(dkp)
             if name == BrowserSelection:getSelectedPlayer() then
                 getglobal(listEntry:GetName() .. BACKGROUND):Show()
@@ -105,9 +119,111 @@ function DkpBrowser:createEntries()
     end
 end
 
-function DkpBrowser:updateRoster()
+local function updateRoster()
     GuildRosterHandler:update()
-    updateBrowserEntries()
+    JP_UpdateBrowserEntries()
+end
+
+local function isItemLink(text)
+    -- 16 Colons in a message makes it quite certain that the message contains an itemlink
+    local _, colonCount = string.gsub(text, ":", "")
+    if (colonCount >= 16) and (string.find(text, "item")) then
+        return true
+    end
+    return false
+end
+
+local function setDesaturations(nilOrOne)
+    for classCount = 1, 8, 1 do
+        local icon = getglobal("JP_OuterFrameFilterClassButton" .. classCount .. "Icon")
+        icon:SetDesaturated(nilOrOne)
+    end
+end
+
+local function deselectAllClasses()
+    for _, class in pairs(IdsToClasses) do
+        ToggledClasses[class] = nil
+    end
+    setDesaturations(1)
+    JP_UpdateBrowserEntries()
+end
+
+local function clearBiddingRoster()
+    for player, _ in pairs(biddingRoundRoster) do
+        biddingRoundRoster[player] = nil
+    end
+end
+
+local function stopBiddingRound()
+    clearBiddingRoster()
+    auctionInProgress = false
+end
+
+function DkpBrowser:clearOverview()
+    stopBiddingRound()
+    deselectAllClasses()
+end
+
+local function startBiddingRound(textInWarning)
+    if Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
+        DkpBrowser:clearOverview()
+        if isItemLink(textInWarning) then
+            auctionInProgress = true
+        end
+    end
+end
+
+local function addBidder(bidder, amount)
+    if not amount then
+        biddingRoundRoster[bidder] = "Full"
+    else
+        biddingRoundRoster[bidder] = amount
+    end
+    local bidHeaderId = getglobal("JP_OuterFrameListBidHeader"):GetID()
+    if (GuildRosterHandler:getCurrentSortingId() == bidHeaderId) then
+        JP_UpdateBrowserEntries()
+    else
+        JP_UpdateBrowserEntries(bidHeaderId)
+    end
+end
+
+local function addBidToEntries()
+    for entry = 1, MaximumMembersShown, 1 do
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Player"):SetSize(111, 24)
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):Show()
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Amount"):SetPoint("LEFT", OUTER_FRAME_LIST_ENTRY .. entry .. "Bid", "RIGHT")
+    end
+end
+
+local function addBidToOverview()
+    getglobal("JP_OuterFrameListPlayerHeader"):SetSize(115, 24)
+    getglobal("JP_OuterFrameListBidHeader"):Show()
+    getglobal("JP_OuterFrameListAmountHeader"):SetPoint("LEFT", JP_OuterFrameListBidHeader, "RIGHT")
+    addBidToEntries()
+end
+
+function DkpBrowser:onEvent(event, ...)
+    local textInWarning = select(1, ...)
+    if (event == "CHAT_MSG_RAID_WARNING") and isItemLink(textInWarning) then
+        startBiddingRound(textInWarning)
+    elseif (event == "CHAT_MSG_RAID") or (event == "CHAT_MSG_RAID_LEADER") then
+        if auctionInProgress and isItemLink(textInWarning) then
+            local sender = Utils:removeRealmName(select(2, ...))
+            addBidder(sender)
+        end
+    elseif (event == "CHAT_MSG_WHISPER") then
+        local bidAmount = string.match(textInWarning, "%d+")
+        if bidAmount then
+            local sender = Utils:removeRealmName(select(2, ...))
+            addBidder(sender, bidAmount)
+        end
+    elseif (event == "GUILD_ROSTER_UPDATE") then
+        updateRoster()
+    elseif (event == "ADDON_LOADED") then
+        if Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
+            addBidToOverview()
+        end
+    end
 end
 
 local function attachIcon(button, left, right, top, bottom)
@@ -159,28 +275,14 @@ function DkpBrowser:classButtonOnClick(id)
         icon:SetDesaturated(1)
         ToggledClasses[IdsToClasses[id]] = nil
     end
-    updateBrowserEntries()
-end
-
-local function setDesaturations(nilOrOne)
-    for classCount = 1, 8, 1 do
-        local icon = getglobal("JP_OuterFrameFilterClassButton" .. classCount .. "Icon")
-        icon:SetDesaturated(nilOrOne)
-    end
-end
-
-function DkpBrowser:deselectAllClasses()
-    for _, class in pairs(IdsToClasses) do
-        ToggledClasses[class] = nil
-    end
-    setDesaturations(1)
-    updateBrowserEntries()
+    JP_UpdateBrowserEntries()
 end
 
 function DkpBrowser:selectAllClasses()
+    stopBiddingRound()
     for _, class in pairs(IdsToClasses) do
         ToggledClasses[class] = true
     end
     setDesaturations(nil)
-    updateBrowserEntries()
+    JP_UpdateBrowserEntries()
 end

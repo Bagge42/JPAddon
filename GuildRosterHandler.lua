@@ -49,7 +49,50 @@ function GuildRosterHandler:update()
     GuildRosterNeedsUpdate = false
 end
 
-function GuildRosterHandler:getSortedRoster(id)
+local function bid1LargerThanBid2(bid1, bid2)
+    if not bid1 then
+        return false
+    elseif not bid2 then
+        return true
+    elseif (bid2 == "Full") then
+        return false
+    else
+        return bid1 > bid2
+    end
+end
+
+local function sortByBids(roster, bids)
+    table.sort(roster, function(member1, member2)
+        local member1Bid = bids[member1[1]]
+        local member2Bid = bids[member2[1]]
+        if CurrentOrderUsed == DESCENDING then
+            return bid1LargerThanBid2(member2Bid, member1Bid)
+        else
+            return bid1LargerThanBid2(member1Bid, member2Bid)
+        end
+    end)
+end
+
+local function sortByNameOrDkp(roster)
+    table.sort(roster, function(member1, member2)
+        if CurrentOrderUsed == DESCENDING then
+            return member1[CurrentIdUsed] > member2[CurrentIdUsed]
+        else
+            return member1[CurrentIdUsed] < member2[CurrentIdUsed]
+        end
+    end)
+end
+
+local function sortRoster(roster, bids)
+    local bidHeaderId = getglobal("JP_OuterFrameListBidHeader"):GetID()
+    if (CurrentIdUsed == bidHeaderId) then
+        return sortByBids(roster, bids)
+    else
+        return sortByNameOrDkp(roster)
+    end
+end
+
+function GuildRosterHandler:getSortedRoster(id, bids)
     if CurrentIdUsed == id then
         if CurrentOrderUsed == ASCENDING then
             CurrentOrderUsed = DESCENDING
@@ -61,13 +104,7 @@ function GuildRosterHandler:getSortedRoster(id)
         CurrentOrderUsed = ASCENDING
     end
     local sortedRoster = Utils:copyTable(Roster)
-    table.sort(sortedRoster, function(member1, member2)
-        if CurrentOrderUsed == DESCENDING then
-            return member1[CurrentIdUsed] > member2[CurrentIdUsed]
-        else
-            return member1[CurrentIdUsed] < member2[CurrentIdUsed]
-        end
-    end)
+    sortRoster(sortedRoster, bids)
     return sortedRoster
 end
 
@@ -125,5 +162,9 @@ function GuildRosterHandler:getRaidRoster()
     end
 
     return raidRosterTable
+end
+
+function GuildRosterHandler:getCurrentSortingId()
+    return CurrentIdUsed
 end
 

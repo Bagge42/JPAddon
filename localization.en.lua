@@ -4,6 +4,7 @@ ADD_BUTTON = "+"
 SUB_BUTTON = "-"
 PLAYER_HEADER = "Player"
 AMOUNT_HEADER = "DKP"
+BID_HEADER = "Bid"
 DRUID = "Druid"
 HUNTER = "Hunter"
 MAGE = "Mage"
@@ -48,6 +49,8 @@ ADDON_PREFIX = "jpdkp"
 BENCH_MSG_SHARE = "ShareBench"
 SETTINGS = "Settings"
 SETTING_INFO = "Press enter or escape after edit to save"
+BIDDERS_ONLY_SETTING = "Only show bidders in overview"
+BIDDERS_ONLY_BOOLEAN_SETTING = "biddersOnlyBoolean"
 
 -- XML Frame naming related
 

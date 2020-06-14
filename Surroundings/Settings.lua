@@ -6,10 +6,19 @@ Jp.Settings = Settings
 
 local ClassesWaitingForSettings = {}
 local ClassesListeningToChanges = {}
-local EditBoxTable = {}
+local SettingsTable = {}
 local SettingsLoaded = false
 local SettingTexts = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME, DECAY_SETTING_NAME }
 local DefaultSettings = { [SettingTexts[1]] = 12, [SettingTexts[2]] = 33, [SettingTexts[3]] = 27, [SettingTexts[4]] = 0, [SettingTexts[5]] = 0, [SettingTexts[6]] = 20 }
+
+function printSettings()
+    for k, v in pairs(JP_Current_Settings) do
+       print("Key")
+        print(k)
+        print("Val")
+        print(v)
+    end
+end
 
 function Settings:onSettingsClick()
     local isOfficer = Utils:isOfficer()
@@ -47,6 +56,26 @@ local function createEditBox(settingFrame, id)
     settingFrame.value:SetFontObject("GameFontNormal")
 end
 
+local function sendSettingChange(settingName, newValue)
+    for _, classListening in pairs(ClassesListeningToChanges) do
+        classListening:settingChanged(settingName, newValue)
+    end
+end
+
+local function insertSetting(settingName, settingValue)
+    JP_Current_Settings[settingName] = settingValue
+    SettingsTable[settingName] = settingValue
+    sendSettingChange(settingName, settingValue)
+end
+
+local function biddersOnlySettingOnClick()
+    if SettingsTable[BIDDERS_ONLY_BOOLEAN_SETTING] then
+        insertSetting(BIDDERS_ONLY_BOOLEAN_SETTING, false)
+    else
+        insertSetting(BIDDERS_ONLY_BOOLEAN_SETTING, true)
+    end
+end
+
 function Settings:onLoad()
     local initialSetting = CreateFrame("Frame", "$parentSetting1", JP_SettingsFrame, "JP_SettingEntry")
     initialSetting:SetPoint("TOPLEFT", 0, -24)
@@ -68,21 +97,39 @@ function Settings:onLoad()
     settingInfo.text = settingInfo:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     settingInfo.text:SetPoint("LEFT", 5, 0)
     settingInfo.text:SetText(SETTING_INFO)
+
+    local biddersOnlySetting = CreateFrame("Frame", "$parentBiddersOnlySetting", JP_SettingsFrame, "JP_SettingEntry")
+    biddersOnlySetting:SetPoint("BOTTOM", "$parentSettingInfo", "TOP")
+    biddersOnlySetting.text = biddersOnlySetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    biddersOnlySetting.text:SetPoint("LEFT", 5, 0)
+    biddersOnlySetting.text:SetText(BIDDERS_ONLY_SETTING)
+    biddersOnlySetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_SettingsFrameBiddersOnlySetting, "JP_SettingCheckButton")
+    biddersOnlySetting.checkButton:SetPoint("RIGHT")
+    biddersOnlySetting.checkButton.tooltip = "A bidding round is started by linking an item in a raid warning. If this checkbox is marked the only people that will be shown in the overview, after the start of a bidding round, is people linking an item in the raid chat. The bidding round lasts until a new round has been started or show none is clicked."
+    biddersOnlySetting.checkButton:SetScript("OnClick", biddersOnlySettingOnClick)
 end
 
-local function insertInEditBoxAndEditBoxTable(settingValue, editBoxId)
+local function insertInEditBoxAndSettingsTable(settingValue, editBoxId)
     getglobal("JP_SettingsFrameSetting" .. editBoxId .. "EditBox"):SetNumber(settingValue)
-    EditBoxTable[SettingTexts[editBoxId]] = settingValue
+    SettingsTable[SettingTexts[editBoxId]] = settingValue
 end
 
-local function insertSettings()
+local function loadCheckBoxSettings()
+    SettingsTable[BIDDERS_ONLY_BOOLEAN_SETTING] = JP_Current_Settings[BIDDERS_ONLY_BOOLEAN_SETTING]
+    if JP_Current_Settings[BIDDERS_ONLY_BOOLEAN_SETTING] then
+        getglobal("JP_SettingsFrameBiddersOnlySettingCheckButton"):SetChecked(true)
+    end
+end
+
+local function loadSettings()
     for settingsCount = 1, Utils:getTableSize(DefaultSettings), 1 do
         local setting = JP_Current_Settings[SettingTexts[settingsCount]]
         if not setting then
             setting = DefaultSettings[SettingTexts[settingsCount]]
         end
-        insertInEditBoxAndEditBoxTable(setting, settingsCount)
+        insertInEditBoxAndSettingsTable(setting, settingsCount)
     end
+    loadCheckBoxSettings()
 end
 
 local function sendSettings()
@@ -94,28 +141,20 @@ end
 function Settings:settingsLoaded(event, ...)
     local addonPrefix = select(1, ...)
     if (addonPrefix == ADDON_PREFIX) and (event == "ADDON_LOADED") then
-        insertSettings()
+        loadSettings()
         sendSettings()
         SettingsLoaded = true
-    end
-end
-
-local function sendSettingChange(settingName, newValue)
-    for classListening, _ in pairs(ClassesListeningToChanges) do
-        classListening:settingChanged(settingName, newValue)
     end
 end
 
 function Settings:saveSetting(id)
     local settingValue = getglobal("JP_SettingsFrameSetting" .. id .. "EditBox"):GetNumber()
     local settingName = SettingTexts[id]
-    JP_Current_Settings[settingName] = settingValue
-    EditBoxTable[settingName] = settingValue
-    sendSettingChange(settingName, settingValue)
+    insertSetting(settingName, settingValue)
 end
 
 function Settings:getSetting(settingName)
-    return EditBoxTable[settingName]
+    return SettingsTable[settingName]
 end
 
 function Settings:subscribeToSettings(class)

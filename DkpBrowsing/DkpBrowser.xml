@@ -5,7 +5,7 @@
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
             </OnLoad>
             <OnClick>
-                    updateBrowserEntries(self:GetID())
+                    JP_UpdateBrowserEntries(self:GetID())
             </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.4)
@@ -41,6 +41,18 @@
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentBid" justifyH="LEFT" inherits="GameFontHighlightSmall" hidden="true">
+                    <Size>
+                        <AbsDimension x="73" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayer">
                             <Offset>
                                 <AbsDimension x="4" y="0"/>
                             </Offset>
@@ -157,11 +169,16 @@
                     Jp.DkpBrowser:createEntries()
                     Jp.DkpBrowser:createFilterButtons()
                     self:RegisterEvent("GUILD_ROSTER_UPDATE")
+                    self:RegisterEvent("CHAT_MSG_RAID")
+                    self:RegisterEvent("CHAT_MSG_RAID_LEADER")
+                    self:RegisterEvent("CHAT_MSG_RAID_WARNING")
+                    self:RegisterEvent("CHAT_MSG_WHISPER")
+                    self:RegisterEvent("ADDON_LOADED")
                     self:SetUserPlaced(1)
                     self:RegisterForDrag("LeftButton")
             </OnLoad>
             <OnEvent>
-                    Jp.DkpBrowser:updateRoster()
+                    Jp.DkpBrowser:onEvent(event, ...)
             </OnEvent>
             <OnDragStart>
                     self:StartMoving()
@@ -201,13 +218,13 @@
                         </Anchors>
                         <Scripts>
                             <OnVerticalScroll>
-                                FauxScrollFrame_OnVerticalScroll(self, offset, 24, updateBrowserEntries)
+                                FauxScrollFrame_OnVerticalScroll(self, offset, 24, JP_UpdateBrowserEntries)
                             </OnVerticalScroll>
                         </Scripts>
                     </ScrollFrame>
                     <Button inherits="JP_ListHeader" name="$parentPlayerHeader" id="1" text="PLAYER_HEADER">
                         <Size>
-                            <AbsDimension x="188" y="24"/>
+                            <AbsDimension x="189" y="24"/>
                         </Size>
                         <Anchors>
                             <Anchor point="TOPLEFT">
@@ -217,9 +234,17 @@
                             </Anchor>
                         </Anchors>
                     </Button>
+                    <Button inherits="JP_ListHeader" name="$parentBidHeader" id="3" text="BID_HEADER" hidden="true">
+                        <Size>
+                            <AbsDimension x="74" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
+                        </Anchors>
+                    </Button>
                     <Button inherits="JP_ListHeader" name="$parentAmountHeader" id="2" text="AMOUNT_HEADER">
                         <Size>
-                            <AbsDimension x="95" y="24"/>
+                            <AbsDimension x="94" y="24"/>
                         </Size>
                         <Anchors>
                             <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
@@ -304,7 +329,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                Jp.DkpBrowser:deselectAllClasses()
+                                Jp.DkpBrowser:clearOverview()
                             </OnClick>
                         </Scripts>
                     </Button>
