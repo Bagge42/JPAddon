@@ -49,26 +49,30 @@ function GuildRosterHandler:update()
     GuildRosterNeedsUpdate = false
 end
 
-local function bid1LargerThanBid2(bid1, bid2)
-    if not bid1 then
+local function bid1LargerThanBid2(member1, member2, bids)
+    local member1Bid = bids[member1[1]]
+    local member2Bid = bids[member2[1]]
+    if not member1Bid then
         return false
-    elseif not bid2 then
+    elseif not member2Bid then
         return true
-    elseif (bid2 == "Full") then
-        return false
+    elseif (member2Bid == "Full") then
+        if (member1Bid == "Full") then
+            return member1[2] > member2[2]
+        else
+            return false
+        end
     else
-        return bid1 > bid2
+        return member1Bid > member2Bid
     end
 end
 
 local function sortByBids(roster, bids)
     table.sort(roster, function(member1, member2)
-        local member1Bid = bids[member1[1]]
-        local member2Bid = bids[member2[1]]
         if CurrentOrderUsed == DESCENDING then
-            return bid1LargerThanBid2(member2Bid, member1Bid)
+            return bid1LargerThanBid2(member2, member1, bids)
         else
-            return bid1LargerThanBid2(member1Bid, member2Bid)
+            return bid1LargerThanBid2(member1, member2, bids)
         end
     end)
 end
