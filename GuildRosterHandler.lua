@@ -58,6 +58,8 @@ local function bid1LargerThanBid2(member1, member2, bids)
         else
             return false
         end
+    elseif not member2Bid then
+        return true
     elseif (member2Bid == "Full") then
         if (member1Bid == "Full") then
             return member1[2] > member2[2]
