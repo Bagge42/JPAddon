@@ -59,11 +59,11 @@ local function insertSetting(settingName, settingValue)
     sendSettingChange(settingName, settingValue)
 end
 
-local function biddersOnlySettingOnClick()
-    if SettingsTable[BIDDERS_ONLY_BOOLEAN_SETTING] then
-        insertSetting(BIDDERS_ONLY_BOOLEAN_SETTING, false)
+local function toggleBooleanSetting(settingName)
+    if SettingsTable[settingName] then
+        insertSetting(settingName, false)
     else
-        insertSetting(BIDDERS_ONLY_BOOLEAN_SETTING, true)
+        insertSetting(settingName, true)
     end
 end
 
@@ -97,7 +97,21 @@ function Settings:onLoad()
     biddersOnlySetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_SettingsFrameBiddersOnlySetting, "JP_SettingCheckButton")
     biddersOnlySetting.checkButton:SetPoint("RIGHT")
     biddersOnlySetting.checkButton.tooltip = "A bidding round is started by linking an item in a raid warning. If this checkbox is marked the only people that will be shown in the overview, after the start of a bidding round, is people linking an item in the raid chat. The bidding round lasts until a new round has been started or show none/all is clicked."
-    biddersOnlySetting.checkButton:SetScript("OnClick", biddersOnlySettingOnClick)
+    biddersOnlySetting.checkButton:SetScript("OnClick", function()
+        toggleBooleanSetting(BIDDERS_ONLY_BOOLEAN_SETTING)
+    end)
+
+    local autoInvSetting = CreateFrame("Frame", "$parentAutoInvSetting", JP_SettingsFrame, "JP_SettingEntry")
+    autoInvSetting:SetPoint("BOTTOM", "$parentBiddersOnlySetting", "TOP")
+    autoInvSetting.text = autoInvSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    autoInvSetting.text:SetPoint("LEFT", 5, 0)
+    autoInvSetting.text:SetText(AUTO_INV_SETTING)
+    autoInvSetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_SettingsFrameAutoInvSetting, "JP_SettingCheckButton")
+    autoInvSetting.checkButton:SetPoint("RIGHT")
+    autoInvSetting.checkButton.tooltip = "Toggle automatic inviting of guild members. Valid formats: 'Inv', 'inv', 'Invite', 'invite'"
+    autoInvSetting.checkButton:SetScript("OnClick", function()
+        toggleBooleanSetting(AUTO_INV_BOOLEAN_SETTING)
+    end)
 end
 
 local function insertInEditBoxAndSettingsTable(settingValue, editBoxId)
@@ -105,11 +119,16 @@ local function insertInEditBoxAndSettingsTable(settingValue, editBoxId)
     SettingsTable[SettingTexts[editBoxId]] = settingValue
 end
 
-local function loadCheckBoxSettings()
-    SettingsTable[BIDDERS_ONLY_BOOLEAN_SETTING] = JP_Current_Settings[BIDDERS_ONLY_BOOLEAN_SETTING]
-    if JP_Current_Settings[BIDDERS_ONLY_BOOLEAN_SETTING] then
-        getglobal("JP_SettingsFrameBiddersOnlySettingCheckButton"):SetChecked(true)
+local function loadCheckBoxSetting(settingName, checkBoxName)
+    SettingsTable[settingName] = JP_Current_Settings[settingName]
+    if JP_Current_Settings[settingName] then
+        getglobal(checkBoxName):SetChecked(true)
     end
+end
+
+local function loadCheckBoxSettings()
+    loadCheckBoxSetting(BIDDERS_ONLY_BOOLEAN_SETTING, "JP_SettingsFrameBiddersOnlySettingCheckButton")
+    loadCheckBoxSetting(AUTO_INV_BOOLEAN_SETTING, "JP_SettingsFrameAutoInvSettingCheckButton")
 end
 
 local function loadSettings()

@@ -176,3 +176,21 @@ function GuildRosterHandler:getCurrentSortingId()
     return CurrentIdUsed
 end
 
+local function isRaiderRank(rank)
+    return (rank == "Raider") or (rank == "Officer") or (rank == "Jesus")
+end
+
+function GuildRosterHandler:getRaiders()
+    local raiderTable = {}
+
+    for _, rosterEntry in pairs(Roster) do
+        local name = rosterEntry[1]
+        local rank = rosterEntry[4]
+        local isOnline = rosterEntry[5]
+        if isRaiderRank(rank) and (isOnline == 1) then
+            raiderTable[table.getn(raiderTable) + 1] = name
+        end
+    end
+
+    return raiderTable
+end

@@ -34,6 +34,7 @@ LOG = "Log"
 CLEAR_BENCH = "Clear bench"
 SHARE_BENCH = "Share"
 LOG_TITLE = "Transaction log"
+INVITE_TITLE = "Invite"
 SETTINGS_TITLE = "Settings"
 MANAGEMENT_TITLE = "Management"
 LOG_EVENT_HEADER = "Event"
@@ -51,6 +52,8 @@ SETTINGS = "Settings"
 SETTING_INFO = "Press enter or escape after edit to save"
 BIDDERS_ONLY_SETTING = "Only show bidders in overview"
 BIDDERS_ONLY_BOOLEAN_SETTING = "biddersOnlyBoolean"
+AUTO_INV_SETTING = "Invite guild members on whisper"
+AUTO_INV_BOOLEAN_SETTING = "autoInvBoolean"
 
 -- XML Frame naming related
 

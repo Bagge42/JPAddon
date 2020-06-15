@@ -316,6 +316,19 @@
                             </OnClick>
                         </Scripts>
                     </Button>
+                    <Button name="$parentInvite" text="INVITE_TITLE" inherits="JP_AllClassToggle">
+                        <Size>
+                            <AbsDimension x="58" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentLog" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.DkpBrowser:massInvite()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
                     <Button name="$parentNone" text="NONE" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="48" y="24"/>

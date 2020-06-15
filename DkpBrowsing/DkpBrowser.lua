@@ -4,6 +4,7 @@ local GuildRosterHandler = Jp.GuildRosterHandler
 local BrowserSelection = Jp.BrowserSelection
 local Utils = Jp.Utils
 local Settings = Jp.Settings
+local Bench = Jp.Bench
 Jp.DkpBrowser = DkpBrowser
 
 local MaximumMembersShown = 8
@@ -25,6 +26,7 @@ local function showHideJp()
             getglobal("JP_BenchFrame"):SetPoint("TOPLEFT", "JP_OuterFrameList", "TOPRIGHT", 0, -4)
             getglobal("JP_BenchFrameClearBench"):Hide()
             getglobal("JP_OuterFrameTitleFrameBench"):Hide()
+            getglobal("JP_OuterFrameTitleFrameInvite"):Hide()
             getglobal("JP_OuterFrameTitleFrameOptions"):Hide()
             getglobal("JP_OuterFrameTitleFrameLog"):SetPoint("RIGHT", "JP_OuterFrameTitleFrameClose", "LEFT")
             getglobal("JP_OuterFrameTitleFrameNone"):SetPoint("RIGHT", "JP_OuterFrameTitleFrameLog", "LEFT")
@@ -202,21 +204,46 @@ local function addBidToOverview()
     addBidToEntries()
 end
 
+local function isValidInvFormat(text)
+    return (text == "inv") or (text == "Inv") or (text == "invite") or (text == "Invite")
+end
+
+local function isInGuild(otherPlayer)
+    local playerGuild = GetGuildInfo("player")
+    local otherPlayerGuild = GetGuildInfo(otherPlayer)
+    return playerGuild == otherPlayerGuild
+end
+
+local function shouldConvertToRaid()
+    return (GetNumGroupMembers() >= 5) and not IsInRaid() and UnitIsGroupLeader("player")
+end
+
+local function handleWhisper(text, sender)
+    if isValidInvFormat(text) and Settings:getSetting(AUTO_INV_BOOLEAN_SETTING) and isInGuild(sender) then
+        if shouldConvertToRaid() then
+            ConvertToRaid()
+        end
+        InviteUnit(sender)
+    else
+        local bidAmount = string.match(text, "%d+")
+        if bidAmount then
+            addBidder(sender, bidAmount)
+        end
+    end
+end
+
 function DkpBrowser:onEvent(event, ...)
-    local textInWarning = select(1, ...)
-    if (event == "CHAT_MSG_RAID_WARNING") and isItemLink(textInWarning) then
-        startBiddingRound(textInWarning)
+    local text = select(1, ...)
+    if (event == "CHAT_MSG_RAID_WARNING") and isItemLink(text) then
+        startBiddingRound(text)
     elseif (event == "CHAT_MSG_RAID") or (event == "CHAT_MSG_RAID_LEADER") then
-        if auctionInProgress and isItemLink(textInWarning) then
+        if auctionInProgress and isItemLink(text) then
             local sender = Utils:removeRealmName(select(2, ...))
             addBidder(sender)
         end
     elseif (event == "CHAT_MSG_WHISPER") then
-        local bidAmount = string.match(textInWarning, "%d+")
-        if bidAmount then
-            local sender = Utils:removeRealmName(select(2, ...))
-            addBidder(sender, bidAmount)
-        end
+        local sender = Utils:removeRealmName(select(2, ...))
+        handleWhisper(text, sender)
     elseif (event == "GUILD_ROSTER_UPDATE") then
         updateRoster()
     elseif (event == "ADDON_LOADED") then
@@ -285,4 +312,16 @@ function DkpBrowser:selectAllClasses()
     end
     setDesaturations(nil)
     JP_UpdateBrowserEntries()
+end
+
+function DkpBrowser:massInvite()
+    local raiders = GuildRosterHandler:getRaiders()
+    for _, name in pairs(raiders) do
+        if shouldConvertToRaid() then
+            ConvertToRaid()
+        end
+        if not isBenched(name) then
+            InviteUnit(name)
+        end
+    end
 end
