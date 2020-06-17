@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Button name="JP_BenchEntry" hidden="true" virtual="true">
         <Size>
-            <AbsDimension x="85" y="24"/>
+            <AbsDimension x="85" y="23"/>
         </Size>
         <Layers>
             <Layer>
@@ -90,8 +90,11 @@
                             self:RegisterEvent("ADDON_LOADED")
                     </OnLoad>
                     <OnEvent>
-                        Jp.Bench:loadBench(event, ...)
+                            Jp.Bench:loadBench(event, ...)
                     </OnEvent>
+                    <OnMouseWheel>
+                            Jp.Bench:onMouseWheel(delta)
+                    </OnMouseWheel>
                 </Scripts>
                 <Size>
                     <AbsDimension x="85" y="207"/>
@@ -104,23 +107,23 @@
                     </Anchor>
                 </Anchors>
             </Frame>
-<!--            <Button name="$parentShareBench" inherits="JP_HoverLight" text="SHARE_BENCH">-->
-<!--                <Size>-->
-<!--                    <AbsDimension x="43" y="45"/>-->
-<!--                </Size>-->
-<!--                <Anchors>-->
-<!--                    <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOM">-->
-<!--                        <Offset>-->
-<!--                            <AbsDimension x="-21" y="0"/>-->
-<!--                        </Offset>-->
-<!--                    </Anchor>-->
-<!--                </Anchors>-->
-<!--                <Scripts>-->
-<!--                    <OnClick>-->
-<!--                            Jp.Bench:shareBench()-->
-<!--                    </OnClick>-->
-<!--                </Scripts>-->
-<!--            </Button>-->
+            <!--            <Button name="$parentShareBench" inherits="JP_HoverLight" text="SHARE_BENCH">-->
+            <!--                <Size>-->
+            <!--                    <AbsDimension x="43" y="45"/>-->
+            <!--                </Size>-->
+            <!--                <Anchors>-->
+            <!--                    <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOM">-->
+            <!--                        <Offset>-->
+            <!--                            <AbsDimension x="-21" y="0"/>-->
+            <!--                        </Offset>-->
+            <!--                    </Anchor>-->
+            <!--                </Anchors>-->
+            <!--                <Scripts>-->
+            <!--                    <OnClick>-->
+            <!--                            Jp.Bench:shareBench()-->
+            <!--                    </OnClick>-->
+            <!--                </Scripts>-->
+            <!--            </Button>-->
             <Button name="$parentClearBench" inherits="JP_HoverLight" text="CLEAR_BENCH">
                 <Size>
                     <AbsDimension x="85" y="45"/>

@@ -1,11 +1,14 @@
 JP_Current_Bench = {}
 local Jp = _G.Jp
-local Bench = {}
 local BrowserSelection = Jp.BrowserSelection
 local GuildRosterHandler = Jp.GuildRosterHandler
-local MaximumMembersShown = 10
 local Utils = Jp.Utils
+local Bench = {}
 Jp.Bench = Bench
+
+local MaximumMembersShown = 9
+local BenchIndex = 1
+local MessageLimit = 255
 
 function isBenched(player)
     return JP_Current_Bench[player] ~= nil
@@ -26,27 +29,75 @@ local function clearBenchEntries()
     end
 end
 
+local function getSortedBench()
+    local sortedBench = {}
+
+    for member, _ in pairs(JP_Current_Bench) do
+        sortedBench[#sortedBench + 1] = member
+    end
+    table.sort(sortedBench, function(member1, member2)
+        return member1 < member2
+    end)
+
+    return sortedBench
+end
+
 local function updateBenchEntries()
     clearBenchEntries()
     local entryCounter = 1
-    for member, class in pairs(JP_Current_Bench) do
+    local sortedBench = getSortedBench()
+    for memberIndex = BenchIndex, #sortedBench, 1 do
+        if entryCounter > MaximumMembersShown then
+            return
+        end
         local benchEntry = getglobal("JP_BenchFrameListEntry" .. entryCounter)
         benchEntry:Show()
         getglobal(benchEntry:GetName() .. BACKGROUND):Hide()
         local fontString = getglobal(benchEntry:GetName() .. PLAYER)
-        fontString:SetText(member)
-        Utils:setClassColor(fontString, class)
+        fontString:SetText(sortedBench[memberIndex])
+        Utils:setClassColor(fontString, JP_Current_Bench[sortedBench[memberIndex]])
         entryCounter = entryCounter + 1
     end
+end
+
+local function decrementIndexIfNeeded()
+    if (BenchIndex > 1) then
+        BenchIndex = BenchIndex - 1
+    end
+end
+
+local function incrementIndexIfNeeded()
+    if (BenchIndex + 1 <= #getSortedBench() - MaximumMembersShown) then
+        BenchIndex = BenchIndex + 1
+    end
+end
+
+local function benchLimitReached(playerToAdd)
+    local benchLength = string.len(BENCH_MSG_SHARE)
+    for player, _ in pairs(JP_Current_Bench) do
+        benchLength = benchLength + string.len(player) + 1
+    end
+    if (benchLength + string.len(playerToAdd) + 1 > MessageLimit) then
+        Utils:jpMsg("You are prohibited from adding more players to the bench, as adding more players will make it impossible to synchronize the bench properly.")
+        return true
+    end
+    return false
 end
 
 local function changeBenchState(player, class)
     if JP_Current_Bench[player] then
         JP_Current_Bench[player] = nil
+        decrementIndexIfNeeded()
     else
-        JP_Current_Bench[player] = class
+        if not benchLimitReached(player) then
+            JP_Current_Bench[player] = class
+            incrementIndexIfNeeded()
+        else
+            return
+        end
     end
     updateBenchEntries()
+    return true
 end
 
 function Bench:getBench()
@@ -59,12 +110,13 @@ function Bench:removeFromBench(entryId)
     end
 
     local player = getglobal("JP_BenchFrameListEntry" .. entryId .. PLAYER):GetText()
-    changeBenchState(player)
-    if BrowserSelection:getSelectedPlayer() == player then
-        BrowserSelection:colorBenchButton(player)
+    if changeBenchState(player) then
+        if BrowserSelection:getSelectedPlayer() == player then
+            BrowserSelection:colorBenchButton(player)
+        end
+        local msg = BENCH_MSG_REMOVE .. "&" .. player
+        Utils:sendOfficerAddonMsg(msg, "RAID")
     end
-    local msg = BENCH_MSG_REMOVE .. "&" .. player
-    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 function Bench:createBenchEntries()
@@ -80,6 +132,7 @@ end
 
 function Bench:clearBench()
     JP_Current_Bench = {}
+    BenchIndex = 1
     updateBenchEntries()
     getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
 end
@@ -98,7 +151,11 @@ end
 
 function Bench:loadBench(event, addonName)
     if addonName == "jpdkp" then
-        updateBenchEntries()
+        if not IsInGroup() then
+            Bench:clearBench()
+        else
+            updateBenchEntries()
+        end
         if JP_Current_Settings["BenchHidden"] then
             hideBench()
         end
@@ -108,10 +165,11 @@ end
 function Bench:benchPlayer()
     local selectedPlayer = BrowserSelection:getSelectedPlayer()
     local playerClass = GuildRosterHandler:getPlayerClass(selectedPlayer)
-    changeBenchState(selectedPlayer, playerClass)
-    local msg = BENCH_MSG_ADD .. "&" .. selectedPlayer .. "&" .. playerClass
-    Utils:sendOfficerAddonMsg(msg, "RAID")
-    BrowserSelection:colorBenchButton(selectedPlayer)
+    if changeBenchState(selectedPlayer, playerClass) then
+        local msg = BENCH_MSG_ADD .. "&" .. selectedPlayer .. "&" .. playerClass
+        Utils:sendOfficerAddonMsg(msg, "RAID")
+        BrowserSelection:colorBenchButton(selectedPlayer)
+    end
 end
 
 local function requestUpdate()
@@ -182,5 +240,23 @@ function Bench:showHideBench()
         JP_Current_Settings["BenchHidden"] = false
     else
         hideBench()
+    end
+end
+
+local function newIndexIsValid(delta)
+    if (BenchIndex == 1) and (delta < 0) then
+        return false
+    end
+    if (BenchIndex + delta > #getSortedBench() - MaximumMembersShown + 1) then
+        return false
+    end
+    return true
+end
+
+function Bench:onMouseWheel(delta)
+    local negativeDelta = -delta
+    if newIndexIsValid(negativeDelta) then
+        BenchIndex = BenchIndex + negativeDelta
+        updateBenchEntries()
     end
 end

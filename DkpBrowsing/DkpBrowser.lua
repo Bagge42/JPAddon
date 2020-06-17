@@ -218,8 +218,16 @@ local function shouldConvertToRaid()
     return (GetNumGroupMembers() >= 5) and not IsInRaid() and UnitIsGroupLeader("player")
 end
 
+local function isInRaid(player)
+    return UnitInRaid(player)
+end
+
+local function shouldInviteToRaid(text, sender)
+    return isValidInvFormat(text) and Settings:getSetting(AUTO_INV_BOOLEAN_SETTING) and isInGuild(sender) and not isInRaid(sender)
+end
+
 local function handleWhisper(text, sender)
-    if isValidInvFormat(text) and Settings:getSetting(AUTO_INV_BOOLEAN_SETTING) and isInGuild(sender) then
+    if shouldInviteToRaid(text, sender) then
         if shouldConvertToRaid() then
             ConvertToRaid()
         end
