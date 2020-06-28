@@ -191,17 +191,32 @@ end
 
 local function addBidToEntries()
     for entry = 1, MaximumMembersShown, 1 do
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Player"):SetSize(111, 24)
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. PLAYER):SetSize(111, 24)
         getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):Show()
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Amount"):SetPoint("LEFT", OUTER_FRAME_LIST_ENTRY .. entry .. "Bid", "RIGHT")
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. AMOUNT):SetPoint("LEFT", OUTER_FRAME_LIST_ENTRY .. entry .. "Bid", "RIGHT")
     end
 end
 
-local function addBidToOverview()
+function DkpBrowser:addBidToOverview()
     getglobal("JP_OuterFrameListPlayerHeader"):SetSize(115, 24)
     getglobal("JP_OuterFrameListBidHeader"):Show()
     getglobal("JP_OuterFrameListAmountHeader"):SetPoint("LEFT", JP_OuterFrameListBidHeader, "RIGHT")
     addBidToEntries()
+end
+
+local function removeBidFromEntries()
+    for entry = 1, MaximumMembersShown, 1 do
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. PLAYER):SetSize(184, 24)
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):Hide()
+        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. AMOUNT):SetPoint("LEFT", OUTER_FRAME_LIST_ENTRY .. entry .. PLAYER, "RIGHT", 4, 0)
+    end
+end
+
+function DkpBrowser:removeBidFromOverview()
+    getglobal("JP_OuterFrameListPlayerHeader"):SetSize(189, 24)
+    getglobal("JP_OuterFrameListBidHeader"):Hide()
+    getglobal("JP_OuterFrameListAmountHeader"):SetPoint("LEFT", JP_OuterFrameListPlayerHeader, "RIGHT")
+    removeBidFromEntries()
 end
 
 local function isValidInvFormat(text)
@@ -256,7 +271,7 @@ function DkpBrowser:onEvent(event, ...)
         updateRoster()
     elseif (event == "ADDON_LOADED") then
         if Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
-            addBidToOverview()
+            DkpBrowser:addBidToOverview()
         end
     end
 end
@@ -328,7 +343,7 @@ function DkpBrowser:massInvite()
         if shouldConvertToRaid() then
             ConvertToRaid()
         end
-        if not isBenched(name) then
+        if not isBenched(name) and not isInRaid(name) then
             InviteUnit(name)
         end
     end
