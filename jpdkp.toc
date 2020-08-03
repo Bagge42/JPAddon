@@ -1,5 +1,5 @@
 ## Title: J&P DKP
-## Version: 1.7.6
+## Version: 1.7.7
 ## Author: Jordål @ <EU - Gandling>
 ## Interface: 11303
 ## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id

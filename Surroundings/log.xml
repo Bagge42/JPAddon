@@ -136,7 +136,7 @@
             </OnClick>
         </Scripts>
         <Size>
-            <AbsDimension x="89" y="78"/>
+            <AbsDimension x="89" y="80"/>
         </Size>
         <ButtonText>
             <Anchors>
@@ -223,7 +223,7 @@
                 <Frames>
                     <Button name="$parentNext" inherits="JP_HoverLight" text="NEXT">
                         <Size>
-                            <AbsDimension x="75" y="18"/>
+                            <AbsDimension x="89" y="30"/>
                         </Size>
                         <Anchors>
                             <Anchor point="BOTTOMRIGHT"/>
@@ -236,10 +236,10 @@
                     </Button>
                     <Button name="$parentPrevious" inherits="JP_HoverLight" text="PREVIOUS">
                         <Size>
-                            <AbsDimension x="95" y="18"/>
+                            <AbsDimension x="89" y="30"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="RIGHT" relativeTo="$parentNext" relativePoint="LEFT"/>
+                            <Anchor point="BOTTOM" relativeTo="$parentNext" relativePoint="TOP"/>
                         </Anchors>
                         <Scripts>
                             <OnClick>

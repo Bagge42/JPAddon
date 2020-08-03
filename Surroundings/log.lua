@@ -7,8 +7,10 @@ local Log = {}
 Jp.Log = Log
 
 local MaximumMembersShown = 24
-local MaximumRaidsShown = 30
-local LogHistoryIndex = 0
+local MaximumRaidsShown = 29
+local RaidIndex = 1
+local RaidToDateZoneIndex = {}
+local DateIndex = 0
 local ZoneIndex = 0
 local Icons = {
     [ONY_NAME] = ONY_RES,
@@ -136,11 +138,14 @@ local function clearRaidEntries()
     end
 end
 
-local function getZoneEntryAndUpdateIndexes(raidEntry, zoneKey)
-    local zoneEntry = raidEntry[zoneKey]
+local function getZoneEntryAndUpdateIndexes(dateEntry, zoneKey)
+    local zoneEntry = dateEntry[zoneKey]
+
+    RaidToDateZoneIndex[RaidIndex] = { DateIndex, ZoneIndex }
+    RaidIndex = RaidIndex + 1
 
     if zoneKey == 1 then
-        LogHistoryIndex = LogHistoryIndex + 1
+        DateIndex = DateIndex + 1
         ZoneIndex = 0
     else
         ZoneIndex = ZoneIndex + 1
@@ -157,44 +162,88 @@ local function getZoneTexture(zone)
     end
 end
 
-local function updateRaidNavigateButtons(nrOfEntries)
+local function getNumberOfRaidEntries()
+    local nrOfDateEntries = Utils:getTableSize(JP_Log_History)
+    local nrOfRaidEntries = 0
+    for dateEntry = 1, nrOfDateEntries, 1 do
+        nrOfRaidEntries = nrOfRaidEntries + Utils:getTableSize(JP_Log_History[dateEntry])
+    end
+    return nrOfRaidEntries
+end
+
+local function updateLogPreviousNextSelectButtons()
     local previousButton = getglobal("JP_LogFrameSelectFramePrevious")
     local nextButton = getglobal("JP_LogFrameSelectFrameNext")
-    if LogHistoryIndex == 0 then
+    if RaidIndex == 1 then
         previousButton:Hide()
     else
         previousButton:Show()
     end
-    if ((DataEntryIndex + MaximumMembersShown) >= nrOfEntries) then
+    if ((RaidIndex + MaximumMembersShown) >= getNumberOfRaidEntries()) then
         nextButton:Hide()
     else
         nextButton:Show()
     end
 end
 
+--local function dateZonePosChange(zoneKey)
+--    if zoneKey == 1 then
+--        DateIndex = DateIndex + 1
+--        ZoneIndex = 0
+--    else
+--        ZoneIndex = ZoneIndex + 1
+--    end
+--end
+--
+--local function dateZoneNegChange(zoneIndexStartOfNextDateIndex)
+--    if ZoneIndex == 0 then
+--        DateIndex = DateIndex - 1
+--        ZoneIndex = zoneIndexStartOfNextDateIndex
+--    else
+--        ZoneIndex = ZoneIndex - 1
+--    end
+--end
+--
+--local function changeDateAndZoneIndex(sign)
+--    local nrOfDateEntries = Utils:getTableSize(JP_Log_History)
+--    for count = 1, MaximumRaidsShown, 1 do
+--        local logHistoryKey = nrOfDateEntries - DateIndex
+--        local dateEntry = JP_Log_History[logHistoryKey]
+--        if dateEntry then
+--            local zoneKey = #dateEntry - ZoneIndex
+--            if (sign >= 0) then
+--                dateZonePosChange(zoneKey)
+--            else
+--                dateZoneNegChange(#JP_Log_History[logHistoryKey - 1] - 1)
+--            end
+--        end
+--    end
+--end
+
 function Log:updateRaidEntries()
     clearRaidEntries()
-    local LogHistoryIndexBeforeUpdate = LogHistoryIndex
-    for raidIndex = 1, MaximumRaidsShown, 1 do
-        local logHistoryKey = #JP_Log_History - LogHistoryIndex
-        local raidEntry = JP_Log_History[logHistoryKey]
-        if raidEntry then
-            local logEntryFrame = getglobal("JP_LogFrameSelectFrameButton" .. (raidIndex))
-            local zoneKey = #raidEntry - ZoneIndex
-            local zoneEntry = getZoneEntryAndUpdateIndexes(raidEntry, zoneKey)
+    local raidIndexBeforeUpdate = RaidIndex
+    local nrOfDateEntries = Utils:getTableSize(JP_Log_History)
+    for raidNumber = 1, MaximumRaidsShown, 1 do
+        local logHistoryKey = nrOfDateEntries - DateIndex
+        local dateEntry = JP_Log_History[logHistoryKey]
+        if dateEntry then
+            local zoneEntryFrame = getglobal("JP_LogFrameSelectFrameButton" .. (raidNumber))
+            local zoneKey = #dateEntry - ZoneIndex
+            local zoneEntry = getZoneEntryAndUpdateIndexes(dateEntry, zoneKey)
             local firstDataEntry = zoneEntry[1]
             local zoneTexture = getZoneTexture(firstDataEntry[1])
             local date = firstDataEntry[2][1]
-            attachIcon(logEntryFrame, zoneTexture)
-            logEntryFrame:SetText(date)
-            logEntryFrame:Show()
-            ButtonIdToKeys[raidIndex] = { logHistoryKey, zoneKey }
+            attachIcon(zoneEntryFrame, zoneTexture)
+            zoneEntryFrame:SetText(date)
+            zoneEntryFrame:Show()
+            ButtonIdToKeys[raidNumber] = { logHistoryKey, zoneKey }
         else
             break
         end
     end
-    LogHistoryIndex = LogHistoryIndexBeforeUpdate
-    updateRaidNavigateButtons(#JP_Log_History)
+    RaidIndex = raidIndexBeforeUpdate
+    updateLogPreviousNextSelectButtons()
 end
 
 function Log:createEntries()
@@ -289,17 +338,27 @@ function Log:displayFramePrevious()
     updateEntries(LatestButtonId)
 end
 
+local function updateDateZoneIndex()
+    if RaidToDateZoneIndex[RaidIndex] then
+        DateIndex = RaidToDateZoneIndex[RaidIndex][1]
+        ZoneIndex = RaidToDateZoneIndex[RaidIndex][2]
+    end
+end
+
 function Log:selectFrameNext()
-    LogHistoryIndex = LogHistoryIndex + MaximumRaidsShown
+    RaidIndex = RaidIndex + MaximumRaidsShown
+    updateDateZoneIndex()
     Log:updateRaidEntries()
 end
 
 function Log:selectFramePrevious()
-    LogHistoryIndex = LogHistoryIndex - MaximumRaidsShown
+    RaidIndex = RaidIndex - MaximumRaidsShown
+    updateDateZoneIndex()
     Log:updateRaidEntries()
 end
 
 function Log:back()
+    updateDateZoneIndex()
     Log:updateRaidEntries()
     getglobal("JP_LogFrameDisplayFrame"):Hide()
     getglobal("JP_LogFrameSelectFrame"):Show()
