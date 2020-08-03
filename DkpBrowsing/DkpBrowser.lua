@@ -223,12 +223,6 @@ local function isValidInvFormat(text)
     return (text == "inv") or (text == "Inv") or (text == "invite") or (text == "Invite")
 end
 
-local function isInGuild(otherPlayer)
-    local playerGuild = GetGuildInfo("player")
-    local otherPlayerGuild = GetGuildInfo(otherPlayer)
-    return playerGuild == otherPlayerGuild
-end
-
 local function shouldConvertToRaid()
     return (GetNumGroupMembers() >= 5) and not IsInRaid() and UnitIsGroupLeader("player")
 end
@@ -238,7 +232,7 @@ local function isInRaid(player)
 end
 
 local function shouldInviteToRaid(text, sender)
-    return isValidInvFormat(text) and Settings:getSetting(AUTO_INV_BOOLEAN_SETTING) and isInGuild(sender) and not isInRaid(sender)
+    return isValidInvFormat(text) and Settings:getSetting(AUTO_INV_BOOLEAN_SETTING) and GuildRosterHandler:isInGuild(sender) and not isInRaid(sender)
 end
 
 local function handleWhisper(text, sender)
@@ -247,7 +241,7 @@ local function handleWhisper(text, sender)
             ConvertToRaid()
         end
         InviteUnit(sender)
-    else
+    elseif GuildRosterHandler:isInGuild(sender) and Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
         local bidAmount = string.match(text, "%d+")
         if bidAmount then
             addBidder(sender, bidAmount)

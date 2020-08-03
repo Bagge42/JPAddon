@@ -146,6 +146,13 @@ function GuildRosterHandler:getGuildIndex(memberName)
     return GuildIndex[memberName]
 end
 
+function GuildRosterHandler:isInGuild(name)
+    if GuildRosterHandler:getGuildIndex(name) == nil then
+        return false
+    end
+    return true
+end
+
 function GuildRosterHandler:getPlayerClass(player)
     local rosterId = NameToRosterId[player]
     if rosterId then

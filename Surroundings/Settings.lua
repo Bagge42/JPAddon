@@ -96,7 +96,7 @@ function Settings:onLoad()
     biddersOnlySetting.text:SetText(BIDDERS_ONLY_SETTING)
     biddersOnlySetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_SettingsFrameBiddersOnlySetting, "JP_SettingCheckButton")
     biddersOnlySetting.checkButton:SetPoint("RIGHT")
-    biddersOnlySetting.checkButton.tooltip = "A bidding round is started by linking an item in a raid warning. If this checkbox is marked the only people that will be shown in the overview, after the start of a bidding round, is people linking an item in the raid chat. The bidding round lasts until a new round has been started or show none/all is clicked."
+    biddersOnlySetting.checkButton.tooltip = "A bidding round is started by linking an item in a raid warning. If this checkbox is marked the only people that will be shown in the overview, after the start of a bidding round, is people linking an item in the raid chat and people whispering a bid. The bidding round lasts until a new round has been started or show none/all is clicked."
     biddersOnlySetting.checkButton:SetScript("OnClick", function()
         toggleBooleanSetting(BIDDERS_ONLY_BOOLEAN_SETTING)
         if SettingsTable[BIDDERS_ONLY_BOOLEAN_SETTING] then
