@@ -316,12 +316,25 @@
                             </OnClick>
                         </Scripts>
                     </Button>
+                    <Button name="$parentPriorities" text="PRIORITY_TITLE" inherits="JP_AllClassToggle">
+                        <Size>
+                            <AbsDimension x="65" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentLog" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Priorities:onClick()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
                     <Button name="$parentInvite" text="INVITE_TITLE" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="58" y="24"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="RIGHT" relativeTo="$parentLog" relativePoint="LEFT"/>
+                            <Anchor point="RIGHT" relativeTo="$parentPriorities" relativePoint="LEFT"/>
                         </Anchors>
                         <Scripts>
                             <OnClick>

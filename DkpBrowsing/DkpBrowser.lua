@@ -270,7 +270,7 @@ function DkpBrowser:onEvent(event, ...)
     end
 end
 
-local function attachIcon(button, left, right, top, bottom)
+local function attachClassIcon(button, left, right, top, bottom)
     button.icon = button:CreateTexture("$parentIcon", "CENTER")
     button.icon:SetAllPoints(button)
     button.icon:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES")
@@ -287,20 +287,20 @@ function DkpBrowser:createFilterButtons()
     local initialButton = CreateFrame("Button", "$parentClassButton1", JP_OuterFrameFilter, CLASS_BUTTON)
     initialButton:SetID(1)
     initialButton:SetPoint("LEFT", JP_OuterFrameFilter, "LEFT")
-    attachIcon(initialButton, 0, 0.25, 0, 0.25)
+    attachClassIcon(initialButton, 0, 0.25, 0, 0.25)
 
     for firstRowCount = 2, 4, 1 do
         local firstImageRow = CreateFrame("Button", "$parentClassButton" .. firstRowCount, JP_OuterFrameFilter, CLASS_BUTTON)
         firstImageRow:SetID(firstRowCount)
         firstImageRow:SetPoint("LEFT", "$parentClassButton" .. (firstRowCount - 1), "RIGHT")
-        attachIcon(firstImageRow, 0 + 0.25 * (firstRowCount - 1), 0.25 * firstRowCount, 0, 0.25)
+        attachClassIcon(firstImageRow, 0 + 0.25 * (firstRowCount - 1), 0.25 * firstRowCount, 0, 0.25)
     end
 
     for secondRowCount = 5, 8, 1 do
         local secondImageRow = CreateFrame("Button", "$parentClassButton" .. secondRowCount, JP_OuterFrameFilter, CLASS_BUTTON)
         secondImageRow:SetID(secondRowCount)
         secondImageRow:SetPoint("LEFT", "$parentClassButton" .. (secondRowCount - 1), "RIGHT")
-        attachIcon(secondImageRow, 0 + 0.25 * (secondRowCount - 4 - 1), 0.25 * (secondRowCount - 4), 0.25, 0.50)
+        attachClassIcon(secondImageRow, 0 + 0.25 * (secondRowCount - 4 - 1), 0.25 * (secondRowCount - 4), 0.25, 0.50)
     end
 
     toggleAllFilters()

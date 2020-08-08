@@ -186,39 +186,12 @@ local function updateLogPreviousNextSelectButtons()
     end
 end
 
---local function dateZonePosChange(zoneKey)
---    if zoneKey == 1 then
---        DateIndex = DateIndex + 1
---        ZoneIndex = 0
---    else
---        ZoneIndex = ZoneIndex + 1
---    end
---end
---
---local function dateZoneNegChange(zoneIndexStartOfNextDateIndex)
---    if ZoneIndex == 0 then
---        DateIndex = DateIndex - 1
---        ZoneIndex = zoneIndexStartOfNextDateIndex
---    else
---        ZoneIndex = ZoneIndex - 1
---    end
---end
---
---local function changeDateAndZoneIndex(sign)
---    local nrOfDateEntries = Utils:getTableSize(JP_Log_History)
---    for count = 1, MaximumRaidsShown, 1 do
---        local logHistoryKey = nrOfDateEntries - DateIndex
---        local dateEntry = JP_Log_History[logHistoryKey]
---        if dateEntry then
---            local zoneKey = #dateEntry - ZoneIndex
---            if (sign >= 0) then
---                dateZonePosChange(zoneKey)
---            else
---                dateZoneNegChange(#JP_Log_History[logHistoryKey - 1] - 1)
---            end
---        end
---    end
---end
+function Log:resetIndexes()
+    RaidIndex = 1
+    RaidToDateZoneIndex = {}
+    DateIndex = 0
+    ZoneIndex = 0
+end
 
 function Log:updateRaidEntries()
     clearRaidEntries()
@@ -249,7 +222,7 @@ end
 function Log:createEntries()
     local initialEntry = CreateFrame("Button", "$parentEntry1", JP_LogFrameDisplayFrameList, "JP_LogEntry")
     initialEntry:SetID(1)
-    initialEntry:SetPoint("TOPLEFT", 0, -24)
+    initialEntry:SetPoint("TOPLEFT", 0, -20)
     for entryNr = 2, MaximumMembersShown, 1 do
         local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_LogFrameDisplayFrameList, "JP_LogEntry")
         followingEntries:SetID(entryNr)

@@ -117,6 +117,14 @@ function Utils:sendAddonMsg(msg, targetChannel, targetPlayer)
     C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel, targetPlayer)
 end
 
+function Utils:getTableWithNoHoles(table)
+    local tableWithoutHoles = {}
+    for _, v in pairs(table) do
+       tableWithoutHoles[#tableWithoutHoles + 1] = v
+    end
+    return tableWithoutHoles
+end
+
 -- Wait function from wowwiki --
 local waitTable = {}
 local waitFrame

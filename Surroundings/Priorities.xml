@@ -1,0 +1,388 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Button name="JP_PriorityEntry" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="445" y="18"/>
+        </Size>
+        <Layers>
+            <Layer>
+                <FontString name="$parentItem" justifyH="LEFT" inherits="GameFontNormalSmall">
+                    <Size>
+                        <AbsDimension x="200" y="18"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="3" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentPriority" justifyH="LEFT" inherits="GameFontNormalSmall">
+                    <Size>
+                        <AbsDimension x="245" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentItem">
+                            <Offset>
+                                <AbsDimension x="4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                    getglobal(self:GetName() .. BACKGROUND):Hide()
+            </OnLoad>
+            <OnClick>
+                    Jp.Priorities:selectEntry(self:GetID())
+            </OnClick>
+            <OnEnter>
+                    getglobal(self:GetName() .. BACKGROUND):Show()
+            </OnEnter>
+            <OnLeave>
+                    if not Jp.Priorities:isSelected(self:GetID()) then
+                        getglobal(self:GetName() .. BACKGROUND):Hide()
+                    end
+            </OnLeave>
+        </Scripts>
+        <NormalTexture name="$parentBackground">
+            <Color r="0" g="0" b="0.5" a="0.33"/>
+        </NormalTexture>
+    </Button>
+    <Frame name="JP_PriorityModifierFrame" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="48" y="18"/>
+        </Size>
+    </Frame>
+    <Button name="JP_PriorityModifier" inherits="JP_HoverLight" virtual="true">
+        <Size>
+            <AbsDimension x="18" y="18"/>
+        </Size>
+    </Button>
+    <Button name="JP_PriorityClassButton" virtual="true">
+        <Size>
+            <AbsDimension x="38" y="38"/>
+        </Size>
+        <Scripts>
+            <OnClick>
+                    Jp.Priorities:classButtonOnClick(self:GetID())
+            </OnClick>
+        </Scripts>
+    </Button>
+    <Frame name="JP_PriorityFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="false">
+        <Anchors>
+            <Anchor point="RIGHT" relativePoint="CENTER">
+                <Offset>
+                    <AbsDimension x="350" y="100"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Size>
+            <AbsDimension x="445" y="500"/>
+        </Size>
+        <Scripts>
+            <OnLoad>
+                    self:RegisterForDrag("LeftButton")
+                    self:SetUserPlaced(1)
+--                    self:RegisterEvent("CHAT_MSG_ADDON")
+--                    self:RegisterEvent("ADDON_LOADED")
+--                    C_ChatInfo.RegisterAddonMessagePrefix(ADDON_PREFIX)
+            </OnLoad>
+            <OnDragStart>
+                    self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                    self:StopMovingOrSizing()
+            </OnDragStop>
+<!--            <OnEvent>-->
+<!--                    Jp.Log:onSyncAttempt(event, ...)-->
+<!--            </OnEvent>-->
+        </Scripts>
+        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
+            <Color r="0" g="0" b="0" a="0.3"/>
+        </Backdrop>
+        <Frames>
+            <Frame name="$parentTitleFrame">
+                <Size>
+                    <AbsDimension x="445" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontHighlight" text="PRIORITY_TITLE">
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="6" y="1"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button name="$parentClose" inherits="JP_CloseButton"/>
+                </Frames>
+            </Frame>
+            <Frame name="$parentDisplayFrame">
+                <Frames>
+                    <Frame name="$parentList">
+                        <Size>
+                            <AbsDimension x="445" y="452"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="JP_PriorityFrameTitleFrame" relativePoint="BOTTOM"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                    Jp.Priorities:createEntries()
+                                    self:RegisterEvent("ADDON_LOADED")
+                            </OnLoad>
+                            <OnEvent>
+                                    Jp.Priorities:loadPriorities(event, ...)
+                            </OnEvent>
+                        </Scripts>
+                        <Frames>
+                            <Button inherits="JP_LogHeader" name="$parentItemHeader" id="1" text="PRIORITY_ITEM_HEADER">
+                                <Size>
+                                    <AbsDimension x="200" y="20"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="TOPLEFT"/>
+                                </Anchors>
+                                <Scripts>
+                                    <OnClick>
+                                        Jp.Priorities:itemNameClicked()
+                                    </OnClick>
+                                </Scripts>
+                            </Button>
+                            <Button inherits="JP_LogHeader" name="$parentPriorityHeader" id="2" text="PRIORITY_HEADER">
+                                <Size>
+                                    <AbsDimension x="245" y="20"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentItemHeader"/>
+                                </Anchors>
+                            </Button>
+                        </Frames>
+                    </Frame>
+                    <Button name="$parentAdd" inherits="JP_HoverLight" text="ADD_PRIO">
+                        <Size>
+                            <AbsDimension x="125" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parentList" relativePoint="BOTTOMLEFT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Priorities:add()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentNext" inherits="JP_HoverLight" text="NEXT">
+                        <Size>
+                            <AbsDimension x="75" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="$parentList" relativePoint="BOTTOMRIGHT">
+                                <Offset>
+                                    <AbsDimension x="-38" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Priorities:next()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentPrevious" inherits="JP_HoverLight" text="PREVIOUS">
+                        <Size>
+                            <AbsDimension x="95" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentNext" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Priorities:previous()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="$parentAddFrame" hidden="true">
+                <Size>
+                    <AbsDimension x="445" y="100"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="JP_PriorityFrame" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentPlayerName" inherits="GameFontNormal">
+                            <Anchors>
+                                <Anchor point="BOTTOM" relativePoint="TOP"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Frame name="$parentItemDescription">
+                        <Size>
+                            <AbsDimension x="73" y="24"/>
+                        </Size>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontHighlight" text="PRIORITY_ADD_ITEM_DESCRIPTION">
+                                    <Anchors>
+                                        <Anchor point="LEFT">
+                                            <Offset>
+                                                <AbsDimension x="6" y="0"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Anchors>
+                            <Anchor point="TOPLEFT"/>
+                        </Anchors>
+                    </Frame>
+                    <EditBox name="$parentItemValue" id="1" font="GameFontHighlight" autoFocus="false">
+                        <Size>
+                            <AbsDimension x="350" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="$parentItemDescription" relativePoint="RIGHT"/>
+                        </Anchors>
+                        <TextInsets>
+                            <AbsInset left="5" right="0" top="0" bottom="0"/>
+                        </TextInsets>
+                        <FontString>
+                            <Color r="1" g="1" b="1" a="0.9"/>
+                        </FontString>
+                        <Scripts>
+                            <OnEscapePressed>
+                                self:ClearFocus()
+                            </OnEscapePressed>
+                            <OnEnterPressed>
+                                Jp.Priorities:accept()
+                            </OnEnterPressed>
+                            <OnTabPressed>
+                                Jp.Priorities:onTab(self:GetID())
+                            </OnTabPressed>
+                        </Scripts>
+                    </EditBox>
+                    <Frame name="$parentPriorityDescription">
+                        <Size>
+                            <AbsDimension x="90" y="24"/>
+                        </Size>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontHighlight" text="PRIORITY_ADD_DESCRIPTION">
+                                    <Anchors>
+                                        <Anchor point="LEFT">
+                                            <Offset>
+                                                <AbsDimension x="6" y="0"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parentItemDescription" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Frame>
+                    <EditBox name="$parentPriorityValue" id="2" font="GameFontHighlight" autoFocus="false">
+                        <Size>
+                            <AbsDimension x="350" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="$parentPriorityDescription" relativePoint="RIGHT"/>
+                        </Anchors>
+                        <TextInsets>
+                            <AbsInset left="5" right="0" top="0" bottom="0"/>
+                        </TextInsets>
+                        <FontString>
+                            <Color r="1" g="1" b="1" a="0.9"/>
+                        </FontString>
+                        <Scripts>
+                            <OnEscapePressed>
+                                self:ClearFocus()
+                            </OnEscapePressed>
+                            <OnEnterPressed>
+                                Jp.Priorities:accept()
+                            </OnEnterPressed>
+                            <OnTabPressed>
+                                Jp.Priorities:onTab(self:GetID())
+                            </OnTabPressed>
+                        </Scripts>
+                    </EditBox>
+                    <Frame name="$parentExplanation">
+                        <Size>
+                            <AbsDimension x="445" y="24"/>
+                        </Size>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontNormal" text="PRIORITY_EXPLANATION">
+                                    <Anchors>
+                                        <Anchor point="LEFT">
+                                            <Offset>
+                                                <AbsDimension x="6" y="0"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parentPriorityDescription" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Frame>
+                    <Button name="$parentAccept" inherits="JP_AllClassToggle" text="ACCEPT">
+                        <Size>
+                            <AbsDimension x="95" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOMLEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Priorities:accept()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentCancel" inherits="JP_AllClassToggle" text="CANCEL">
+                        <Size>
+                            <AbsDimension x="95" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOMRIGHT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    self:GetParent():Hide()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+        </Frames>
+    </Frame>
+</Ui>

@@ -1,8 +1,8 @@
 ## Title: J&P DKP
-## Version: 1.7.7
+## Version: 1.7.8
 ## Author: Jordål @ <EU - Gandling>
 ## Interface: 11303
-## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id
+## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id, JP_Priority_List
 
 localization.en.lua
 Utils.lua
@@ -19,3 +19,5 @@ DkpManagement\EventQueue.lua
 DkpManagement\DkpManager.lua
 DkpManagement\DkpManager.xml
 DkpManagement\Bench.xml
+Surroundings\Priorities.lua
+Surroundings\Priorities.xml

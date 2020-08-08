@@ -183,7 +183,7 @@
         <Frames>
             <Frame name="$parentTitleFrame">
                 <Size>
-                    <AbsDimension x="445" y="20"/>
+                    <AbsDimension x="445" y="24"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT"/>
@@ -253,7 +253,7 @@
                 <Frames>
                     <Frame name="$parentList">
                         <Size>
-                            <AbsDimension x="445" y="456"/>
+                            <AbsDimension x="445" y="452"/>
                         </Size>
                         <Anchors>
                             <Anchor point="TOP" relativeTo="JP_LogFrameTitleFrame" relativePoint="BOTTOM"/>
@@ -266,7 +266,7 @@
                         <Frames>
                             <Button inherits="JP_LogHeader" name="$parentTimeHeader" id="1" text="LOG_TIME_HEADER">
                                 <Size>
-                                    <AbsDimension x="70" y="24"/>
+                                    <AbsDimension x="70" y="20"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="TOPLEFT"/>
@@ -274,7 +274,7 @@
                             </Button>
                             <Button inherits="JP_LogHeader" name="$parentPlayerHeader" id="2" text="PLAYER_HEADER">
                                 <Size>
-                                    <AbsDimension x="95" y="24"/>
+                                    <AbsDimension x="95" y="20"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTimeHeader"/>
@@ -282,7 +282,7 @@
                             </Button>
                             <Button inherits="JP_LogHeader" name="$parentChangeHeader" id="3" text="LOG_CHANGE_HEADER">
                                 <Size>
-                                    <AbsDimension x="56" y="24"/>
+                                    <AbsDimension x="56" y="20"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
@@ -290,7 +290,7 @@
                             </Button>
                             <Button inherits="JP_LogHeader" name="$parentTotalHeader" id="4" text="LOG_TOTAL_HEADER">
                                 <Size>
-                                    <AbsDimension x="56" y="24"/>
+                                    <AbsDimension x="56" y="20"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentChangeHeader"/>
@@ -298,7 +298,7 @@
                             </Button>
                             <Button inherits="JP_LogHeader" name="$parentEventHeader" id="5" text="LOG_EVENT_HEADER">
                                 <Size>
-                                    <AbsDimension x="74" y="24"/>
+                                    <AbsDimension x="74" y="20"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentTotalHeader"/>
@@ -306,7 +306,7 @@
                             </Button>
                             <Button inherits="JP_LogHeader" name="$parentModifierHeader" id="6" text="LOG_MODIFIER_HEADER">
                                 <Size>
-                                    <AbsDimension x="94" y="24"/>
+                                    <AbsDimension x="94" y="20"/>
                                 </Size>
                                 <Anchors>
                                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentEventHeader"/>

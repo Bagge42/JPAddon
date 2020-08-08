@@ -240,6 +240,7 @@ end
 
 function DkpManager:onLogClick()
     if not getglobal(LOG_FRAME):IsVisible() then
+        Log:resetIndexes()
         Log:updateRaidEntries()
         getglobal(LOG_FRAME):Show()
     else
