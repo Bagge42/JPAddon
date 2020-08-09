@@ -207,6 +207,45 @@
                     </EditBox>
                 </Frames>
             </Frame>
+            <Frame name="$parentPriorityLink" hidden="true">
+                <Size>
+                    <AbsDimension x="283" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parentPlayerManagement" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="-27"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentItemName" inherits="GameFontNormal">
+                            <Anchors>
+                                <Anchor point="BOTTOM" relativePoint="TOP">
+                                    <Offset>
+                                        <AbsDimension x="0" y="2"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentPriority" inherits="GameFontNormal">
+                            <Anchors>
+                                <Anchor point="CENTER">
+                                    <Offset>
+                                        <AbsDimension x="0" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
             <Button name="$parentUndo" text="UNDO" inherits="JP_HoverLight">
                 <Size>
                     <AbsDimension x="135" y="45"/>

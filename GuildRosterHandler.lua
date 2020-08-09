@@ -10,6 +10,7 @@ local NameToRosterId = {}
 local GuildIndex = {}
 local GuildRosterNeedsUpdate = true
 local AltRoster = {}
+local OfficerRoster = {}
 
 function GuildRosterHandler:update()
     if not CanViewOfficerNote() then
@@ -39,9 +40,16 @@ function GuildRosterHandler:update()
                 GuildIndex[name] = member
                 NameToRosterId[name] = rosterId
                 guildRoster[rosterId] = { name, (1 * dkp), class, rank, isOnline, zone, rankIndex }
+
+                if (rank == "Officer") or (rank == "Jesus") then
+                   OfficerRoster[name] = class
+                end
             end
         else
             AltRoster[name] = class
+            if (rank == OFFICER_ALT) then
+                OfficerRoster[name] = class
+            end
         end
     end
 
@@ -98,6 +106,10 @@ local function sortRoster(roster, bids)
     else
         return sortByNameOrDkp(roster)
     end
+end
+
+function GuildRosterHandler:isOfficer(player)
+    return OfficerRoster[player] ~= nil
 end
 
 function GuildRosterHandler:getSortedRoster(id, bids)

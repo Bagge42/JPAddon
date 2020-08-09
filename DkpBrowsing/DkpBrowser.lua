@@ -29,7 +29,8 @@ local function showHideJp()
             getglobal("JP_OuterFrameTitleFrameInvite"):Hide()
             getglobal("JP_OuterFrameTitleFrameOptions"):Hide()
             getglobal("JP_OuterFrameTitleFrameLog"):SetPoint("RIGHT", "JP_OuterFrameTitleFrameClose", "LEFT")
-            getglobal("JP_OuterFrameTitleFrameNone"):SetPoint("RIGHT", "JP_OuterFrameTitleFrameLog", "LEFT")
+            getglobal("JP_OuterFrameTitleFramePriorities"):SetPoint("RIGHT", "JP_OuterFrameTitleFrameLog", "LEFT")
+            getglobal("JP_OuterFrameTitleFrameNone"):SetPoint("RIGHT", "JP_OuterFrameTitleFramePriorities", "LEFT")
         end
     end
 end
@@ -126,15 +127,6 @@ local function updateRoster()
     JP_UpdateBrowserEntries()
 end
 
-local function isItemLink(text)
-    -- 16 Colons in a message makes it quite certain that the message contains an itemlink
-    local _, colonCount = string.gsub(text, ":", "")
-    if (colonCount >= 16) and (string.find(text, "item")) then
-        return true
-    end
-    return false
-end
-
 local function setDesaturations(nilOrOne)
     for classCount = 1, 8, 1 do
         local icon = getglobal("JP_OuterFrameFilterClassButton" .. classCount .. "Icon")
@@ -164,12 +156,13 @@ end
 function DkpBrowser:clearOverview()
     stopBiddingRound()
     deselectAllClasses()
+    getglobal("JP_ManagementPriorityLink"):Hide()
 end
 
 local function startBiddingRound(textInWarning)
     if Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
         DkpBrowser:clearOverview()
-        if isItemLink(textInWarning) then
+        if Utils:isItemLink(textInWarning) then
             auctionInProgress = true
         end
     end
@@ -251,10 +244,10 @@ end
 
 function DkpBrowser:onEvent(event, ...)
     local text = select(1, ...)
-    if (event == "CHAT_MSG_RAID_WARNING") and isItemLink(text) then
+    if (event == "CHAT_MSG_RAID_WARNING") and Utils:isItemLink(text) then
         startBiddingRound(text)
     elseif (event == "CHAT_MSG_RAID") or (event == "CHAT_MSG_RAID_LEADER") then
-        if auctionInProgress and isItemLink(text) then
+        if auctionInProgress and Utils:isItemLink(text) then
             local sender = Utils:removeRealmName(select(2, ...))
             addBidder(sender)
         end
@@ -324,6 +317,7 @@ end
 
 function DkpBrowser:selectAllClasses()
     stopBiddingRound()
+    getglobal("JP_ManagementPriorityLink"):Hide()
     for _, class in pairs(IdsToClasses) do
         ToggledClasses[class] = true
     end

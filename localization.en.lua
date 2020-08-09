@@ -57,12 +57,17 @@ BACK = "Back to raids"
 SNAPSHOT = "Create dkp snapshot"
 ADDON_PREFIX = "jpdkp"
 BENCH_MSG_SHARE = "ShareBench"
+PRIORITY_MSG_SHARE = "SharePrio"
+PRIORITY_MSG_SHARE_START = "SharePrioStart"
+PRIORITY_MSG_SHARE_END = "SharePrioEnd"
 SETTINGS = "Settings"
 SETTING_INFO = "Press enter or escape after edit to save"
 BIDDERS_ONLY_SETTING = "Only show bidders in overview"
 BIDDERS_ONLY_BOOLEAN_SETTING = "biddersOnlyBoolean"
 AUTO_INV_SETTING = "Invite guild members on whisper"
 AUTO_INV_BOOLEAN_SETTING = "autoInvBoolean"
+LINK_PRIO_SETTING_TEXT = "Link priority in raid chat"
+LINK_PRIO_BOOLEAN_SETTING = "linkPrioBoolean"
 
 -- XML Frame naming related
 
@@ -77,6 +82,7 @@ BENCH_ENTRY = "JP_BenchEntry"
 MANAGEMENT = "JP_Management"
 LOG_FRAME = "JP_LogFrame"
 PRIORITY_FRAME = "JP_PriorityFrame"
+PRIORITIES_SHARE = "Share priorities"
 DECAY_SETTING_NAME = "DecayPercentage"
 
 -- Resource paths --

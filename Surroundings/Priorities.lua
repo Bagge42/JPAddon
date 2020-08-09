@@ -1,6 +1,8 @@
 local Jp = _G.Jp
 local Priorities = {}
 local Utils = Jp.Utils
+local Settings = Jp.Settings
+local GuildRosterHandler = Jp.GuildRosterHandler
 Jp.Priorities = Priorities
 
 JP_Priority_List = {}
@@ -11,7 +13,7 @@ local CurrentOrderUsed = ASCENDING
 
 local function getSortedPriorities()
     local tableCopy = Utils:getTableWithNoHoles(JP_Priority_List)
-        table.sort(tableCopy, function(member1, member2)
+    table.sort(tableCopy, function(member1, member2)
         if CurrentOrderUsed == DESCENDING then
             return member1[1] > member2[1]
         else
@@ -68,7 +70,85 @@ local function updatePriorityList()
     updateNextPreviousButtons()
 end
 
+function Priorities:deleteAllPrios()
+    JP_Priority_List = {}
+    updatePriorityList()
+end
+
+local function removeTextFromItemLink(itemLink)
+    local withoutBrackets = string.gsub(itemLink, "[%[%]]", "")
+    local withoutSpacesAtTheEnd = string.gsub(withoutBrackets, '[ \t]+%f[\r\n%z]', '')
+    return withoutSpacesAtTheEnd
+end
+
+local function linkPriorityIfAny(item)
+    local priority
+    local itemText = GetItemInfo(item)
+    for _, itemPriorityTable in pairs(JP_Priority_List) do
+        if (itemPriorityTable[1] == itemText) then
+            priority = itemPriorityTable[2]
+        end
+    end
+    if (priority ~= nil) then
+        if Settings:getSetting(LINK_PRIO_BOOLEAN_SETTING) then
+            local msg = "Priority: " .. priority
+            SendChatMessage(msg, "RAID")
+        end
+        getglobal("JP_ManagementPriorityLink"):Show()
+        getglobal("JP_ManagementPriorityLinkItemName"):SetText(itemText)
+        getglobal("JP_ManagementPriorityLinkPriority"):SetText(priority)
+    else
+        getglobal("JP_ManagementPriorityLink"):Hide()
+    end
+end
+
+function Priorities:onEvent(event, ...)
+    local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
+
+    local text = select(1, ...)
+    if (event == "CHAT_MSG_RAID_WARNING") and Utils:isItemLink(text) and Jp.Utils:isOfficer() then
+        linkPriorityIfAny(text)
+    end
+    if (event == "CHAT_MSG_ADDON") then
+        if (prefix == ADDON_PREFIX) and GuildRosterHandler:isOfficer(Utils:removeRealmName(sender)) then
+            local prefix, item, prio = string.split("&", msg)
+            if Utils:isSelf(sender) then
+                return
+            elseif (prefix == PRIORITY_MSG_SHARE_START) then
+                JP_Priority_List = {}
+                JP_Priority_List[1] = { item, prio }
+            elseif (prefix == PRIORITY_MSG_SHARE_END) then
+                JP_Priority_List[#JP_Priority_List + 1] = { item, prio }
+                updatePriorityList()
+            else
+                JP_Priority_List[#JP_Priority_List + 1] = { item, prio }
+            end
+        end
+    end
+end
+
+function Priorities:share()
+    local priorityList = getSortedPriorities()
+    local msg
+    for itemCount = 1, #priorityList, 1 do
+        if (itemCount == 1) then
+            msg = PRIORITY_MSG_SHARE_START .. "&"
+        elseif (itemCount == #priorityList) then
+            msg = PRIORITY_MSG_SHARE_END .. "&"
+        else
+            msg = PRIORITY_MSG_SHARE .. "&"
+        end
+        msg = msg .. priorityList[itemCount][1] .. "&" .. priorityList[itemCount][2]
+        Utils:sendOfficerAddonMsg(msg, "GUILD")
+    end
+    Utils:jpMsg("Shared priorities with all online guild members")
+end
+
 function Priorities:onClick()
+    if not Utils:isOfficer() then
+        getglobal("JP_PriorityFrameDisplayFrameAdd"):Hide()
+        getglobal("JP_PriorityFrameTitleFrameShare"):Hide()
+    end
     if not getglobal(PRIORITY_FRAME):IsVisible() then
         updatePriorityList()
         getglobal(PRIORITY_FRAME):Show()
@@ -121,9 +201,7 @@ end
 
 local function getItemText()
     local initialText = getglobal("JP_PriorityFrameAddFrameItemValue"):GetText()
-    local withoutBrackets = string.gsub(initialText, "[%[%]]", "")
-    local withoutSpacesAtTheEnd = string.gsub(withoutBrackets, '[ \t]+%f[\r\n%z]', '')
-    return withoutSpacesAtTheEnd
+    return removeTextFromItemLink(initialText)
 end
 
 function Priorities:accept()
@@ -144,8 +222,14 @@ local function removeSelection()
 end
 
 local function editClick()
+    getglobal("JP_PriorityFrameAddFrame"):Show()
+    local itemValue = getglobal("JP_PriorityFrameAddFrameItemValue")
+    itemValue:SetFocus()
+    local selectedEntryItem = getglobal("JP_PriorityFrameDisplayFrameListEntry" .. CurrentSelectedEntry .. "Item"):GetText()
+    itemValue:SetText(selectedEntryItem)
+    local selectedEntryPriority = getglobal("JP_PriorityFrameDisplayFrameListEntry" .. CurrentSelectedEntry .. "Priority"):GetText()
+    getglobal("JP_PriorityFrameAddFramePriorityValue"):SetText(selectedEntryPriority)
     removeSelection()
-    print("edit")
 end
 
 local function deleteClick()
@@ -193,13 +277,6 @@ function Priorities:onTab(id)
     end
 end
 
---Remove
-function Priorities:loadPriorities(event, addonName)
-    if (addonName == "jpdkp") then
-        updatePriorityList()
-    end
-end
-
 function Priorities:selectEntry(id)
     local modifierFrame = getglobal("JP_PriorityFrameDisplayFrameListModifierFrame")
     local clickedEntryBackground = getglobal("JP_PriorityFrameDisplayFrameListEntry" .. id .. BACKGROUND)
@@ -211,16 +288,18 @@ function Priorities:selectEntry(id)
         if CurrentSelectedEntry ~= nil then
             getglobal("JP_PriorityFrameDisplayFrameListEntry" .. CurrentSelectedEntry .. BACKGROUND):Hide()
         end
-        modifierFrame:SetPoint("LEFT", "JP_PriorityFrameDisplayFrameListEntry" .. id, "RIGHT")
-        modifierFrame:Show()
-        clickedEntryBackground:Show()
+        if Utils:isOfficer() then
+            modifierFrame:SetPoint("LEFT", "JP_PriorityFrameDisplayFrameListEntry" .. id, "RIGHT")
+            modifierFrame:Show()
+            clickedEntryBackground:Show()
+        end
         CurrentSelectedEntry = id
     end
 end
 
 function Priorities:itemNameClicked()
     if (CurrentOrderUsed == ASCENDING) then
-       CurrentOrderUsed = DESCENDING
+        CurrentOrderUsed = DESCENDING
     else
         CurrentOrderUsed = ASCENDING
     end

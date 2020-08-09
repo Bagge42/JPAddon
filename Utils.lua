@@ -117,6 +117,15 @@ function Utils:sendAddonMsg(msg, targetChannel, targetPlayer)
     C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel, targetPlayer)
 end
 
+function Utils:isItemLink(text)
+    -- 16 Colons in a message makes it quite certain that the message contains an itemlink
+    local _, colonCount = string.gsub(text, ":", "")
+    if (colonCount >= 16) and (string.find(text, "item")) then
+        return true
+    end
+    return false
+end
+
 function Utils:getTableWithNoHoles(table)
     local tableWithoutHoles = {}
     for _, v in pairs(table) do

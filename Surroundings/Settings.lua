@@ -117,6 +117,18 @@ function Settings:onLoad()
     autoInvSetting.checkButton:SetScript("OnClick", function()
         toggleBooleanSetting(AUTO_INV_BOOLEAN_SETTING)
     end)
+
+    local linkPrioSetting = CreateFrame("Frame", "$parentLinkPrioSetting", JP_SettingsFrame, "JP_SettingEntry")
+    linkPrioSetting:SetPoint("BOTTOM", "$parentAutoInvSetting", "TOP")
+    linkPrioSetting.text = linkPrioSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    linkPrioSetting.text:SetPoint("LEFT", 5, 0)
+    linkPrioSetting.text:SetText(LINK_PRIO_SETTING_TEXT)
+    linkPrioSetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_SettingsFrameLinkPrioSetting, "JP_SettingCheckButton")
+    linkPrioSetting.checkButton:SetPoint("RIGHT")
+    linkPrioSetting.checkButton.tooltip = "Toggle to link priorities in the raid chat when an item is linked in a raid warning, if such a priority exist"
+    linkPrioSetting.checkButton:SetScript("OnClick", function()
+        toggleBooleanSetting(LINK_PRIO_BOOLEAN_SETTING)
+    end)
 end
 
 local function insertInEditBoxAndSettingsTable(settingValue, editBoxId)

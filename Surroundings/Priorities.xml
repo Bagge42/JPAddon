@@ -61,17 +61,7 @@
             <AbsDimension x="18" y="18"/>
         </Size>
     </Button>
-    <Button name="JP_PriorityClassButton" virtual="true">
-        <Size>
-            <AbsDimension x="38" y="38"/>
-        </Size>
-        <Scripts>
-            <OnClick>
-                    Jp.Priorities:classButtonOnClick(self:GetID())
-            </OnClick>
-        </Scripts>
-    </Button>
-    <Frame name="JP_PriorityFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="false">
+    <Frame name="JP_PriorityFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
         <Anchors>
             <Anchor point="RIGHT" relativePoint="CENTER">
                 <Offset>
@@ -86,9 +76,8 @@
             <OnLoad>
                     self:RegisterForDrag("LeftButton")
                     self:SetUserPlaced(1)
---                    self:RegisterEvent("CHAT_MSG_ADDON")
---                    self:RegisterEvent("ADDON_LOADED")
---                    C_ChatInfo.RegisterAddonMessagePrefix(ADDON_PREFIX)
+                    self:RegisterEvent("CHAT_MSG_RAID_WARNING")
+                    self:RegisterEvent("CHAT_MSG_ADDON")
             </OnLoad>
             <OnDragStart>
                     self:StartMoving()
@@ -96,9 +85,9 @@
             <OnDragStop>
                     self:StopMovingOrSizing()
             </OnDragStop>
-<!--            <OnEvent>-->
-<!--                    Jp.Log:onSyncAttempt(event, ...)-->
-<!--            </OnEvent>-->
+            <OnEvent>
+                    Jp.Priorities:onEvent(event, ...)
+            </OnEvent>
         </Scripts>
         <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
             <Color r="0" g="0" b="0" a="0.3"/>
@@ -129,6 +118,19 @@
                 </Layers>
                 <Frames>
                     <Button name="$parentClose" inherits="JP_CloseButton"/>
+                    <Button name="$parentShare" text="PRIORITIES_SHARE" inherits="JP_AllClassToggle">
+                        <Size>
+                            <AbsDimension x="105" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentClose" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Priorities:share()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
                 </Frames>
             </Frame>
             <Frame name="$parentDisplayFrame">
@@ -143,11 +145,7 @@
                         <Scripts>
                             <OnLoad>
                                     Jp.Priorities:createEntries()
-                                    self:RegisterEvent("ADDON_LOADED")
                             </OnLoad>
-                            <OnEvent>
-                                    Jp.Priorities:loadPriorities(event, ...)
-                            </OnEvent>
                         </Scripts>
                         <Frames>
                             <Button inherits="JP_LogHeader" name="$parentItemHeader" id="1" text="PRIORITY_ITEM_HEADER">
