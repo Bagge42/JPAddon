@@ -12,7 +12,7 @@ local PriorityIndex = 0
 local CurrentOrderUsed = ASCENDING
 
 local function getSortedPriorities()
-    local tableCopy = Utils:getTableWithNoHoles(JP_Priority_List)
+    local tableCopy = Utils:getTableWithNoNils(JP_Priority_List)
     table.sort(tableCopy, function(member1, member2)
         if CurrentOrderUsed == DESCENDING then
             return member1[1] > member2[1]
@@ -81,7 +81,7 @@ local function removeTextFromItemLink(itemLink)
     return withoutSpacesAtTheEnd
 end
 
-local function linkPriorityIfAny(item)
+local function linkPriorityIfAny(item, sender)
     local priority
     local itemText = GetItemInfo(item)
     for _, itemPriorityTable in pairs(JP_Priority_List) do
@@ -90,7 +90,7 @@ local function linkPriorityIfAny(item)
         end
     end
     if (priority ~= nil) then
-        if Settings:getSetting(LINK_PRIO_BOOLEAN_SETTING) then
+        if Settings:getSetting(LINK_PRIO_BOOLEAN_SETTING) and Utils:isSelf(sender) then
             local msg = "Priority: " .. priority
             SendChatMessage(msg, "RAID")
         end
@@ -107,7 +107,7 @@ function Priorities:onEvent(event, ...)
 
     local text = select(1, ...)
     if (event == "CHAT_MSG_RAID_WARNING") and Utils:isItemLink(text) and Jp.Utils:isOfficer() then
-        linkPriorityIfAny(text)
+        linkPriorityIfAny(text, msg)
     end
     if (event == "CHAT_MSG_ADDON") then
         if (prefix == ADDON_PREFIX) and GuildRosterHandler:isOfficer(Utils:removeRealmName(sender)) then
@@ -120,7 +120,7 @@ function Priorities:onEvent(event, ...)
             elseif (prefix == PRIORITY_MSG_SHARE_END) then
                 JP_Priority_List[#JP_Priority_List + 1] = { item, prio }
                 updatePriorityList()
-            else
+            elseif (prefix == PRIORITY_MSG_SHARE) then
                 JP_Priority_List[#JP_Priority_List + 1] = { item, prio }
             end
         end

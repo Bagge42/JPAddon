@@ -126,12 +126,14 @@ function Utils:isItemLink(text)
     return false
 end
 
-function Utils:getTableWithNoHoles(table)
-    local tableWithoutHoles = {}
-    for _, v in pairs(table) do
-       tableWithoutHoles[#tableWithoutHoles + 1] = v
+function Utils:getTableWithNoNils(table)
+    local tableWithoutNils = {}
+    for k, v in pairs(table) do
+        if (k ~= nil and v ~= nil) then
+            tableWithoutNils[#tableWithoutNils + 1] = v
+        end
     end
-    return tableWithoutHoles
+    return tableWithoutNils
 end
 
 -- Wait function from wowwiki --

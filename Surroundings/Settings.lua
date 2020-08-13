@@ -146,6 +146,7 @@ end
 local function loadCheckBoxSettings()
     loadCheckBoxSetting(BIDDERS_ONLY_BOOLEAN_SETTING, "JP_SettingsFrameBiddersOnlySettingCheckButton")
     loadCheckBoxSetting(AUTO_INV_BOOLEAN_SETTING, "JP_SettingsFrameAutoInvSettingCheckButton")
+    loadCheckBoxSetting(LINK_PRIO_BOOLEAN_SETTING, "JP_SettingsFrameLinkPrioSettingCheckButton")
 end
 
 local function loadSettings()
