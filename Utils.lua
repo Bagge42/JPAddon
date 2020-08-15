@@ -20,8 +20,13 @@ function Utils:removeRealmName(nameAndRealm)
     return name
 end
 
-function Utils:isInRaid()
-    return GetNumGroupMembers() > 0
+function Utils:selfIsInRaid()
+    if IsInGroup() then
+        if IsInRaid() then
+            return true
+        end
+    end
+    return false
 end
 
 function Utils:copyTable(tableToCopy)

@@ -120,7 +120,7 @@ local function sendRaidDkpWarning(jesusIsInRaid, dkp, nrOfPlayers)
 end
 
 local function modifyRaidDkp(dkp, bench, zone, undo)
-    if Utils:isInRaid() then
+    if Utils:selfIsInRaid() then
         local jesusIsInRaid = false
         local playerNames = collectPlayerNamesFromTablesNoDups(GuildRosterHandler:getRaidRoster(), bench)
         for player, _ in pairs(playerNames) do
@@ -160,7 +160,7 @@ end
 
 local function subWarn(player, dkp)
     local warningMessage = "Subtracted " .. dkp .. " DKP from " .. player
-    if Utils:isInRaid() then
+    if Utils:selfIsInRaid() then
         Utils:sendWarningMessage(warningMessage)
     else
         Utils:jpMsg(warningMessage)
@@ -169,7 +169,7 @@ end
 
 local function addWarn(player, dkp)
     local warningMessage = "Added " .. dkp .. " DKP to " .. player
-    if Utils:isInRaid() then
+    if Utils:selfIsInRaid() then
         Utils:sendWarningMessage(warningMessage)
     else
         Utils:jpMsg(warningMessage)
@@ -238,16 +238,6 @@ local function undoDecay()
     end
     local actionMsg = UnitName("player") .. " undid the decay, all dkp has been restored."
     Utils:sendGuildMessage(actionMsg)
-end
-
-function DkpManager:onLogClick()
-    if not getglobal(LOG_FRAME):IsVisible() then
-        Log:resetIndexes()
-        Log:updateRaidEntries()
-        getglobal(LOG_FRAME):Show()
-    else
-        getglobal(LOG_FRAME):Hide()
-    end
 end
 
 local function singlePlayerUndo(player, amount, zone)

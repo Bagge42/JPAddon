@@ -353,7 +353,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    Jp.DkpManager:onLogClick()
+                                    Jp.Log:onClick()
                             </OnClick>
                         </Scripts>
                     </Button>

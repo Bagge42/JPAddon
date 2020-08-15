@@ -199,29 +199,8 @@ function DkpBrowser:removeBidFromOverview()
     removeBidFromEntries()
 end
 
-local function isValidInvFormat(text)
-    return (text == "inv") or (text == "Inv") or (text == "invite") or (text == "Invite")
-end
-
-local function shouldConvertToRaid()
-    return (GetNumGroupMembers() >= 5) and not IsInRaid() and UnitIsGroupLeader("player")
-end
-
-local function isInRaid(player)
-    return UnitInRaid(player)
-end
-
-local function shouldInviteToRaid(text, sender)
-    return isValidInvFormat(text) and Settings:getSetting(AUTO_INV_BOOLEAN_SETTING) and GuildRosterHandler:isInGuild(sender) and not isInRaid(sender)
-end
-
 local function handleWhisper(text, sender)
-    if shouldInviteToRaid(text, sender) then
-        if shouldConvertToRaid() then
-            ConvertToRaid()
-        end
-        InviteUnit(sender)
-    elseif GuildRosterHandler:isInGuild(sender) and Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
+    if GuildRosterHandler:isInGuild(sender) and Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
         local bidAmount = string.match(text, "%d+")
         if bidAmount then
             addBidder(sender, bidAmount)
@@ -310,16 +289,4 @@ function DkpBrowser:selectAllClasses()
     end
     setDesaturations(nil)
     JP_UpdateBrowserEntries()
-end
-
-function DkpBrowser:massInvite()
-    local raiders = GuildRosterHandler:getRaiders()
-    for _, name in pairs(raiders) do
-        if shouldConvertToRaid() then
-            ConvertToRaid()
-        end
-        if not isBenched(name) and not isInRaid(name) then
-            InviteUnit(name)
-        end
-    end
 end

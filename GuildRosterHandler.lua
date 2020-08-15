@@ -205,8 +205,7 @@ function GuildRosterHandler:getRaiders()
     for _, rosterEntry in pairs(Roster) do
         local name = rosterEntry[1]
         local rank = rosterEntry[4]
-        local isOnline = rosterEntry[5]
-        if isRaiderRank(rank) and (isOnline == 1) then
+        if isRaiderRank(rank) then
             raiderTable[table.getn(raiderTable) + 1] = name
         end
     end

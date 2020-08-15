@@ -34,7 +34,7 @@ local function insertSetting(settingName, settingValue)
     sendSettingChange(settingName, settingValue)
 end
 
-local function toggleBooleanSetting(settingName)
+function Settings:toggleBooleanSetting(settingName)
     if SettingsTable[settingName] then
         insertSetting(settingName, false)
     else
@@ -75,7 +75,7 @@ function Settings:onLoad()
     biddersOnlySetting.checkButton:SetPoint("RIGHT")
     biddersOnlySetting.checkButton.tooltip = "A bidding round is started by linking an item in a raid warning. If this checkbox is marked the only people that will be shown in the overview, after the start of a bidding round, is people linking an item in the raid chat and people whispering a bid. The bidding round lasts until a new round has been started or show none/all is clicked."
     biddersOnlySetting.checkButton:SetScript("OnClick", function()
-        toggleBooleanSetting(BIDDERS_ONLY_BOOLEAN_SETTING)
+        Settings:toggleBooleanSetting(BIDDERS_ONLY_BOOLEAN_SETTING)
         if SettingsTable[BIDDERS_ONLY_BOOLEAN_SETTING] then
             Jp.DkpBrowser:addBidToOverview()
         else
@@ -83,20 +83,8 @@ function Settings:onLoad()
         end
     end)
 
-    local autoInvSetting = CreateFrame("Frame", "$parentAutoInvSetting", JP_SettingsFrame, "JP_SettingEntry")
-    autoInvSetting:SetPoint("BOTTOM", "$parentBiddersOnlySetting", "TOP")
-    autoInvSetting.text = autoInvSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    autoInvSetting.text:SetPoint("LEFT", 5, 0)
-    autoInvSetting.text:SetText(AUTO_INV_SETTING)
-    autoInvSetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_SettingsFrameAutoInvSetting, "JP_SettingCheckButton")
-    autoInvSetting.checkButton:SetPoint("RIGHT")
-    autoInvSetting.checkButton.tooltip = "Toggle automatic inviting of guild members. Valid formats: 'Inv', 'inv', 'Invite', 'invite'"
-    autoInvSetting.checkButton:SetScript("OnClick", function()
-        toggleBooleanSetting(AUTO_INV_BOOLEAN_SETTING)
-    end)
-
     local linkPrioSetting = CreateFrame("Frame", "$parentLinkPrioSetting", JP_SettingsFrame, "JP_SettingEntry")
-    linkPrioSetting:SetPoint("BOTTOM", "$parentAutoInvSetting", "TOP")
+    linkPrioSetting:SetPoint("BOTTOM", "$parentBiddersOnlySetting", "TOP")
     linkPrioSetting.text = linkPrioSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     linkPrioSetting.text:SetPoint("LEFT", 5, 0)
     linkPrioSetting.text:SetText(LINK_PRIO_SETTING_TEXT)
@@ -104,7 +92,7 @@ function Settings:onLoad()
     linkPrioSetting.checkButton:SetPoint("RIGHT")
     linkPrioSetting.checkButton.tooltip = "Toggle to link priorities in the raid chat when an item is linked in a raid warning, if such a priority exist"
     linkPrioSetting.checkButton:SetScript("OnClick", function()
-        toggleBooleanSetting(LINK_PRIO_BOOLEAN_SETTING)
+        Settings:toggleBooleanSetting(LINK_PRIO_BOOLEAN_SETTING)
     end)
 end
 
@@ -122,7 +110,7 @@ end
 
 local function loadCheckBoxSettings()
     loadCheckBoxSetting(BIDDERS_ONLY_BOOLEAN_SETTING, "JP_SettingsFrameBiddersOnlySettingCheckButton")
-    loadCheckBoxSetting(AUTO_INV_BOOLEAN_SETTING, "JP_SettingsFrameAutoInvSettingCheckButton")
+    loadCheckBoxSetting(AUTO_INV_BOOLEAN_SETTING, "JP_InviteFrameAutoInvSettingCheckButton")
     loadCheckBoxSetting(LINK_PRIO_BOOLEAN_SETTING, "JP_SettingsFrameLinkPrioSettingCheckButton")
 end
 

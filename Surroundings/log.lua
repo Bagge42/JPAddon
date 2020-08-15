@@ -115,24 +115,6 @@ local function createTexture(button)
     button.icon:SetAllPoints(button)
 end
 
-function Log:createRaidEntries()
-    local initialButton = CreateFrame("Button", "$parentButton1", JP_LogFrameSelectFrame, "JP_RaidSelect")
-    initialButton:SetID(1)
-    initialButton:SetPoint("TOPLEFT")
-    createTexture(initialButton)
-    for buttonNr = 2, MaximumRaidsShown, 1 do
-        local followingButtons = CreateFrame("Button", "$parentButton" .. buttonNr, JP_LogFrameSelectFrame, "JP_RaidSelect")
-        followingButtons:SetID(buttonNr)
-        if buttonNr % 5 == 1 then
-            followingButtons:SetPoint("TOP", "$parentButton" .. (1 + (floor(buttonNr / 5) - 1) * 5), "BOTTOM")
-        else
-            followingButtons:SetPoint("LEFT", "$parentButton" .. (buttonNr - 1), "RIGHT")
-        end
-        createTexture(followingButtons)
-    end
-    Log:updateRaidEntries()
-end
-
 local function clearRaidEntries()
     for entry = 1, MaximumRaidsShown, 1 do
         local button = getglobal("JP_LogFrameSelectFrameButton" .. entry)
@@ -190,14 +172,7 @@ local function updateLogPreviousNextSelectButtons()
     end
 end
 
-function Log:resetIndexes()
-    RaidIndex = 1
-    RaidToDateZoneIndex = {}
-    DateIndex = 0
-    ZoneIndex = 0
-end
-
-function Log:updateRaidEntries()
+local function updateRaidEntries()
     clearRaidEntries()
     local raidIndexBeforeUpdate = RaidIndex
     local nrOfDateEntries = Utils:getTableSize(JP_Log_History)
@@ -221,6 +196,42 @@ function Log:updateRaidEntries()
     end
     RaidIndex = raidIndexBeforeUpdate
     updateLogPreviousNextSelectButtons()
+end
+
+function Log:createRaidEntries()
+    local initialButton = CreateFrame("Button", "$parentButton1", JP_LogFrameSelectFrame, "JP_RaidSelect")
+    initialButton:SetID(1)
+    initialButton:SetPoint("TOPLEFT")
+    createTexture(initialButton)
+    for buttonNr = 2, MaximumRaidsShown, 1 do
+        local followingButtons = CreateFrame("Button", "$parentButton" .. buttonNr, JP_LogFrameSelectFrame, "JP_RaidSelect")
+        followingButtons:SetID(buttonNr)
+        if buttonNr % 5 == 1 then
+            followingButtons:SetPoint("TOP", "$parentButton" .. (1 + (floor(buttonNr / 5) - 1) * 5), "BOTTOM")
+        else
+            followingButtons:SetPoint("LEFT", "$parentButton" .. (buttonNr - 1), "RIGHT")
+        end
+        createTexture(followingButtons)
+    end
+    updateRaidEntries()
+end
+
+local function resetIndexes()
+    RaidIndex = 1
+    RaidToDateZoneIndex = {}
+    DateIndex = 0
+    ZoneIndex = 0
+end
+
+function Log:onClick()
+    local logFrame = getglobal(LOG_FRAME)
+    if not logFrame:IsVisible() then
+        resetIndexes()
+        updateRaidEntries()
+        logFrame:Show()
+    else
+        logFrame:Hide()
+    end
 end
 
 function Log:createEntries()
@@ -325,18 +336,18 @@ end
 function Log:selectFrameNext()
     RaidIndex = RaidIndex + MaximumRaidsShown
     updateDateZoneIndex()
-    Log:updateRaidEntries()
+    updateRaidEntries()
 end
 
 function Log:selectFramePrevious()
     RaidIndex = RaidIndex - MaximumRaidsShown
     updateDateZoneIndex()
-    Log:updateRaidEntries()
+    updateRaidEntries()
 end
 
 function Log:back()
     updateDateZoneIndex()
-    Log:updateRaidEntries()
+    updateRaidEntries()
     getglobal("JP_LogFrameDisplayFrame"):Hide()
     getglobal("JP_LogFrameSelectFrame"):Show()
 end

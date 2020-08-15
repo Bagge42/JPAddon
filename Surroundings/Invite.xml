@@ -3,7 +3,27 @@
         <Scripts>
             <OnLoad>
                     Jp.Invite:onLoad()
+                    self:RegisterEvent("CHAT_MSG_WHISPER")
+                    self:RegisterEvent("GROUP_ROSTER_UPDATE")
             </OnLoad>
+            <OnEvent>
+                    Jp.Invite:onEvent(event, ...)
+            </OnEvent>
         </Scripts>
+        <Frames>
+            <Button name="$parentMassInvite" text="MASS_INVITE_BUTTON_TEXT" inherits="JP_HoverLight">
+                <Size>
+                    <AbsDimension x="283" y="45"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            Jp.Invite:massInvite()
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
     </Frame>
 </Ui>
