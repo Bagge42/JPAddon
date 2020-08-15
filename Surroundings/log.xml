@@ -148,17 +148,7 @@
             </Anchors>
         </ButtonText>
     </Button>
-    <Frame name="JP_LogFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
-        <Anchors>
-            <Anchor point="RIGHT" relativePoint="CENTER">
-                <Offset>
-                    <AbsDimension x="350" y="100"/>
-                </Offset>
-            </Anchor>
-        </Anchors>
-        <Size>
-            <AbsDimension x="445" y="500"/>
-        </Size>
+    <Frame name="JP_LogFrame" inherits="JP_NewWindow">
         <Scripts>
             <OnLoad>
                     self:RegisterForDrag("LeftButton")
@@ -166,48 +156,13 @@
                     self:RegisterEvent("CHAT_MSG_ADDON")
                     self:RegisterEvent("ADDON_LOADED")
                     C_ChatInfo.RegisterAddonMessagePrefix(ADDON_PREFIX)
+                    Jp.Log:onLoad()
             </OnLoad>
-            <OnDragStart>
-                    self:StartMoving()
-            </OnDragStart>
-            <OnDragStop>
-                    self:StopMovingOrSizing()
-            </OnDragStop>
             <OnEvent>
                     Jp.Log:onSyncAttempt(event, ...)
             </OnEvent>
         </Scripts>
-        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
-            <Color r="0" g="0" b="0" a="0.3"/>
-        </Backdrop>
         <Frames>
-            <Frame name="$parentTitleFrame">
-                <Size>
-                    <AbsDimension x="445" y="24"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="TOPLEFT"/>
-                </Anchors>
-                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
-                    <Color r="0" g="0" b="0" a="1"/>
-                </Backdrop>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <FontString inherits="GameFontHighlight" text="LOG_TITLE">
-                            <Anchors>
-                                <Anchor point="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="6" y="1"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </FontString>
-                    </Layer>
-                </Layers>
-                <Frames>
-                    <Button name="$parentClose" inherits="JP_CloseButton"/>
-                </Frames>
-            </Frame>
             <Frame name="$parentSelectFrame">
                 <Scripts>
                     <OnLoad>

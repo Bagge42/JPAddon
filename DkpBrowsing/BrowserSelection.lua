@@ -1,6 +1,7 @@
 local Jp = _G.Jp
 local GuildRosterHandler = Jp.GuildRosterHandler
 local Utils = Jp.Utils
+local Bidding = Jp.Bidding
 local BrowserSelection = {}
 Jp.BrowserSelection = BrowserSelection
 
@@ -22,6 +23,7 @@ function BrowserSelection:selectEntry(entryId)
         playerNameFrame:SetText(playerInEntry)
         Utils:setClassColor(playerNameFrame, GuildRosterHandler:getPlayerClass(playerInEntry))
         getglobal(PLAYER_MANAGEMENT .. "Value"):SetFocus()
+        Bidding:setBidInPlayerManagement(playerInEntry)
         getglobal(OUTER_FRAME_LIST_ENTRY .. entryId .. BACKGROUND):Show()
         CurrentSelection = playerInEntry
         BrowserSelection:colorBenchButton(playerInEntry)

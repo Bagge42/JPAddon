@@ -6,6 +6,7 @@ local Bench = Jp.Bench
 local EventQueue = Jp.EventQueue
 local Log = Jp.Log
 local Settings = Jp.Settings
+local Bidding = Jp.Bidding
 local DkpManager = {}
 Jp.DkpManager = DkpManager
 
@@ -33,6 +34,7 @@ function DkpManager:settingsLoaded()
 end
 
 function DkpManager:onLoad()
+    getglobal("JP_ManagementTitleFrameClose"):Hide()
     Settings:subscribeToSettingChanges(DkpManager)
 end
 
@@ -283,6 +285,7 @@ function DkpManager:undo()
 end
 
 function DkpManager:resetPlayerEditBox()
+    Bidding:stopBiddingRound()
     local editBox = getglobal(PLAYER_MANAGEMENT .. "Value")
     editBox:SetNumber("")
     editBox:ClearFocus()

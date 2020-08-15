@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Frame name="JP_InviteFrame" inherits="JP_CenterFrame" hidden="true">
+        <Scripts>
+            <OnLoad>
+                    Jp.Invite:onLoad()
+            </OnLoad>
+        </Scripts>
+    </Frame>
+</Ui>

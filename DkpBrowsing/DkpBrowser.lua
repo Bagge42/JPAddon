@@ -5,13 +5,12 @@ local BrowserSelection = Jp.BrowserSelection
 local Utils = Jp.Utils
 local Settings = Jp.Settings
 local Bench = Jp.Bench
+local Bidding = Jp.Bidding
 Jp.DkpBrowser = DkpBrowser
 
 local MaximumMembersShown = 8
 local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
 local ToggledClasses = {}
-local auctionInProgress = false
-local biddingRoundRoster = {}
 
 local function showHideJp()
     local outerFrame = getglobal("JP_OuterFrame")
@@ -25,7 +24,6 @@ local function showHideJp()
             getglobal("JP_OuterFrameTitleFrame"):SetSize(368, 24)
             getglobal("JP_BenchFrame"):SetPoint("TOPLEFT", "JP_OuterFrameList", "TOPRIGHT", 0, -4)
             getglobal("JP_BenchFrameClearBench"):Hide()
-            getglobal("JP_OuterFrameTitleFrameBench"):Hide()
             getglobal("JP_OuterFrameTitleFrameInvite"):Hide()
             getglobal("JP_OuterFrameTitleFrameOptions"):Hide()
             getglobal("JP_OuterFrameTitleFrameLog"):SetPoint("RIGHT", "JP_OuterFrameTitleFrameClose", "LEFT")
@@ -42,6 +40,7 @@ end
 
 local function getToggledRoster(sortButtonId)
     local toggledRoster = {}
+    local biddingRoundRoster = Bidding:getBidders()
     local guildRoster = GuildRosterHandler:getSortedRoster(sortButtonId, biddingRoundRoster)
     for member = 1, table.getn(guildRoster), 1 do
         if ToggledClasses[guildRoster[member][3]] then
@@ -71,7 +70,7 @@ local function getNumberOfEntriesToFill(toggledRoster)
 end
 
 local function setBidText(player, entry)
-    local bid = biddingRoundRoster[player]
+    local bid = Bidding:getBid(player)
     if bid then
         getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):SetText(bid)
     end
@@ -79,7 +78,7 @@ end
 
 function JP_UpdateBrowserEntries(sortButtonId)
     local toggledRoster
-    if sortButtonId ~= nill and tonumber(sortButtonId) then
+    if sortButtonId ~= nil and tonumber(sortButtonId) then
         toggledRoster = getToggledRoster(sortButtonId)
     else
         toggledRoster = getToggledRoster()
@@ -142,19 +141,8 @@ local function deselectAllClasses()
     JP_UpdateBrowserEntries()
 end
 
-local function clearBiddingRoster()
-    for player, _ in pairs(biddingRoundRoster) do
-        biddingRoundRoster[player] = nil
-    end
-end
-
-local function stopBiddingRound()
-    clearBiddingRoster()
-    auctionInProgress = false
-end
-
 function DkpBrowser:clearOverview()
-    stopBiddingRound()
+    Bidding:stopBiddingRound()
     deselectAllClasses()
     getglobal("JP_ManagementPriorityLink"):Hide()
 end
@@ -163,16 +151,15 @@ local function startBiddingRound(textInWarning)
     if Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
         DkpBrowser:clearOverview()
         if Utils:isItemLink(textInWarning) then
-            auctionInProgress = true
+            Bidding:setAuctionInProgress(true)
         end
     end
 end
 
 local function addBidder(bidder, amount)
-    if not amount then
-        biddingRoundRoster[bidder] = "Full"
-    else
-        biddingRoundRoster[bidder] = amount
+    Bidding:addBidder(bidder, amount)
+    if (BrowserSelection:getSelectedPlayer() == bidder) then
+        Bidding:setBidInPlayerManagement(bidder)
     end
     local bidHeaderId = getglobal("JP_OuterFrameListBidHeader"):GetID()
     if (GuildRosterHandler:getCurrentSortingId() == bidHeaderId) then
@@ -247,7 +234,7 @@ function DkpBrowser:onEvent(event, ...)
     if (event == "CHAT_MSG_RAID_WARNING") and Utils:isItemLink(text) then
         startBiddingRound(text)
     elseif (event == "CHAT_MSG_RAID") or (event == "CHAT_MSG_RAID_LEADER") then
-        if auctionInProgress and Utils:isItemLink(text) then
+        if Bidding:auctionInProgress() and Utils:isItemLink(text) then
             local sender = Utils:removeRealmName(select(2, ...))
             addBidder(sender)
         end
@@ -316,7 +303,7 @@ function DkpBrowser:classButtonOnClick(id)
 end
 
 function DkpBrowser:selectAllClasses()
-    stopBiddingRound()
+    Bidding:stopBiddingRound()
     getglobal("JP_ManagementPriorityLink"):Hide()
     for _, class in pairs(IdsToClasses) do
         ToggledClasses[class] = true

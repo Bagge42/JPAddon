@@ -27,6 +27,10 @@ local ButtonIdToKeys = {}
 local DataEntryIndex = 1
 local LatestButtonId
 
+function Log:onLoad()
+    getglobal("JP_LogFrameTitleFrameName"):SetText(LOG_FRAME_TITLE)
+end
+
 local function getZoneNrIfExist(dateEntry, zone)
     for zoneCount = 1, #dateEntry, 1 do
         local zoneEntry = dateEntry[zoneCount]

@@ -11,31 +11,6 @@ local SettingsLoaded = false
 local SettingTexts = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME, DECAY_SETTING_NAME }
 local DefaultSettings = { [SettingTexts[1]] = 12, [SettingTexts[2]] = 33, [SettingTexts[3]] = 27, [SettingTexts[4]] = 0, [SettingTexts[5]] = 0, [SettingTexts[6]] = 20 }
 
-function Settings:onSettingsClick()
-    local isOfficer = Utils:isOfficer()
-    local settings = getglobal("JP_SettingsFrame")
-    local management = getglobal("JP_Management")
-
-    if not settings:IsVisible() then
-        settings:Show()
-        management:Hide()
-        --        if not isOfficer then
-        --            getglobal("JP_OuterFrame"):SetSize(651, 300)
-        --            getglobal("JP_OuterFrameTitleFrame"):SetSize(651, 24)
-        --            getglobal("JP_BenchFrame"):SetPoint("TOPLEFT", "JP_SettingsFrame", "TOPRIGHT")
-        --        end
-    else
-        settings:Hide()
-        if isOfficer then
-            management:Show()
-            --        else
-            --            getglobal("JP_OuterFrame"):SetSize(368, 300)
-            --            getglobal("JP_OuterFrameTitleFrame"):SetSize(368, 24)
-            --            getglobal("JP_BenchFrame"):SetPoint("TOPLEFT", "JP_OuterFrameList", "TOPRIGHT", 0, -4)
-        end
-    end
-end
-
 local function createEditBox(settingFrame, id)
     settingFrame.value = CreateFrame("EditBox", "$parentEditBox", settingFrame, "JP_SettingEditBox")
     settingFrame.value:SetID(id)
@@ -68,6 +43,8 @@ local function toggleBooleanSetting(settingName)
 end
 
 function Settings:onLoad()
+    getglobal("JP_SettingsFrameTitleFrameName"):SetText(SETTINGS_FRAME_TITLE)
+
     local initialSetting = CreateFrame("Frame", "$parentSetting1", JP_SettingsFrame, "JP_SettingEntry")
     initialSetting:SetPoint("TOPLEFT", 0, -24)
     initialSetting.text = initialSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")

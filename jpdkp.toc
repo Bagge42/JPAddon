@@ -6,6 +6,9 @@
 
 localization.en.lua
 Utils.lua
+DkpManagement\Bidding.lua
+DkpManagement\FrameHandler.lua
+DkpManagement\FrameHandler.xml
 GuildRosterHandler.lua
 DkpBrowsing\BrowserSelection.lua
 Surroundings\Settings.lua
@@ -21,3 +24,5 @@ DkpManagement\DkpManager.xml
 DkpManagement\Bench.xml
 Surroundings\Priorities.lua
 Surroundings\Priorities.xml
+Surroundings\Invite.lua
+Surroundings\Invite.xml

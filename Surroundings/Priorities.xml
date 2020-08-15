@@ -61,78 +61,20 @@
             <AbsDimension x="18" y="18"/>
         </Size>
     </Button>
-    <Frame name="JP_PriorityFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
-        <Anchors>
-            <Anchor point="RIGHT" relativePoint="CENTER">
-                <Offset>
-                    <AbsDimension x="350" y="100"/>
-                </Offset>
-            </Anchor>
-        </Anchors>
-        <Size>
-            <AbsDimension x="445" y="500"/>
-        </Size>
+    <Frame name="JP_PriorityFrame" inherits="JP_NewWindow">
         <Scripts>
             <OnLoad>
                     self:RegisterForDrag("LeftButton")
                     self:SetUserPlaced(1)
                     self:RegisterEvent("CHAT_MSG_RAID_WARNING")
                     self:RegisterEvent("CHAT_MSG_ADDON")
+                    Jp.Priorities:onLoad()
             </OnLoad>
-            <OnDragStart>
-                    self:StartMoving()
-            </OnDragStart>
-            <OnDragStop>
-                    self:StopMovingOrSizing()
-            </OnDragStop>
             <OnEvent>
                     Jp.Priorities:onEvent(event, ...)
             </OnEvent>
         </Scripts>
-        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
-            <Color r="0" g="0" b="0" a="0.3"/>
-        </Backdrop>
         <Frames>
-            <Frame name="$parentTitleFrame">
-                <Size>
-                    <AbsDimension x="445" y="24"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="TOPLEFT"/>
-                </Anchors>
-                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
-                    <Color r="0" g="0" b="0" a="1"/>
-                </Backdrop>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <FontString inherits="GameFontHighlight" text="PRIORITY_TITLE">
-                            <Anchors>
-                                <Anchor point="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="6" y="1"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </FontString>
-                    </Layer>
-                </Layers>
-                <Frames>
-                    <Button name="$parentClose" inherits="JP_CloseButton"/>
-                    <Button name="$parentShare" text="PRIORITIES_SHARE" inherits="JP_AllClassToggle">
-                        <Size>
-                            <AbsDimension x="105" y="24"/>
-                        </Size>
-                        <Anchors>
-                            <Anchor point="RIGHT" relativeTo="$parentClose" relativePoint="LEFT"/>
-                        </Anchors>
-                        <Scripts>
-                            <OnClick>
-                                    Jp.Priorities:share()
-                            </OnClick>
-                        </Scripts>
-                    </Button>
-                </Frames>
-            </Frame>
             <Frame name="$parentDisplayFrame">
                 <Frames>
                     <Frame name="$parentList">

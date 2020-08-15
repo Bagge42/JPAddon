@@ -68,8 +68,8 @@ local function bid1LargerThanBid2(member1, member2, bids)
         end
     elseif not member2Bid then
         return true
-    elseif (member2Bid == "Full") then
-        if (member1Bid == "Full") then
+    elseif (member2Bid == FULL_DKP) then
+        if (member1Bid == FULL_DKP) then
             return member1[2] > member2[2]
         else
             return false

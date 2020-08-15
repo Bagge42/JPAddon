@@ -149,7 +149,61 @@
             <Color r="1" g="1" b="1" a="0.5"/>
         </NormalTexture>
     </Button>
-    <Frame name="JP_OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true">
+    <Frame name="JP_NewWindow" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true"
+           hidden="true" virtual="true">
+        <Anchors>
+            <Anchor point="RIGHT" relativePoint="CENTER">
+                <Offset>
+                    <AbsDimension x="350" y="100"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Size>
+            <AbsDimension x="445" y="500"/>
+        </Size>
+        <Scripts>
+            <OnDragStart>
+                    self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                    self:StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
+            <Color r="0" g="0" b="0" a="0.3"/>
+        </Backdrop>
+        <Frames>
+            <Frame name="$parentTitleFrame">
+                <Size>
+                    <AbsDimension x="445" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                </Anchors>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentName" inherits="GameFontHighlight" text="NEW_TITLE">
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="6" y="1"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button name="$parentClose" inherits="JP_CloseButton"/>
+                </Frames>
+            </Frame>
+        </Frames>
+    </Frame>
+    <Frame name="JP_OuterFrame" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true"
+           hidden="true">
         <Anchors>
             <Anchor point="RIGHT" relativePoint="CENTER">
                 <Offset>
@@ -277,7 +331,7 @@
                 </Layers>
                 <Frames>
                     <Button name="$parentClose" inherits="JP_CloseButton"/>
-                    <Button name="$parentOptions" text="SETTINGS" inherits="JP_AllClassToggle">
+                    <Button name="$parentOptions" text="SETTINGS_BUTTON_TEXT" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="58" y="24"/>
                         </Size>
@@ -286,29 +340,16 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                Jp.Settings:onSettingsClick()
+                                    Jp.FrameHandler:settingButtonClicked()
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentBench" text="BENCH_TITLE" inherits="JP_AllClassToggle">
-                        <Size>
-                            <AbsDimension x="58" y="24"/>
-                        </Size>
-                        <Anchors>
-                            <Anchor point="RIGHT" relativeTo="$parentOptions" relativePoint="LEFT"/>
-                        </Anchors>
-                        <Scripts>
-                            <OnClick>
-                                    Jp.Bench:showHideBench()
-                            </OnClick>
-                        </Scripts>
-                    </Button>
-                    <Button name="$parentLog" text="LOG" inherits="JP_AllClassToggle">
+                    <Button name="$parentLog" text="LOG_BUTTON_TEXT" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="48" y="24"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="RIGHT" relativeTo="$parentBench" relativePoint="LEFT"/>
+                            <Anchor point="RIGHT" relativeTo="$parentOptions" relativePoint="LEFT"/>
                         </Anchors>
                         <Scripts>
                             <OnClick>
@@ -316,7 +357,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentPriorities" text="PRIORITY_TITLE" inherits="JP_AllClassToggle">
+                    <Button name="$parentPriorities" text="PRIORITY_BUTTON_TEXT" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="65" y="24"/>
                         </Size>
@@ -329,7 +370,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentInvite" text="INVITE_TITLE" inherits="JP_AllClassToggle">
+                    <Button name="$parentInvite" text="INVITE_BUTTON_TEXT" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="58" y="24"/>
                         </Size>
@@ -338,7 +379,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    Jp.DkpBrowser:massInvite()
+                                    Jp.FrameHandler:inviteButtonClicked()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -355,7 +396,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                Jp.DkpBrowser:clearOverview()
+                                    Jp.DkpBrowser:clearOverview()
                             </OnClick>
                         </Scripts>
                     </Button>

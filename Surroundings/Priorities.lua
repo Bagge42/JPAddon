@@ -24,18 +24,43 @@ local function getSortedPriorities()
     return tableCopy
 end
 
+local function share()
+    local priorityList = getSortedPriorities()
+    local msg
+    for itemCount = 1, #priorityList, 1 do
+        if (itemCount == 1) then
+            msg = PRIORITY_MSG_SHARE_START .. "&"
+        elseif (itemCount == #priorityList) then
+            msg = PRIORITY_MSG_SHARE_END .. "&"
+        else
+            msg = PRIORITY_MSG_SHARE .. "&"
+        end
+        msg = msg .. priorityList[itemCount][1] .. "&" .. priorityList[itemCount][2]
+        Utils:sendOfficerAddonMsg(msg, "GUILD")
+    end
+    Utils:jpMsg("Shared priorities with all online guild members")
+end
+
+local function createPriorityShareButton()
+    local shareButton = CreateFrame("Button", "$parentShare", JP_PriorityFrameTitleFrame, "JP_AllClassToggle")
+    shareButton:SetText(PRIORITIES_SHARE)
+    shareButton:SetSize(105, 24)
+    shareButton:SetPoint("Right", JP_PriorityFrameTitleFrameClose, "Left")
+    shareButton:HookScript("OnClick", share)
+    shareButton:Show()
+end
+
+function Priorities:onLoad()
+    getglobal("JP_PriorityFrameTitleFrameName"):SetText(PRIORITY_FRAME_TITLE)
+    createPriorityShareButton()
+end
+
 local function clearEntries()
     for member = 1, MaximumPrioritiesShown, 1 do
         local listEntry = getglobal("JP_PriorityFrameDisplayFrameListEntry" .. member)
         getglobal(listEntry:GetName() .. "Item"):SetText("")
         getglobal(listEntry:GetName() .. "Priority"):SetText("")
         listEntry:Hide()
-    end
-end
-
-function jptest()
-    for i = 1, 30, 1 do
-        JP_Priority_List[Utils:getTableSize(JP_Priority_List) + 1] = { "Hej" .. i, "D" .. i * 2 }
     end
 end
 
@@ -92,7 +117,7 @@ local function linkPriorityIfAny(item, sender)
     if (priority ~= nil) then
         if Settings:getSetting(LINK_PRIO_BOOLEAN_SETTING) and Utils:isSelf(sender) then
             local msg = "Priority: " .. priority
-            SendChatMessage(msg, "RAID")
+            SendChatMessage(msg, "RAID_WARNING")
         end
         getglobal("JP_ManagementPriorityLink"):Show()
         getglobal("JP_ManagementPriorityLinkItemName"):SetText(itemText)
@@ -125,23 +150,6 @@ function Priorities:onEvent(event, ...)
             end
         end
     end
-end
-
-function Priorities:share()
-    local priorityList = getSortedPriorities()
-    local msg
-    for itemCount = 1, #priorityList, 1 do
-        if (itemCount == 1) then
-            msg = PRIORITY_MSG_SHARE_START .. "&"
-        elseif (itemCount == #priorityList) then
-            msg = PRIORITY_MSG_SHARE_END .. "&"
-        else
-            msg = PRIORITY_MSG_SHARE .. "&"
-        end
-        msg = msg .. priorityList[itemCount][1] .. "&" .. priorityList[itemCount][2]
-        Utils:sendOfficerAddonMsg(msg, "GUILD")
-    end
-    Utils:jpMsg("Shared priorities with all online guild members")
 end
 
 function Priorities:onClick()
