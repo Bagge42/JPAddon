@@ -29,6 +29,19 @@ function Utils:selfIsInRaid()
     return false
 end
 
+function Utils:getSortedTableWhereNameKeyClassValue(tableToSort)
+    local sortedTable = {}
+
+    for member, _ in pairs(tableToSort) do
+        sortedTable[#sortedTable + 1] = member
+    end
+    table.sort(sortedTable, function(member1, member2)
+        return member1 < member2
+    end)
+
+    return sortedTable
+end
+
 function Utils:copyTable(tableToCopy)
     local copy = {}
     for k, _ in pairs(tableToCopy) do
@@ -145,21 +158,21 @@ end
 local waitTable = {}
 local waitFrame
 function Utils:jpWait(delay, func, ...)
-    if(type(delay)~="number" or type(func)~="function") then
+    if (type(delay) ~= "number" or type(func) ~= "function") then
         return false
     end
-    if(waitFrame == nil) then
-        waitFrame = CreateFrame("Frame","WaitFrame", UIParent)
-        waitFrame:SetScript("onUpdate",function (self,elapse)
+    if (waitFrame == nil) then
+        waitFrame = CreateFrame("Frame", "WaitFrame", UIParent)
+        waitFrame:SetScript("onUpdate", function(self, elapse)
             local count = #waitTable
             local i = 1
-            while(i<=count) do
-                local waitRecord = tremove(waitTable,i)
-                local d = tremove(waitRecord,1)
-                local f = tremove(waitRecord,1)
-                local p = tremove(waitRecord,1)
-                if(d>elapse) then
-                    tinsert(waitTable,i,{d-elapse,f,p})
+            while (i <= count) do
+                local waitRecord = tremove(waitTable, i)
+                local d = tremove(waitRecord, 1)
+                local f = tremove(waitRecord, 1)
+                local p = tremove(waitRecord, 1)
+                if (d > elapse) then
+                    tinsert(waitTable, i, { d - elapse, f, p })
                     i = i + 1
                 else
                     count = count - 1
@@ -168,6 +181,6 @@ function Utils:jpWait(delay, func, ...)
             end
         end)
     end
-    tinsert(waitTable,{delay,func,{...}})
+    tinsert(waitTable, { delay, func, { ... } })
     return true
 end

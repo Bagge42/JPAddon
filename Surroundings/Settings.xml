@@ -26,7 +26,7 @@
             <AbsDimension x="36" y="24"/>
         </Size>
     </CheckButton>
-    <Frame name="JP_SettingsFrame" inherits="JP_CenterFrame" hidden="true">
+    <Frame name="JP_SettingsFrame" inherits="JP_CenterFrameStatic" hidden="true">
         <Scripts>
             <OnLoad>
                     Jp.Settings:onLoad()

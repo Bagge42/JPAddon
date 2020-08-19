@@ -1,5 +1,51 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Frame name="JP_InviteFrame" inherits="JP_CenterFrame" hidden="true">
+    <Frame name="JP_CenterFrameTab" virtual="true">
+        <Anchors>
+            <Anchor point="TOP" relativeTo="$parentTitleFrame" relativePoint="BOTTOM"/>
+        </Anchors>
+        <Size>
+            <AbsDimension x="283" y="252"/>
+        </Size>
+    </Frame>
+    <Button name="JP_InviteListEntry" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="283" y="21"/>
+        </Size>
+        <Layers>
+            <Layer>
+                <FontString name="$parentPlayer" justifyH="LEFT" inherits="GameFontHighlightSmall">
+                    <Size>
+                        <AbsDimension x="200" y="21"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                    getglobal(self:GetName() .. BACKGROUND):Hide()
+            </OnLoad>
+            <OnClick>
+                    Jp.Invite:onListEntryClick(self:GetID())
+            </OnClick>
+            <OnEnter>
+                    getglobal(self:GetName() .. BACKGROUND):Show()
+            </OnEnter>
+            <OnLeave>
+                    getglobal(self:GetName() .. BACKGROUND):Hide()
+            </OnLeave>
+        </Scripts>
+        <NormalTexture name="$parentBackground">
+            <Color r="0" g="0" b="0.5" a="0.33"/>
+        </NormalTexture>
+    </Button>
+    <Frame name="JP_InviteFrame" inherits="JP_CenterFrameDynamic" hidden="true">
         <Scripts>
             <OnLoad>
                     Jp.Invite:onLoad()
@@ -11,19 +57,91 @@
             </OnEvent>
         </Scripts>
         <Frames>
-            <Button name="$parentMassInvite" text="MASS_INVITE_BUTTON_TEXT" inherits="JP_HoverLight">
-                <Size>
-                    <AbsDimension x="283" y="45"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOMLEFT"/>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                            Jp.Invite:massInvite()
-                    </OnClick>
-                </Scripts>
-            </Button>
+            <Frame name="$parentInviteTab" inherits="JP_CenterFrameTab">
+                <Frames>
+                    <Button name="$parentMassInvite" text="MASS_INVITE_BUTTON_TEXT" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="45"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOMLEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Invite:massInvite()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="$parentTanksTab" inherits="JP_CenterFrameTab" hidden="true">
+                <Frames>
+                </Frames>
+            </Frame>
+            <Frame name="$parentAssistTab" inherits="JP_CenterFrameTab" hidden="true">
+                <Frames>
+                    <Frame name="$parentOfficerAssistSetting">
+                        <Size>
+                            <AbsDimension x="283" y="21"/>
+                        </Size>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString inherits="GameFontNormal" text="OFFICERS">
+                                    <Anchors>
+                                        <Anchor point="LEFT">
+                                            <Offset>
+                                                <AbsDimension x="6" y="0"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Anchors>
+                            <Anchor point="TOP"/>
+                        </Anchors>
+                        <Frames>
+                            <CheckButton name="$parentCheckButton" inherits="ChatConfigCheckButtonTemplate">
+                                <Size>
+                                    <AbsDimension x="32" y="21"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="RIGHT"/>
+                                </Anchors>
+                                <Scripts>
+                                    <OnClick>
+                                            Jp.Settings:toggleBooleanSetting(OFFICER_ASSIST_BOOLEAN_SETTING)
+                                    </OnClick>
+                                </Scripts>
+                            </CheckButton>
+                        </Frames>
+                    </Frame>
+                    <Frame name="$parentList">
+                        <Scripts>
+                            <OnLoad>
+                                    Jp.Invite:createAssistEntries()
+                                    self:RegisterEvent("ADDON_LOADED")
+                            </OnLoad>
+                            <OnEvent>
+                                    Jp.Invite:loadTables(event, ...)
+                            </OnEvent>
+<!--                            <OnMouseWheel>-->
+<!--                                    Jp.Bench:onMouseWheel(delta)-->
+<!--                            </OnMouseWheel>-->
+                        </Scripts>
+                        <Size>
+                            <AbsDimension x="283" y="231"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="$parentOfficerAssistSetting" relativePoint="BOTTOM"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+            </Frame>
+            <Frame name="$parentImportTab" inherits="JP_CenterFrameTab" hidden="true">
+                <Frames>
+                </Frames>
+            </Frame>
         </Frames>
     </Frame>
 </Ui>

@@ -39,7 +39,7 @@
             <Color r="1" g="1" b="1" a="0.5"/>
         </NormalTexture>
     </Button>
-    <Frame name="JP_Management" inherits="JP_CenterFrame">
+    <Frame name="JP_Management" inherits="JP_CenterFrameStatic">
         <Scripts>
             <OnLoad>
                 Jp.DkpManager:onLoad()
@@ -49,12 +49,12 @@
         <Frames>
             <Frame name="$parentPlayerManagement" hidden="true">
                 <Size>
-                    <AbsDimension x="283" y="48"/>
+                    <AbsDimension x="283" y="72"/>
                 </Size>
                 <Anchors>
                     <Anchor point="LEFT">
                         <Offset>
-                            <AbsDimension x="0" y="6"/>
+                            <AbsDimension x="0" y="10"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -73,7 +73,7 @@
                 <Frames>
                     <Button name="$parentSub" text="SUB_BUTTON" inherits="JP_AdjustDkp" id="2">
                         <Anchors>
-                            <Anchor point="RIGHT">
+                            <Anchor point="TOPRIGHT">
                                 <Offset>
                                     <AbsDimension x="0" y="0"/>
                                 </Offset>
@@ -105,7 +105,7 @@
                     </Button>
                     <Frame name="$parentDescription">
                         <Size>
-                            <AbsDimension x="88" y="24"/>
+                            <AbsDimension x="88" y="48"/>
                         </Size>
                         <Layers>
                             <Layer level="ARTWORK">
@@ -125,26 +125,14 @@
                             <Anchor point="TOPLEFT"/>
                         </Anchors>
                     </Frame>
-                    <Button name="$parentQueue" text="QUEUE_BUTTON">
+                    <Button name="$parentQueue" text="QUEUE_BUTTON" inherits="JP_AllClassToggle">
                         <Anchors>
-                            <Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-                                <Offset>
-                                    <AbsDimension x="7" y="0"/>
-                                </Offset>
-                            </Anchor>
+                            <Anchor point="BOTTOMLEFT"/>
                         </Anchors>
                         <Size>
-                            <AbsDimension x="100" y="24"/>
+                            <AbsDimension x="71" y="24"/>
                         </Size>
-                        <ButtonText name="$parentText">
-                            <Anchors>
-                                <Anchor point="LEFT">
-                                    <Offset>
-                                        <AbsDimension x="4" y="0"/>
-                                    </Offset>
-                                </Anchor>
-                            </Anchors>
-                        </ButtonText>
+                        <ButtonText name="$parentText"/>
                         <NormalFont style="GameFontHighlight"/>
                         <Scripts>
                             <OnClick>
@@ -152,14 +140,42 @@
                             </OnClick>
                         </Scripts>
                     </Button>
+                    <Button name="$parentTank" text="TANK_BUTTON" inherits="JP_AllClassToggle">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="$parentQueue" relativePoint="RIGHT"/>
+                        </Anchors>
+                        <Size>
+                            <AbsDimension x="106" y="24"/>
+                        </Size>
+                        <NormalFont style="GameFontHighlight"/>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Invite:mainTankButtonClick()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentAssist" text="ASSIST_BUTTON" inherits="JP_AllClassToggle">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="$parentTank" relativePoint="RIGHT"/>
+                        </Anchors>
+                        <Size>
+                            <AbsDimension x="106" y="24"/>
+                        </Size>
+                        <NormalFont style="GameFontHighlight"/>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Invite:assistButtonClick()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
                     <EditBox name="$parentValue" numeric="true" font="GameFontHighlight" autoFocus="false">
                         <Size>
-                            <AbsDimension x="64" y="48"/>
+                            <AbsDimension x="77" y="48"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="CENTER">
+                            <Anchor point="RIGHT" relativeTo="$parentAdd" relativePoint="LEFT">
                                 <Offset>
-                                    <AbsDimension y="13" x="0"/>
+                                    <AbsDimension y="0" x="0"/>
                                 </Offset>
                             </Anchor>
                         </Anchors>

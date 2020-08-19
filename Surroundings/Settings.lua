@@ -9,7 +9,7 @@ local ClassesListeningToChanges = {}
 local SettingsTable = {}
 local SettingsLoaded = false
 local SettingTexts = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME, DECAY_SETTING_NAME }
-local DefaultSettings = { [SettingTexts[1]] = 12, [SettingTexts[2]] = 33, [SettingTexts[3]] = 27, [SettingTexts[4]] = 0, [SettingTexts[5]] = 0, [SettingTexts[6]] = 20 }
+local DefaultSettings = { [SettingTexts[1]] = 12, [SettingTexts[2]] = 33, [SettingTexts[3]] = 27, [SettingTexts[4]] = 0, [SettingTexts[5]] = 0, [SettingTexts[6]] = 20}
 
 local function createEditBox(settingFrame, id)
     settingFrame.value = CreateFrame("EditBox", "$parentEditBox", settingFrame, "JP_SettingEditBox")
@@ -43,7 +43,7 @@ function Settings:toggleBooleanSetting(settingName)
 end
 
 function Settings:onLoad()
-    getglobal("JP_SettingsFrameTitleFrameName"):SetText(SETTINGS_FRAME_TITLE)
+    getglobal("JP_SettingsFrameTitleFrameText"):SetText(SETTINGS_FRAME_TITLE)
 
     local initialSetting = CreateFrame("Frame", "$parentSetting1", JP_SettingsFrame, "JP_SettingEntry")
     initialSetting:SetPoint("TOPLEFT", 0, -24)
@@ -110,8 +110,9 @@ end
 
 local function loadCheckBoxSettings()
     loadCheckBoxSetting(BIDDERS_ONLY_BOOLEAN_SETTING, "JP_SettingsFrameBiddersOnlySettingCheckButton")
-    loadCheckBoxSetting(AUTO_INV_BOOLEAN_SETTING, "JP_InviteFrameAutoInvSettingCheckButton")
+    loadCheckBoxSetting(AUTO_INV_BOOLEAN_SETTING, "JP_InviteFrameInviteTabAutoInvSettingCheckButton")
     loadCheckBoxSetting(LINK_PRIO_BOOLEAN_SETTING, "JP_SettingsFrameLinkPrioSettingCheckButton")
+    loadCheckBoxSetting(OFFICER_ASSIST_BOOLEAN_SETTING, "JP_InviteFrameAssistTabOfficerAssistSettingCheckButton")
 end
 
 local function loadSettings()

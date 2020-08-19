@@ -29,23 +29,10 @@ local function clearBenchEntries()
     end
 end
 
-local function getSortedBench()
-    local sortedBench = {}
-
-    for member, _ in pairs(JP_Current_Bench) do
-        sortedBench[#sortedBench + 1] = member
-    end
-    table.sort(sortedBench, function(member1, member2)
-        return member1 < member2
-    end)
-
-    return sortedBench
-end
-
 local function updateBenchEntries()
     clearBenchEntries()
     local entryCounter = 1
-    local sortedBench = getSortedBench()
+    local sortedBench = Utils:getSortedTableWhereNameKeyClassValue(JP_Current_Bench)
     for memberIndex = BenchIndex, #sortedBench, 1 do
         if entryCounter > MaximumMembersShown then
             return
@@ -67,7 +54,7 @@ local function decrementIndexIfNeeded()
 end
 
 local function incrementIndexIfNeeded()
-    if (BenchIndex + 1 <= #getSortedBench() - MaximumMembersShown) then
+    if (BenchIndex + 1 <= Utils:getTableSize(JP_Current_Bench) - MaximumMembersShown) then
         BenchIndex = BenchIndex + 1
     end
 end
@@ -247,7 +234,7 @@ local function newIndexIsValid(delta)
     if (BenchIndex == 1) and (delta < 0) then
         return false
     end
-    if (BenchIndex + delta > #getSortedBench() - MaximumMembersShown + 1) then
+    if (BenchIndex + delta > Utils:getTableSize(JP_Current_Bench) - MaximumMembersShown + 1) then
         return false
     end
     return true

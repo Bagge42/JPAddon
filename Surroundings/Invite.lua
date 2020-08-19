@@ -1,32 +1,87 @@
+JP_Assist_List = {}
+
 local Jp = _G.Jp
 local Invite = {}
 local GuildRosterHandler = Jp.GuildRosterHandler
+local FrameHandler = Jp.FrameHandler
+local BrowserSelection = Jp.BrowserSelection
 local Utils = Jp.Utils
 local Settings = Jp.Settings
 Jp.Invite = Invite
 
 local RaidRoster = {}
+local MaximumAssistsShown = 11
+
+local function shouldGiveAssist(player, rank)
+    local isOfficer = GuildRosterHandler:isOfficer(player)
+    local officersShouldHaveAssist = Settings:getSetting(OFFICER_ASSIST_BOOLEAN_SETTING)
+    local isNotAssistAlready = (rank == 0)
+    local isOnAssistList = JP_Assist_List[player] ~= nil
+
+    return (isOfficer and officersShouldHaveAssist or isOnAssistList) and isNotAssistAlready
+end
+
+local function addRoles(player, rank, role)
+    if not UnitIsGroupLeader("player") then
+        return
+    end
+
+    if shouldGiveAssist(player, rank) then
+        PromoteToAssistant(player)
+    end
+--    local macroBtn = CreateFrame("Button", "myMacroButton", JP_Management, "SecureActionButtonTemplate")
+--    macroBtn:SetAttribute("type1", "macro") -- left click causes macro
+--    macroBtn:SetAttribute("macrotext1", "/maintank femtofire\n/maintank Støvbiks") -- text for macro on left click
+--    macroBtn:SetPoint("Center")
+--    macroBtn:SetSize(50,50)
+--    macroBtn:Show()
+end
 
 local function updateRaidRoster()
     local membersInRaid = GetNumGroupMembers()
     for member = 1, membersInRaid do
-        local name, _, _, _, class = GetRaidRosterInfo(member)
-        RaidRoster[name] = class
+        local name, rank, _, _, class, _, _, _, _, role = GetRaidRosterInfo(member)
+        if name then
+            RaidRoster[name] = class
+            addRoles(name, rank, role)
+        end
+    end
+end
+
+local function clearAssistEntries()
+    for member = 1, MaximumAssistsShown, 1 do
+        local entry = getglobal("JP_InviteFrameAssistTabListEntry" .. member)
+        getglobal(entry:GetName() .. PLAYER):SetText("")
+        entry:Hide()
+    end
+end
+
+local function updateAssistEntries()
+    clearAssistEntries()
+    local sortedEntries = Utils:getSortedTableWhereNameKeyClassValue(JP_Assist_List)
+    for memberIndex = 1, #sortedEntries, 1 do
+        local entry = getglobal("JP_InviteFrameAssistTabListEntry" .. memberIndex)
+        entry:Show()
+        getglobal(entry:GetName() .. BACKGROUND):Hide()
+        local fontString = getglobal(entry:GetName() .. PLAYER)
+        fontString:SetText(sortedEntries[memberIndex])
+        Utils:setClassColor(fontString, JP_Assist_List[sortedEntries[memberIndex]])
     end
 end
 
 function Invite:onLoad()
-    getglobal("JP_InviteFrameTitleFrameName"):SetText(INVITE_FRAME_TITLE)
     if Utils:selfIsInRaid() then
         updateRaidRoster()
     end
+    FrameHandler:createInviteTabs()
+    FrameHandler:setOnClick("Assist", updateAssistEntries)
 
-    local autoInvSetting = CreateFrame("Frame", "$parentAutoInvSetting", JP_InviteFrame, "JP_SettingEntry")
-    autoInvSetting:SetPoint("TOP", "$parentTitleFrame", "BOTTOM")
+    local autoInvSetting = CreateFrame("Frame", "$parentAutoInvSetting", JP_InviteFrameInviteTab, "JP_SettingEntry")
+    autoInvSetting:SetPoint("TOP")
     autoInvSetting.text = autoInvSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     autoInvSetting.text:SetPoint("LEFT", 5, 0)
     autoInvSetting.text:SetText(AUTO_INV_SETTING)
-    autoInvSetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_InviteFrameAutoInvSetting, "JP_SettingCheckButton")
+    autoInvSetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_InviteFrameInviteTabAutoInvSetting, "JP_SettingCheckButton")
     autoInvSetting.checkButton:SetPoint("RIGHT")
     autoInvSetting.checkButton.tooltip = "Toggle automatic inviting of guild members. Valid formats: 'Inv', 'inv', 'Invite', 'invite, INV, INVITE'"
     autoInvSetting.checkButton:SetScript("OnClick", function()
@@ -78,5 +133,38 @@ function Invite:onEvent(event, ...)
         handleWhisper(text, sender)
     elseif (event == "GROUP_ROSTER_UPDATE") then
         updateRaidRoster()
+    end
+end
+
+function Invite:createAssistEntries()
+    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_InviteFrameAssistTabList, "JP_InviteListEntry")
+    initialEntry:SetID(1)
+    initialEntry:SetPoint("TOPLEFT")
+    for entryNr = 2, MaximumAssistsShown, 1 do
+        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_InviteFrameAssistTabList, "JP_InviteListEntry")
+        followingEntries:SetID(entryNr)
+        followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
+    end
+end
+
+function Invite:onListEntryClick(id)
+    local player = getglobal("JP_InviteFrameAssistTabListEntry" .. id .. PLAYER):GetText()
+    JP_Assist_List[player] = nil
+    updateAssistEntries()
+end
+
+function Invite:assistButtonClick()
+    local selectedPlayer = BrowserSelection:getSelectedPlayer()
+    local playerClass = GuildRosterHandler:getPlayerClass(selectedPlayer)
+    JP_Assist_List[selectedPlayer] = playerClass
+end
+
+function Invite:mainTankButtonClick()
+
+end
+
+function Invite:loadTables(_, addonName)
+    if addonName == "jpdkp" then
+        updateAssistEntries()
     end
 end
