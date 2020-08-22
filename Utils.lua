@@ -100,14 +100,16 @@ end
 
 function Utils:isMsgTypeAndNotFromSelf(msg, msgType, sender)
     local type = string.split("&", msg)
-    if (type == msgType) and (Utils:removeRealmName(sender) ~= UnitName("player")) then
+    local self = UnitName("player")
+    if (type == msgType) and (Utils:removeRealmName(sender) ~= self) then
         return true
     end
     return false
 end
 
 function Utils:isSelf(sender)
-    if (Utils:removeRealmName(sender) == UnitName("player")) then
+    local self = UnitName("player")
+    if (Utils:removeRealmName(sender) == self) then
         return true
     end
     return false

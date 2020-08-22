@@ -243,7 +243,7 @@ end
 local function deleteClick()
     local selectedEntryItem = getglobal("JP_PriorityFrameDisplayFrameListEntry" .. CurrentSelectedEntry .. "Item"):GetText()
     local listId = getListId(selectedEntryItem)
-    JP_Priority_List[listId] = nil
+    table.remove(JP_Priority_List, listId)
     removeSelection()
     updatePriorityList()
 end

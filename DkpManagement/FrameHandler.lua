@@ -53,6 +53,7 @@ end
 
 function FrameHandler:setOnClick(tab, method)
     getglobal("JP_InviteFrameTitleFrame" .. tab .. "TabButton"):HookScript("OnClick", method)
+    getglobal("JP_OuterFrameTitleFrameInvite"):HookScript("OnClick", method)
 end
 
 local function hideAllInviteTabs()
