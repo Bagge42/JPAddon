@@ -383,6 +383,19 @@
                             </OnClick>
                         </Scripts>
                     </Button>
+                    <Button name="$parentCons" text="CONS_BUTTON_TEXT" inherits="JP_AllClassToggle">
+                        <Size>
+                            <AbsDimension x="75" y="24"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentInvite" relativePoint="LEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.FrameHandler:consButtonClicked()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
                     <Button name="$parentNone" text="NONE" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="48" y="24"/>

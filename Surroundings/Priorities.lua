@@ -136,16 +136,16 @@ function Priorities:onEvent(event, ...)
     end
     if (event == "CHAT_MSG_ADDON") then
         if (prefix == ADDON_PREFIX) and GuildRosterHandler:isOfficer(Utils:removeRealmName(sender)) then
-            local prefix, item, prio = string.split("&", msg)
+            local msgPrefix, item, prio = string.split("&", msg)
             if Utils:isSelf(sender) then
                 return
-            elseif (prefix == PRIORITY_MSG_SHARE_START) then
+            elseif (msgPrefix == PRIORITY_MSG_SHARE_START) then
                 JP_Priority_List = {}
                 JP_Priority_List[1] = { item, prio }
-            elseif (prefix == PRIORITY_MSG_SHARE_END) then
+            elseif (msgPrefix == PRIORITY_MSG_SHARE_END) then
                 JP_Priority_List[#JP_Priority_List + 1] = { item, prio }
                 updatePriorityList()
-            elseif (prefix == PRIORITY_MSG_SHARE) then
+            elseif (msgPrefix == PRIORITY_MSG_SHARE) then
                 JP_Priority_List[#JP_Priority_List + 1] = { item, prio }
             end
         end

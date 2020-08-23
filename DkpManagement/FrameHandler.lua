@@ -7,6 +7,7 @@ local function hideAll()
     getglobal("JP_SettingsFrame"):Hide()
     getglobal("JP_Management"):Hide()
     getglobal("JP_InviteFrame"):Hide()
+    getglobal("JP_ConsFrame"):Hide()
 end
 
 local function showDefaultFrame()
@@ -35,11 +36,17 @@ local function inviteClicked()
     toggleCenterFrame("JP_InviteFrame")
 end
 
+local function consClicked()
+    toggleCenterFrame("JP_ConsFrame")
+end
+
 function FrameHandler:onClose(frameName)
     if (frameName == "JP_SettingsFrameTitleFrameClose") then
         settingsClicked()
     elseif (frameName == "JP_InviteFrameTitleFrameClose") then
         inviteClicked()
+    elseif (frameName == "JP_ConsFrameTitleFrameClose") then
+        consClicked()
     end
 end
 
@@ -49,6 +56,10 @@ end
 
 function FrameHandler:inviteButtonClicked()
     inviteClicked()
+end
+
+function FrameHandler:consButtonClicked()
+    consClicked()
 end
 
 function FrameHandler:setOnClick(tab, method)

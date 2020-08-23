@@ -2,7 +2,7 @@
 ## Version: 1.8.8
 ## Author: Jordål @ <EU - Gandling>
 ## Interface: 11303
-## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id, JP_Priority_List, JP_Assist_List
+## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id, JP_Priority_List, JP_Assist_List, JP_Consumables_Log
 
 localization.en.lua
 Utils.lua
@@ -26,3 +26,6 @@ DkpManagement\DkpManager.xml
 DkpManagement\Bench.xml
 Surroundings\Priorities.lua
 Surroundings\Priorities.xml
+Tracking\Consumables.lua
+Tracking\ConsumablesLog.lua
+Tracking\ConsumablesLog.xml

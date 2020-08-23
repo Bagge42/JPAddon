@@ -1,0 +1,41 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Frame name="JP_ConsFrame" inherits="JP_CenterFrameStatic" hidden="true">
+        <Scripts>
+            <OnLoad>
+                    self:RegisterEvent("CHAT_MSG_ADDON")
+                    Jp.ConsumablesLog:onLoad()
+            </OnLoad>
+            <OnEvent>
+                    Jp.ConsumablesLog:onEvent(event, ...)
+            </OnEvent>
+        </Scripts>
+        <Frames>
+            <Button name="$parentPost" text="POST_CHECK" inherits="JP_HoverLight">
+                <Size>
+                    <AbsDimension x="283" y="48"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            Jp.ConsumablesLog:getPostRaidCons()
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parentInit" text="INITIAL_CHECK" inherits="JP_HoverLight">
+                <Size>
+                    <AbsDimension x="283" y="48"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativeTo="$parentPost" relativePoint="TOP"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            Jp.ConsumablesLog:getInitialCons()
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+</Ui>
