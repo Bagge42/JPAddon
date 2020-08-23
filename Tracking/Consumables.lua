@@ -50,6 +50,9 @@ local requiredConsumables = {
     [45] = "Flask of Supreme Power",
     [46] = "Elixir of Frost Power",
     [47] = "Juju Ember",
+    [48] = "Monster Omelet",
+    [49] = "Dirge's Kickin' Chimaerok Chops",
+    [50] = "Gordok Green Grog",
 }
 
 local abbToName = {
@@ -100,6 +103,9 @@ local abbToName = {
     ["FoSP"] = "Flask of Supreme Power",
     ["EoFP"] = "Elixir of Frost Power",
     ["JE"] = "Juju Ember",
+    ["MO"] = "Monster Omelet",
+    ["DKCC"] = "Dirge's Kickin' Chimaerok Chops",
+    ["GGG"] = "Gordok Green Grog",
 }
 local nameToAbb = {
     ["Major Mana Potion"] = "MMP",
@@ -149,6 +155,9 @@ local nameToAbb = {
     ["Flask of Supreme Power"] = "FoSP",
     ["Elixir of Frost Power"] = "EoFP",
     ["Juju Ember"] = "JE",
+    ["Monster Omelet"] = "MO",
+    ["Dirge's Kickin' Chimaerok Chops"] = "DKCC",
+    ["Gordok Green Grog"] = "GGG",
 }
 
 function Consumables:getRequiredConsumables()

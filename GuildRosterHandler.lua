@@ -22,14 +22,13 @@ function GuildRosterHandler:update()
 
     for member = 1, NrOfGuildMembers, 1 do
         local nameAndRealm, rank, rankIndex, _, class, zone, _, officernote, online = GetGuildRosterInfo(member)
+        local isOnline = 0
+        if online then
+            isOnline = 1
+        end
         local name = Utils:removeRealmName(nameAndRealm)
         if rank ~= ALT and rank ~= OFFICER_ALT then
             if name ~= "" then
-                local isOnline = 0
-                if online then
-                    isOnline = 1
-                end
-
                 local dkp = 0
                 local _, _, dkpInNote = string.find(officernote, "<(-?%d*)>")
                 if dkpInNote and tonumber(dkpInNote) then
@@ -42,11 +41,11 @@ function GuildRosterHandler:update()
                 guildRoster[rosterId] = { name, (1 * dkp), class, rank, isOnline, zone, rankIndex }
 
                 if (rank == "Officer") or (rank == "Jesus") then
-                   OfficerRoster[name] = class
+                    OfficerRoster[name] = class
                 end
             end
         else
-            AltRoster[name] = class
+            AltRoster[name] = { class, isOnline }
             if (rank == OFFICER_ALT) then
                 OfficerRoster[name] = class
             end
@@ -170,10 +169,25 @@ function GuildRosterHandler:getPlayerClass(player)
     if rosterId then
         return Roster[rosterId][3]
     elseif AltRoster[player] then
-        return AltRoster[player]
+        return AltRoster[player][1]
     else
         return
     end
+end
+
+function GuildRosterHandler:getOnlinePeople()
+    local onlinePlayers = {}
+    for _, rosterEntry in pairs(Roster) do
+        if (rosterEntry[5] == 1) then
+            onlinePlayers[rosterEntry[1]] = true
+        end
+    end
+    for player, rosterEntry in pairs(AltRoster) do
+        if (rosterEntry[2] == 1) then
+            onlinePlayers[player] = true
+        end
+    end
+    return onlinePlayers
 end
 
 function GuildRosterHandler:getRaidRoster()

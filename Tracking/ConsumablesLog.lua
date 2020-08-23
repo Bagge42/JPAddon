@@ -55,10 +55,10 @@ function ConsumablesLog:getItemFromLog(date, item)
     local postEntries = JP_Consumables_Log[date][POST_CONS][item]
     initEntries, postEntries = removeUncommonEntries(initEntries, postEntries)
 
-    Utils:jpMsg(item .. " - Format: Player: Amount used")
+    Utils:jpMsg(item .. ": ")
     for entry = 1, #initEntries, 1 do
         local itemsUsed = initEntries[entry][2] - postEntries[entry][2]
-        local msg = initEntries[entry][1] .. ": " .. itemsUsed
+        local msg = initEntries[entry][1] .. " used " .. itemsUsed
         Utils:jpMsg(msg)
     end
     return true
@@ -160,9 +160,9 @@ function ConsumablesLog:onEvent(event, ...)
     local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
 
     if (event == "CHAT_MSG_ADDON") then
-        if (prefix == ADDON_PREFIX) and Utils:isOfficer() then
+        if (prefix == ADDON_PREFIX) then
             local msgPrefix = string.split("&", msg)
-            if (msgPrefix == INIT_CONS or msgPrefix == POST_CONS) then
+            if (msgPrefix == INIT_CONS or msgPrefix == POST_CONS) and Utils:isOfficer() then
                 insertInLog(msg, msgPrefix, Utils:removeRealmName(sender))
             elseif (msgPrefix == REQUEST_INIT_CONS) then
                 sendCons(INIT_CONS)

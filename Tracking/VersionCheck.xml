@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Frame name="JP_ConsFrame" parent="JP_OuterFrame" hidden="true">
+        <Scripts>
+            <OnLoad>
+                    self:RegisterEvent("CHAT_MSG_ADDON")
+            </OnLoad>
+            <OnEvent>
+                    Jp.VersionCheck:onEvent(event, ...)
+            </OnEvent>
+        </Scripts>
+    </Frame>
+</Ui>

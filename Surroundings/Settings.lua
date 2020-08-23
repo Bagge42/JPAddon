@@ -45,8 +45,14 @@ end
 function Settings:onLoad()
     getglobal("JP_SettingsFrameTitleFrameText"):SetText(SETTINGS_FRAME_TITLE)
 
+    local settingInfo = CreateFrame("Frame", "$parentSettingInfo", JP_SettingsFrame, "JP_SettingEntry")
+    settingInfo:SetPoint("TOPLEFT", 0, -24)
+    settingInfo.text = settingInfo:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    settingInfo.text:SetPoint("LEFT", 5, 0)
+    settingInfo.text:SetText(SETTING_INFO)
+
     local initialSetting = CreateFrame("Frame", "$parentSetting1", JP_SettingsFrame, "JP_SettingEntry")
-    initialSetting:SetPoint("TOPLEFT", 0, -24)
+    initialSetting:SetPoint("TOP", "$parentSettingInfo", "BOTTOM")
     initialSetting.text = initialSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     initialSetting.text:SetPoint("LEFT", 5, 0)
     initialSetting.text:SetText(SettingTexts[1])
@@ -60,14 +66,8 @@ function Settings:onLoad()
         createEditBox(followingSettings, settingCount)
     end
 
-    local settingInfo = CreateFrame("Frame", "$parentSettingInfo", JP_SettingsFrame, "JP_SettingEntry")
-    settingInfo:SetPoint("BOTTOMLEFT")
-    settingInfo.text = settingInfo:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    settingInfo.text:SetPoint("LEFT", 5, 0)
-    settingInfo.text:SetText(SETTING_INFO)
-
     local biddersOnlySetting = CreateFrame("Frame", "$parentBiddersOnlySetting", JP_SettingsFrame, "JP_SettingEntry")
-    biddersOnlySetting:SetPoint("BOTTOM", "$parentSettingInfo", "TOP")
+    biddersOnlySetting:SetPoint("BOTTOMLEFT")
     biddersOnlySetting.text = biddersOnlySetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     biddersOnlySetting.text:SetPoint("LEFT", 5, 0)
     biddersOnlySetting.text:SetText(BIDDERS_ONLY_SETTING)
