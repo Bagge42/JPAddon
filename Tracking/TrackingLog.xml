@@ -3,10 +3,10 @@
         <Scripts>
             <OnLoad>
                     self:RegisterEvent("CHAT_MSG_ADDON")
-                    Jp.ConsumablesLog:onLoad()
+                    Jp.TrackingLog:onLoad()
             </OnLoad>
             <OnEvent>
-                    Jp.ConsumablesLog:onEvent(event, ...)
+                    Jp.TrackingLog:onEvent(event, ...)
             </OnEvent>
         </Scripts>
         <Frames>
@@ -19,7 +19,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            Jp.ConsumablesLog:getPostRaidCons()
+                            Jp.TrackingLog:getPostRaidCons()
                     </OnClick>
                 </Scripts>
             </Button>
@@ -32,7 +32,7 @@
                 </Anchors>
                 <Scripts>
                     <OnClick>
-                            Jp.ConsumablesLog:getInitialCons()
+                            Jp.TrackingLog:getInitialCons()
                     </OnClick>
                 </Scripts>
             </Button>

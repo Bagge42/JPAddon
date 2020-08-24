@@ -1,9 +1,11 @@
 JP_Consumables_Log = {}
+JP_Buff_Log = {}
 local Jp = _G.Jp
 local Utils = Jp.Utils
-local ConsumablesLog = {}
+local TrackingLog = {}
 local Consumables = Jp.Consumables
-Jp.ConsumablesLog = ConsumablesLog
+local Buffs = Jp.Buffs
+Jp.TrackingLog = TrackingLog
 
 local function removeUncommonEntries(initEntries, postEntries)
     local newInit = {}
@@ -26,13 +28,20 @@ local function removeUncommonEntries(initEntries, postEntries)
     return newInit, newPost
 end
 
-function ConsumablesLog:onLoad()
+function TrackingLog:onLoad()
     getglobal("JP_ConsFrameTitleFrameText"):SetText(CONS_FRAME_TITLE)
 end
 
-function ConsumablesLog:getItemFromLog(date, item)
-    if (JP_Consumables_Log[date] == nil) then
+local function existRecordingsForDate(table, date)
+    if (table[date] == nil) then
         Utils:jpMsg("No recordings for the specified date")
+        return false
+    end
+    return true
+end
+
+function TrackingLog:getItemFromLog(date, item)
+    if not existRecordingsForDate(JP_Consumables_Log, date) then
         return
     elseif (JP_Consumables_Log[date][INIT_CONS] == nil) then
         Utils:jpMsg("No initial recordings for the specified date")
@@ -64,19 +73,62 @@ function ConsumablesLog:getItemFromLog(date, item)
     return true
 end
 
-function ConsumablesLog:getAllItems(date)
+function TrackingLog:getRequiredBuffsFromLog(date)
+    local requiredBuffs = Buffs:getRequiredBuffs()
+    for _, buff in pairs(requiredBuffs) do
+        local callSucceeded = TrackingLog:getBuffFromLog(date, buff)
+        if not callSucceeded then
+            return
+        end
+    end
+end
+
+function TrackingLog:getBuffFromLog(date, buff)
+    if not existRecordingsForDate(JP_Buff_Log, date) then
+        return
+    end
+
+    if (Buffs:getAbbFromName(buff) == nil) then
+        local initialBuff = buff
+        buff = Buffs:getNameFromAbb(buff)
+        if (buff == nil) then
+            Utils:jpMsg(initialBuff .. " was not found in the buff log")
+            return
+        end
+    end
+
+    local buffEntries = JP_Buff_Log[date][buff]
+    Utils:jpMsg(buff .. ": ")
+    for entry = 1, #buffEntries, 1 do
+        local player = buffEntries[entry][1]
+        local expirationTime = buffEntries[entry][3]
+        local msg = player .. " - Time left in minutes: " .. expirationTime
+        Utils:jpMsg(msg)
+    end
+    return true
+end
+
+function TrackingLog:getAllItems(date)
     local requiredCons = Consumables:getRequiredConsumables()
     for con = 1, #requiredCons, 1 do
-        local callSucceeded = ConsumablesLog:getItemFromLog(date, requiredCons[con])
+        local callSucceeded = TrackingLog:getItemFromLog(date, requiredCons[con])
         if not callSucceeded then
-           return
+            return
         end
+    end
+end
+
+local function createBuffEntries(datestamp)
+    JP_Buff_Log[datestamp] = {}
+    for name, _ in pairs(Buffs:getRaidBuffNamesAndIds()) do
+        JP_Buff_Log[datestamp][name] = {}
     end
 end
 
 local function createDateEntryIfNeeded(datestamp)
     if (JP_Consumables_Log[datestamp] == nil) then
         JP_Consumables_Log[datestamp] = {}
+        createBuffEntries(datestamp)
     end
 end
 
@@ -94,12 +146,12 @@ local function createPrefixEntryIfNeeded(datestamp, prefix)
     end
 end
 
-function ConsumablesLog:getInitialCons()
+function TrackingLog:getInitialCons()
     local msg = REQUEST_INIT_CONS
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
-function ConsumablesLog:getPostRaidCons()
+function TrackingLog:getPostRaidCons()
     local msg = REQUEST_POST_CONS
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
@@ -148,7 +200,7 @@ local function sendCons(prefix)
     local msg = prefix
     local requiredCons = Consumables:getRequiredConsumables()
     for conNr = 1, #requiredCons, 1 do
-        local conCount = GetItemCount(requiredCons[conNr])
+        local conCount = GetItemCount(requiredCons[conNr], nil, true)
         if (conCount > 0) then
             msg = msg .. "&" .. Consumables:getAbbFromName(requiredCons[conNr]) .. conCount
         end
@@ -156,7 +208,44 @@ local function sendCons(prefix)
     Utils:sendAddonMsg(msg, "RAID")
 end
 
-function ConsumablesLog:onEvent(event, ...)
+local function sendBuffs()
+    local msg = BUFFS
+    local currentBuffs = Buffs:getCurrentBuffs()
+    for buff = 1, #currentBuffs, 1 do
+        local buffInfo = currentBuffs[buff]
+        msg = msg .. "&" .. Buffs:getAbbFromName(buffInfo[1]) .. "?" .. buffInfo[2] .. "?" .. buffInfo[3]
+    end
+    Utils:sendAddonMsg(msg, "RAID")
+end
+
+local function insertOrEditBuff(datestamp, sender, name, duration, expirationTime)
+    local edited = false
+    for entry = 1, #JP_Buff_Log[datestamp][name], 1 do
+        if (JP_Buff_Log[datestamp][name][entry][1] == sender) then
+            JP_Buff_Log[datestamp][name][entry] = { sender, duration, expirationTime }
+            edited = true
+        end
+    end
+    if not edited then
+        table.insert(JP_Buff_Log[datestamp][name], { sender, duration, expirationTime })
+    end
+end
+
+local function addBuff(datestamp, sender, buff)
+    local name, duration, expirationTime = string.split("?", buff)
+    insertOrEditBuff(datestamp, sender, Buffs:getNameFromAbb(name), duration, expirationTime)
+end
+
+local function insertBuffsInLog(msg, msgPrefix, sender)
+    local noPrefixMsg = string.gsub(msg, msgPrefix .. "&", "")
+    local currentTime = time()
+    local datestamp = date("%d/%m/%Y", currentTime)
+    for buff in string.gmatch(noPrefixMsg, "([^&]+)") do
+        addBuff(datestamp, sender, buff)
+    end
+end
+
+function TrackingLog:onEvent(event, ...)
     local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
 
     if (event == "CHAT_MSG_ADDON") then
@@ -164,8 +253,11 @@ function ConsumablesLog:onEvent(event, ...)
             local msgPrefix = string.split("&", msg)
             if (msgPrefix == INIT_CONS or msgPrefix == POST_CONS) and Utils:isOfficer() then
                 insertInLog(msg, msgPrefix, Utils:removeRealmName(sender))
+            elseif (msgPrefix == BUFFS) then
+                insertBuffsInLog(msg, msgPrefix, Utils:removeRealmName(sender))
             elseif (msgPrefix == REQUEST_INIT_CONS) then
                 sendCons(INIT_CONS)
+                sendBuffs()
             elseif (msgPrefix == REQUEST_POST_CONS) then
                 sendCons(POST_CONS)
             end
