@@ -2,7 +2,7 @@
 ## Version: 1.8.11
 ## Author: Jordål @ <EU - Gandling>
 ## Interface: 11303
-## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id, JP_Priority_List, JP_Assist_List, JP_Consumables_Log, JP_Buff_Log
+## SavedVariables: JP_Current_Bench, JP_Current_Settings, JP_Log_History, JP_Log_Date_To_Id, JP_Priority_List, JP_Assist_List, JP_Consumables_Log, JP_Buff_Log, JP_Required_Cons_List, JP_Required_Buff_List
 
 localization.en.lua
 Utils.lua

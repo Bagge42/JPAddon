@@ -175,6 +175,23 @@ function GuildRosterHandler:getPlayerClass(player)
     end
 end
 
+function GuildRosterHandler:getRole(player)
+    local playerClass = GuildRosterHandler:getPlayerClass(player)
+    if (playerClass == PRIEST or playerClass == SHAMAN) then
+        return HEALER
+    elseif (playerClass == ROGUE) then
+        return MELEE
+    elseif (playerClass == DRUID) then
+        return HEALER, TANK
+    elseif (playerClass == WARRIOR) then
+        return MELEE, TANK
+    elseif (playerClass == MAGE or playerClass == WARLOCK) then
+        return CASTER
+    else
+        return HUNTER
+    end
+end
+
 function GuildRosterHandler:getOnlinePeople()
     local onlinePlayers = {}
     for _, rosterEntry in pairs(Roster) do

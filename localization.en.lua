@@ -123,3 +123,9 @@ POST_CONS = "PostCons"
 VERSION_CHECK_REQUEST = "CheckVersion"
 VERSION = "Version"
 BUFFS = "Buffs"
+
+-- Role --
+HEALER = "Healer"
+TANK = "Tank"
+MELEE = "Melee"
+CASTER = "Caster"

@@ -3,6 +3,7 @@
         <Scripts>
             <OnLoad>
                     self:RegisterEvent("CHAT_MSG_ADDON")
+                    self:RegisterEvent("ADDON_LOADED")
                     Jp.TrackingLog:onLoad()
             </OnLoad>
             <OnEvent>

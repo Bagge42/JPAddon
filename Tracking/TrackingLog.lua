@@ -5,28 +5,8 @@ local Utils = Jp.Utils
 local TrackingLog = {}
 local Consumables = Jp.Consumables
 local Buffs = Jp.Buffs
+local GuildRosterHandler = Jp.GuildRosterHandler
 Jp.TrackingLog = TrackingLog
-
-local function removeUncommonEntries(initEntries, postEntries)
-    local newInit = {}
-    local newPost = {}
-    for initEntryNr = 1, #initEntries, 1 do
-        local postPlayerEntry
-        local initPlayerEntry = initEntries[initEntryNr]
-        for postEntryNr = 1, #postEntries, 1 do
-            if (initPlayerEntry[1] == postEntries[postEntryNr][1]) then
-                postPlayerEntry = postEntries[postEntryNr]
-            end
-        end
-        table.insert(newInit, initPlayerEntry)
-        if (postPlayerEntry ~= nil) then
-            table.insert(newPost, postPlayerEntry)
-        else
-            table.insert(newPost, { initPlayerEntry[1], 0 })
-        end
-    end
-    return newInit, newPost
-end
 
 function TrackingLog:onLoad()
     getglobal("JP_ConsFrameTitleFrameText"):SetText(CONS_FRAME_TITLE)
@@ -40,14 +20,68 @@ local function existRecordingsForDate(table, date)
     return true
 end
 
-function TrackingLog:getItemFromLog(date, item)
+local function isRecordings(date)
     if not existRecordingsForDate(JP_Consumables_Log, date) then
-        return
+        return false
     elseif (JP_Consumables_Log[date][INIT_CONS] == nil) then
         Utils:jpMsg("No initial recordings for the specified date")
-        return
+        return false
     elseif (JP_Consumables_Log[date][POST_CONS] == nil) then
         Utils:jpMsg("No post raid recordings for the specified date")
+        return false
+    end
+    return true
+end
+
+function TrackingLog:getItemsFromLog(date, ...)
+    if not isRecordings(date) then
+        return
+    end
+
+    local nrOfItems = select('#', ...)
+    for itemCount = 1, nrOfItems do
+        local item = select(itemCount, ...)
+        TrackingLog:getItemFromLog(date, item)
+    end
+end
+
+local function printInventoriesForItem(entries)
+    for _, playerTable in pairs(entries) do
+        local itemsUsed = playerTable[2]
+        local msg = playerTable[1] .. " held " .. itemsUsed
+        Utils:jpMsg(msg)
+    end
+end
+
+local function convertToNameNumberTable(indexedTable)
+    local newTable = {}
+    if indexedTable then
+        for _, entry in pairs(indexedTable) do
+            newTable[entry[1]] = entry[2]
+        end
+    end
+    return newTable
+end
+
+local function insertZeros(table1, table2)
+    for key, _ in pairs(table1) do
+        if (table2[key] == nil) then
+            table2[key] = 0
+        end
+    end
+end
+
+local function isMatchingRole(roleToMatch, name)
+    if (roleToMatch == nil) then
+        return true
+    else
+        local playerRole, playerRole2 = GuildRosterHandler:getRole(name)
+        return roleToMatch == playerRole or roleToMatch == playerRole2
+    end
+end
+
+function TrackingLog:getItemFromLog(date, item, role)
+    if not isRecordings(date) then
         return
     end
 
@@ -62,15 +96,44 @@ function TrackingLog:getItemFromLog(date, item)
 
     local initEntries = JP_Consumables_Log[date][INIT_CONS][item]
     local postEntries = JP_Consumables_Log[date][POST_CONS][item]
-    initEntries, postEntries = removeUncommonEntries(initEntries, postEntries)
+    initEntries = convertToNameNumberTable(initEntries)
+    postEntries = convertToNameNumberTable(postEntries)
+    insertZeros(initEntries, postEntries)
+    insertZeros(postEntries, initEntries)
 
-    Utils:jpMsg(item .. ": ")
-    for entry = 1, #initEntries, 1 do
-        local itemsUsed = initEntries[entry][2] - postEntries[entry][2]
-        local msg = initEntries[entry][1] .. " used " .. itemsUsed
+    Utils:jpMsg(item)
+    Utils:jpMsg("----------------------------------------")
+    local msg = ""
+    for name, _ in pairs(initEntries) do
+        local itemsUsed = initEntries[name] - postEntries[name]
+        local matchRole = isMatchingRole(role, name)
+        if (itemsUsed ~= 0) and matchRole then
+            msg = msg .. name .. ": " .. itemsUsed .. "  "
+        end
+    end
+    if (msg ~= "") then
         Utils:jpMsg(msg)
     end
+    Utils:jpMsg("")
     return true
+end
+
+local function iterateThroughConsumes(date, consumes, role)
+    for _, item in pairs(consumes) do
+        local callSucceeded = TrackingLog:getItemFromLog(date, item, role)
+        if not callSucceeded then
+            return
+        end
+    end
+end
+
+function TrackingLog:getRole(date, role)
+    if (role == nil) then
+        Utils:jpMsg("Valid roles: Tank, Melee, Healer, Caster, Hunter")
+        return
+    end
+    local roleConsumes = Consumables:getRoleConsumables(role)
+    iterateThroughConsumes(date, roleConsumes, role)
 end
 
 function TrackingLog:getRequiredBuffsFromLog(date)
@@ -148,11 +211,13 @@ end
 
 function TrackingLog:getInitialCons()
     local msg = REQUEST_INIT_CONS
+    Utils:sendWarningMessage("Pre-raid consumable check performed")
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 function TrackingLog:getPostRaidCons()
     local msg = REQUEST_POST_CONS
+    Utils:sendWarningMessage("Post-raid consumable check performed")
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
@@ -262,5 +327,8 @@ function TrackingLog:onEvent(event, ...)
                 sendCons(POST_CONS)
             end
         end
+    elseif (event == "ADDON_LOADED") and (prefix == ADDON_PREFIX) then
+        Consumables:addonLoaded()
+        Buffs:addonLoaded()
     end
 end

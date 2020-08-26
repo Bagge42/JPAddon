@@ -1,173 +1,137 @@
+JP_Required_Cons_List = {}
 local Jp = _G.Jp
+local Utils = Jp.Utils
 local Consumables = {}
 Jp.Consumables = Consumables
 
-local requiredConsumables = {
-    [1] = "Major Mana Potion",
-    [2] = "Mageblood Elixir",
-    [3] = "Nightfin Soup",
-    [4] = "Runn Tum Tuber",
-    [5] = "Superior Mana Potion",
-    [6] = "Spirit of Zanza",
-    [7] = "Greater Nature Protection Potion",
-    [8] = "Greater Arcane Protection Potion",
-    [9] = "Greater Fire Protection Potion",
-    [10] = "Greater Frost Protection Potion",
-    [11] = "Greater Shadow Protection Potion",
-    [12] = "Brilliant Mana Oil",
-    [13] = "Brilliant Wizard Oil",
-    [14] = "Limited Invulnerability Potion",
-    [15] = "Demonic Rune",
-    [16] = "Dark Rune",
-    [17] = "Goblin Sapper Charge",
-    [18] = "Elixir of Poison Resistance",
-    [19] = "Flask of Distilled Wisdom",
-    [20] = "Elixir of the Mongoose",
-    [21] = "Grilled Squid",
-    [22] = "Juju might",
-    [23] = "Winterfall Firewater",
-    [24] = "Juju power",
-    [25] = "Elixir of Giants",
-    [26] = "Dense Sharpening Stone",
-    [27] = "Elemental Sharpening Stone",
-    [28] = "Frost Oil",
-    [29] = "Thistle Tea",
-    [30] = "Major Healing Potion",
-    [31] = "Flask of the Titans",
-    [32] = "Elixir of Fortitude",
-    [33] = "Elixir of Superior Defense",
-    [34] = "Gift of Arthas",
-    [35] = "Rumsey Rum Black Label",
-    [36] = "Free Action Potion",
-    [37] = "Greater Stoneshield Potion",
-    [38] = "Manual Crowd Pummeler",
-    [39] = "Blessed Sunfruit",
-    [40] = "Smoked Desert Dumplings",
-    [41] = "Greater Arcane Elixir",
-    [42] = "Elixir of Greater Firepower",
-    [43] = "Elixir of Shadow Power",
-    [44] = "Heavy Runecloth Bandage",
-    [45] = "Flask of Supreme Power",
-    [46] = "Elixir of Frost Power",
-    [47] = "Juju Ember",
-    [48] = "Monster Omelet",
-    [49] = "Dirge's Kickin' Chimaerok Chops",
-    [50] = "Gordok Green Grog",
+local RequiredConsumables = {
+    [1] = { "Major Mana Potion", { HEALER, CASTER, HUNTER } },
+    [2] = { "Mageblood Potion", { HEALER, CASTER, HUNTER } },
+    [3] = { "Nightfin Soup", { HEALER, CASTER, HUNTER } },
+    [4] = { "Runn Tum Tuber Surprise", { HEALER, CASTER, HUNTER } },
+    [5] = { "Superior Mana Potion", { HEALER, CASTER, HUNTER } },
+    [6] = { "Spirit of Zanza", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [7] = { "Greater Nature Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [8] = { "Greater Arcane Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [9] = { "Greater Fire Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [10] = { "Greater Frost Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [11] = { "Greater Shadow Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [12] = { "Brilliant Mana Oil", { HEALER, HUNTER } },
+    [13] = { "Brilliant Wizard Oil", { CASTER, HEALER } },
+    [14] = { "Limited Invulnerability Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [15] = { "Demonic Rune", { HEALER, CASTER, HUNTER } },
+    [16] = { "Dark Rune", { HEALER, CASTER, HUNTER } },
+    [17] = { "Goblin Sapper Charge", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [18] = { "Elixir of Poison Resistance", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [19] = { "Flask of Distilled Wisdom", { HEALER, CASTER, HUNTER } },
+    [20] = { "Elixir of the Mongoose", { HUNTER, TANK, MELEE } },
+    [21] = { "Grilled Squid", { HUNTER, TANK, MELEE } },
+    [22] = { "Juju might", { HUNTER, TANK, MELEE } },
+    [23] = { "Winterfall Firewater", { HUNTER, TANK, MELEE } },
+    [24] = { "Juju power", { HUNTER, TANK, MELEE } },
+    [25] = { "Elixir of Giants", { HUNTER, TANK, MELEE } },
+    [26] = { "Dense Sharpening Stone", { TANK, MELEE } },
+    [27] = { "Elemental Sharpening Stone", { TANK, MELEE } },
+    [28] = { "Frost Oil", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [29] = { "Thistle Tea", { MELEE } },
+    [30] = { "Major Healing Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [31] = { "Flask of the Titans", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [32] = { "Elixir of Fortitude", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [33] = { "Elixir of Superior Defense", { TANK } },
+    [34] = { "Gift of Arthas", { TANK } },
+    [35] = { "Rumsey Rum Black Label", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [36] = { "Free Action Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [37] = { "Greater Stoneshield Potion", { TANK } },
+    [38] = { "Manual Crowd Pummeler", { TANK } },
+    [39] = { "Blessed Sunfruit", { HUNTER, TANK, MELEE } },
+    [40] = { "Smoked Desert Dumplings", { HUNTER, TANK, MELEE } },
+    [41] = { "Greater Arcane Elixir", { CASTER } },
+    [42] = { "Elixir of Greater Firepower", { CASTER } },
+    [43] = { "Elixir of Shadow Power", { CASTER } },
+    [44] = { "Heavy Runecloth Bandage", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [45] = { "Flask of Supreme Power", { CASTER } },
+    [46] = { "Elixir of Frost Power", { CASTER } },
+    [47] = { "Juju Ember", { CASTER } },
+    [48] = { "Monster Omelet", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [49] = { "Dirge's Kickin' Chimaerok Chops", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [50] = { "Gordok Green Grog", { HEALER, CASTER, HUNTER, TANK, MELEE } },
 }
 
-local abbToName = {
-    ["MMP"] = "Major Mana Potion",
-    ["ME"] = "Mageblood Elixir",
-    ["NS"] = "Nightfin Soup",
-    ["RTT"] = "Runn Tum Tuber",
-    ["SMP"] = "Superior Mana Potion",
-    ["SoZ"] = "Spirit of Zanza",
-    ["GNPP"] = "Greater Nature Protection Potion",
-    ["GAPP"] = "Greater Arcane Protection Potion",
-    ["GFiPP"] = "Greater Fire Protection Potion",
-    ["GFrPP"] = "Greater Frost Protection Potion",
-    ["GSPP"] = "Greater Shadow Protection Potion",
-    ["BMO"] = "Brilliant Mana Oil",
-    ["BWO"] = "Brilliant Wizard Oil",
-    ["LIP"] = "Limited Invulnerability Potion",
-    ["DeR"] = "Demonic Rune",
-    ["DaR"] = "Dark Rune",
-    ["GSC"] = "Goblin Sapper Charge",
-    ["EoPR"] = "Elixir of Poison Resistance",
-    ["FoDW"] = "Flask of Distilled Wisdom",
-    ["EotM"] = "Elixir of the Mongoose",
-    ["GS"] = "Grilled Squid",
-    ["JM"] = "Juju might",
-    ["WF"] = "Winterfall Firewater",
-    ["JP"] = "Juju power",
-    ["EoG"] = "Elixir of Giants",
-    ["DSS"] = "Dense Sharpening Stone",
-    ["ESS"] = "Elemental Sharpening Stone",
-    ["FO"] = "Frost Oil",
-    ["TT"] = "Thistle Tea",
-    ["MHP"] = "Major Healing Potion",
-    ["FotT"] = "Flask of the Titans",
-    ["EoF"] = "Elixir of Fortitude",
-    ["EoSD"] = "Elixir of Superior Defense",
-    ["GoA"] = "Gift of Arthas",
-    ["RRBL"] = "Rumsey Rum Black Label",
-    ["FAP"] = "Free Action Potion",
-    ["GSP"] = "Greater Stoneshield Potion",
-    ["MCP"] = "Manual Crowd Pummeler",
-    ["BS"] = "Blessed Sunfruit",
-    ["SDD"] = "Smoked Desert Dumplings",
-    ["GAE"] = "Greater Arcane Elixir",
-    ["EoGF"] = "Elixir of Greater Firepower",
-    ["EoSP"] = "Elixir of Shadow Power",
-    ["HRB"] = "Heavy Runecloth Bandage",
-    ["FoSP"] = "Flask of Supreme Power",
-    ["EoFP"] = "Elixir of Frost Power",
-    ["JE"] = "Juju Ember",
-    ["MO"] = "Monster Omelet",
-    ["DKCC"] = "Dirge's Kickin' Chimaerok Chops",
-    ["GGG"] = "Gordok Green Grog",
-}
-local nameToAbb = {
-    ["Major Mana Potion"] = "MMP",
-    ["Mageblood Elixir"] = "ME",
-    ["Nightfin Soup"] = "NS",
-    ["Runn Tum Tuber"] = "RTT",
-    ["Superior Mana Potion"] = "SMP",
-    ["Spirit of Zanza"] = "SoZ",
-    ["Greater Nature Protection Potion"] = "GNPP",
-    ["Greater Arcane Protection Potion"] = "GAPP",
-    ["Greater Fire Protection Potion"] = "GFiPP",
-    ["Greater Frost Protection Potion"] = "GFrPP",
-    ["Greater Shadow Protection Potion"] = "GSPP",
-    ["Brilliant Mana Oil"] = "BMO",
-    ["Brilliant Wizard Oil"] = "BWO",
-    ["Limited Invulnerability Potion"] = "LIP",
-    ["Demonic Rune"] = "DeR",
-    ["Dark Rune"] = "DaR",
-    ["Goblin Sapper Charge"] = "GSC",
-    ["Elixir of Poison Resistance"] = "EoPR",
-    ["Flask of Distilled Wisdom"] = "FoDW",
-    ["Elixir of the Mongoose"] = "EotM",
-    ["Grilled Squid"] = "GS",
-    ["Juju might"] = "JM",
-    ["Winterfall Firewater"] = "WF",
-    ["Juju power"] = "JP",
-    ["Elixir of Giants"] = "EoG",
-    ["Dense Sharpening Stone"] = "DSS",
-    ["Elemental Sharpening Stone"] = "ESS",
-    ["Frost Oil"] = "FO",
-    ["Thistle Tea"] = "TT",
-    ["Major Healing Potion"] = "MHP",
-    ["Flask of the Titans"] = "FotT",
-    ["Elixir of Fortitude"] = "EoF",
-    ["Elixir of Superior Defense"] = "EoSD",
-    ["Gift of Arthas"] = "GoA",
-    ["Rumsey Rum Black Label"] = "RRBL",
-    ["Free Action Potion"] = "FAP",
-    ["Greater Stoneshield Potion"] = "GSP",
-    ["Manual Crowd Pummeler"] = "MCP",
-    ["Blessed Sunfruit"] = "BS",
-    ["Smoked Desert Dumplings"] = "SDD",
-    ["Greater Arcane Elixir"] = "GAE",
-    ["Elixir of Greater Firepower"] = "EoGF",
-    ["Elixir of Shadow Power"] = "EoSP",
-    ["Heavy Runecloth Bandage"] = "HRB",
-    ["Flask of Supreme Power"] = "FoSP",
-    ["Elixir of Frost Power"] = "EoFP",
-    ["Juju Ember"] = "JE",
-    ["Monster Omelet"] = "MO",
-    ["Dirge's Kickin' Chimaerok Chops"] = "DKCC",
-    ["Gordok Green Grog"] = "GGG",
-}
+local Roles = {}
+local NameToAbb = {}
+local AbbToName = {}
+
+local function getAbb(name)
+    local abb = ""
+    for match in string.gmatch(name, "%S+") do
+        abb = abb .. string.sub(match, 1, 1)
+    end
+    return abb
+end
+
+function Consumables:addonLoaded()
+    if (Utils:getTableSize(JP_Required_Cons_List) == 0) then
+        for _, consume in pairs(RequiredConsumables) do
+            Consumables:addConsumable(consume[1], consume[2])
+        end
+    end
+end
+
+function Consumables:addConsumable(name, roles)
+    local abb = getAbb(name)
+    table.insert(JP_Required_Cons_List, { name, abb, roles })
+end
+
+function Consumables:removeConsumable(name)
+    local indexToRemove
+    for index, consEntry in pairs(JP_Required_Cons_List) do
+        if (consEntry[1] == name) then
+            indexToRemove = index
+        end
+    end
+    table.remove(JP_Required_Cons_List, indexToRemove)
+end
 
 function Consumables:getRequiredConsumables()
-    return requiredConsumables
+    return JP_Required_Cons_List
 end
 
 function Consumables:getNameFromAbb(abb)
-    return abbToName[abb]
+    if (Utils:getTableSize(AbbToName) == 0) then
+        for _, consumeEntry in pairs(JP_Required_Cons_List) do
+            AbbToName[consumeEntry[2]] = consumeEntry[1]
+        end
+    end
+    return AbbToName[abb]
 end
 
 function Consumables:getAbbFromName(name)
-    return nameToAbb[name]
+    if (Utils:getTableSize(NameToAbb) == 0) then
+        for _, consumeEntry in pairs(JP_Required_Cons_List) do
+            NameToAbb[consumeEntry[1]] = consumeEntry[2]
+        end
+    end
+    return NameToAbb[name]
+end
+
+function Consumables:clearConsumes()
+    JP_Required_Cons_List = {}
+end
+
+local function createRoleTableIfNeeded(role)
+    if (Roles[role] == nil) then
+        Roles[role] = {}
+        for _, consumeEntry in pairs(JP_Required_Cons_List) do
+            for _, consRole in pairs(consumeEntry[3]) do
+                if (consRole == role) then
+                    table.insert(Roles[role], consumeEntry[1])
+                end
+            end
+        end
+    end
+end
+
+function Consumables:getRoleConsumables(role)
+    createRoleTableIfNeeded(role)
+    return Roles[role]
 end

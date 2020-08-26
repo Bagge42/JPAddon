@@ -1,5 +1,7 @@
+JP_Required_Buff_List = {}
 local Jp = _G.Jp
 local Buffs = {}
+local Utils = Jp.Utils
 Jp.Buffs = Buffs
 
 local BuffCap = 32
@@ -64,7 +66,7 @@ local RequiredBuffs = {
 }
 
 function Buffs:getRequiredBuffs()
-    return RequiredBuffs
+    return JP_Required_Buff_List
 end
 
 function Buffs:getRaidBuffNamesAndIds()
@@ -87,6 +89,14 @@ local function checkForBuff(buffId)
             return false, nil, nil
         elseif (spellId == buffId) then
             return true, duration, (expirationTime - GetTime()) / 60
+        end
+    end
+end
+
+function Buffs:addonLoaded()
+    if (Utils:getTableSize(JP_Required_Buff_List) == 0) then
+        for _, buff in pairs(RequiredBuffs) do
+            table.insert(JP_Required_Buff_List, buff)
         end
     end
 end

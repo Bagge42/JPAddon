@@ -157,9 +157,9 @@ function Utils:getTableWithNoNils(table)
 end
 
 -- Wait function from wowwiki --
-local waitTable = {}
-local waitFrame
 function Utils:jpWait(delay, func, ...)
+    local waitTable = {}
+    local waitFrame
     if (type(delay) ~= "number" or type(func) ~= "function") then
         return false
     end

@@ -7,13 +7,7 @@ Jp.VersionCheck = VersionCheck
 local versions = {}
 local playersOnlineAtCheck = {}
 
-function VersionCheck:requestCheck()
-    local msg = VERSION_CHECK_REQUEST
-    playersOnlineAtCheck = GuildRosterHandler:getOnlinePeople()
-    Utils:sendAddonMsg(msg, "GUILD")
-end
-
-function VersionCheck:printVersions()
+local function printVersions()
     local ownVersion = GetAddOnMetadata("Jpdkp", "Version")
     Utils:jpMsg("Following online people has outdated versions:")
     for player, version in pairs(versions) do
@@ -27,6 +21,13 @@ function VersionCheck:printVersions()
             Utils:jpMsg(player)
         end
     end
+end
+
+function VersionCheck:requestCheck()
+    local msg = VERSION_CHECK_REQUEST
+    playersOnlineAtCheck = GuildRosterHandler:getOnlinePeople()
+    Utils:sendAddonMsg(msg, "GUILD")
+    Utils:jpWait(3, printVersions)
 end
 
 local function getAndSendVersion()
