@@ -44,7 +44,7 @@ function VersionCheck:onEvent(event, ...)
             local msgPrefix, version = string.split("&", msg)
             if (msgPrefix == VERSION_CHECK_REQUEST) then
                 getAndSendVersion()
-            elseif (msgPrefix == VERSION) then
+            elseif (msgPrefix == VERSION) and (sender ~= nil) then
                 versions[Utils:removeRealmName(sender)] = version
             end
         end

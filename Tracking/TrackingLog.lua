@@ -174,7 +174,7 @@ end
 function TrackingLog:getAllItems(date)
     local requiredCons = Consumables:getRequiredConsumables()
     for con = 1, #requiredCons, 1 do
-        local callSucceeded = TrackingLog:getItemFromLog(date, requiredCons[con])
+        local callSucceeded = TrackingLog:getItemFromLog(date, requiredCons[con][1])
         if not callSucceeded then
             return
         end
@@ -198,7 +198,7 @@ end
 local function createConsEntries(datestamp, prefix)
     local requiredCons = Consumables:getRequiredConsumables()
     for requiredConNr = 1, #requiredCons, 1 do
-        JP_Consumables_Log[datestamp][prefix][requiredCons[requiredConNr]] = {}
+        JP_Consumables_Log[datestamp][prefix][requiredCons[requiredConNr][1]] = {}
     end
 end
 
@@ -209,6 +209,11 @@ local function createPrefixEntryIfNeeded(datestamp, prefix)
     end
 end
 
+local function getPostRaidConsSilent()
+    local msg = REQUEST_POST_CONS
+    Utils:sendOfficerAddonMsg(msg, "RAID")
+end
+
 function TrackingLog:getInitialCons()
     local msg = REQUEST_INIT_CONS
     Utils:sendWarningMessage("Pre-raid consumable check performed")
@@ -216,9 +221,8 @@ function TrackingLog:getInitialCons()
 end
 
 function TrackingLog:getPostRaidCons()
-    local msg = REQUEST_POST_CONS
+    getPostRaidConsSilent()
     Utils:sendWarningMessage("Post-raid consumable check performed")
-    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 local function createEntriesIfNeeded(datestamp, prefix)
@@ -239,16 +243,34 @@ local function insertOrEdit(datestamp, prefix, sender, con, conNr)
     end
 end
 
-local function addEntry(datestamp, prefix, sender, conAndConNr)
-    local con, conNr
+local function getConName(conAndConNr)
+    local con
     for match in string.gmatch(conAndConNr, "([^%d]+)") do
         con = match
         con = Consumables:getNameFromAbb(con)
     end
+    return con
+end
+
+local function addEntry(datestamp, prefix, sender, conAndConNr)
+    local con = getConName(conAndConNr)
+    local conNr
     for match in string.gmatch(conAndConNr, "([%d]+)") do
         conNr = match
     end
     insertOrEdit(datestamp, prefix, sender, con, conNr)
+end
+
+local function removeConsIfUsed(datestamp, msgPrefix, sender, consReported)
+    for item, itemInfo in pairs(JP_Consumables_Log[datestamp][msgPrefix]) do
+        if not consReported[item] then
+            for index, playerInfo in pairs(itemInfo) do
+                if (playerInfo[1] == sender) then
+                    table.remove(JP_Consumables_Log[datestamp][msgPrefix][item], index)
+                end
+            end
+        end
+    end
 end
 
 local function insertInLog(msg, msgPrefix, sender)
@@ -256,18 +278,23 @@ local function insertInLog(msg, msgPrefix, sender)
     local currentTime = time()
     local datestamp = date("%d/%m/%Y", currentTime)
     createEntriesIfNeeded(datestamp, msgPrefix)
+    local consReported = {}
     for conAndConNr in string.gmatch(noPrefixMsg, "([^&]+)") do
-        addEntry(datestamp, msgPrefix, sender, conAndConNr)
+        if (conAndConNr ~= msgPrefix) then
+            addEntry(datestamp, msgPrefix, sender, conAndConNr)
+            consReported[getConName(conAndConNr)] = true
+        end
     end
+    removeConsIfUsed(datestamp, msgPrefix, sender, consReported)
 end
 
 local function sendCons(prefix)
     local msg = prefix
     local requiredCons = Consumables:getRequiredConsumables()
     for conNr = 1, #requiredCons, 1 do
-        local conCount = GetItemCount(requiredCons[conNr], nil, true)
+        local conCount = GetItemCount(requiredCons[conNr][1], nil, true)
         if (conCount > 0) then
-            msg = msg .. "&" .. Consumables:getAbbFromName(requiredCons[conNr]) .. conCount
+            msg = msg .. "&" .. Consumables:getAbbFromName(requiredCons[conNr][1]) .. conCount
         end
     end
     Utils:sendAddonMsg(msg, "RAID")
@@ -298,8 +325,11 @@ end
 
 local function addBuff(datestamp, sender, buff)
     local name, duration, expirationTime = string.split("?", buff)
-    insertOrEditBuff(datestamp, sender, Buffs:getNameFromAbb(name), duration, expirationTime)
+    if (name ~= BUFFS) then
+        insertOrEditBuff(datestamp, sender, Buffs:getNameFromAbb(name), duration, expirationTime)
+    end
 end
+
 
 local function insertBuffsInLog(msg, msgPrefix, sender)
     local noPrefixMsg = string.gsub(msg, msgPrefix .. "&", "")
@@ -315,20 +345,37 @@ function TrackingLog:onEvent(event, ...)
 
     if (event == "CHAT_MSG_ADDON") then
         if (prefix == ADDON_PREFIX) then
+            if sender then
+                sender = Utils:removeRealmName(sender)
+            end
             local msgPrefix = string.split("&", msg)
             if (msgPrefix == INIT_CONS or msgPrefix == POST_CONS) and Utils:isOfficer() then
-                insertInLog(msg, msgPrefix, Utils:removeRealmName(sender))
+                insertInLog(msg, msgPrefix, sender)
             elseif (msgPrefix == BUFFS) then
-                insertBuffsInLog(msg, msgPrefix, Utils:removeRealmName(sender))
+                insertBuffsInLog(msg, msgPrefix, sender)
             elseif (msgPrefix == REQUEST_INIT_CONS) then
                 sendCons(INIT_CONS)
                 sendBuffs()
             elseif (msgPrefix == REQUEST_POST_CONS) then
                 sendCons(POST_CONS)
+            elseif (msgPrefix == CONS_SHARE) then
+                Consumables:updateConsume(msg)
+            elseif (msgPrefix == CONS_CLEAR) then
+                Consumables:clearCons()
+            elseif (msgPrefix == BUFF_CLEAR) then
+                Buffs:clearBuffs()
+            elseif (msgPrefix == BUFF_SHARE) then
+                Buffs:updateBuff(msg)
             end
         end
     elseif (event == "ADDON_LOADED") and (prefix == ADDON_PREFIX) then
         Consumables:addonLoaded()
         Buffs:addonLoaded()
+    elseif (event == "READY_CHECK") then
+        sendCons(POST_CONS)
     end
+end
+
+function TrackingLog:removeEntry(date)
+    JP_Consumables_Log[date] = nil
 end

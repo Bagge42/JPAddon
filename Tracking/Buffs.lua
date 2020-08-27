@@ -111,3 +111,24 @@ function Buffs:getCurrentBuffs()
     end
     return currentBuffs
 end
+
+function Buffs:shareBuffs()
+    Utils:sendOfficerAddonMsg(BUFF_CLEAR, "GUILD")
+    local msg = BUFF_SHARE
+    for _, buff in pairs(JP_Required_Buff_List) do
+        msg = msg .. "&" .. buff
+    end
+    Utils:sendOfficerAddonMsg(msg, "GUILD")
+end
+
+function Buffs:updateBuff(msg)
+    for match in string.gmatch(msg, "([^&]*)") do
+        if (match ~= BUFF_SHARE) then
+            table.insert(JP_Required_Buff_List, match)
+        end
+    end
+end
+
+function Buffs:clearBuffs()
+    JP_Required_Buff_List = {}
+end

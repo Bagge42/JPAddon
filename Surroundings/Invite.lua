@@ -29,12 +29,12 @@ local function addRoles(player, rank, role)
     if shouldGiveAssist(player, rank) then
         PromoteToAssistant(player)
     end
---    local macroBtn = CreateFrame("Button", "myMacroButton", JP_Management, "SecureActionButtonTemplate")
---    macroBtn:SetAttribute("type1", "macro") -- left click causes macro
---    macroBtn:SetAttribute("macrotext1", "/maintank femtofire\n/maintank Støvbiks") -- text for macro on left click
---    macroBtn:SetPoint("Center")
---    macroBtn:SetSize(50,50)
---    macroBtn:Show()
+    --    local macroBtn = CreateFrame("Button", "myMacroButton", JP_Management, "SecureActionButtonTemplate")
+    --    macroBtn:SetAttribute("type1", "macro") -- left click causes macro
+    --    macroBtn:SetAttribute("macrotext1", "/maintank femtofire\n/maintank Støvbiks") -- text for macro on left click
+    --    macroBtn:SetPoint("Center")
+    --    macroBtn:SetSize(50,50)
+    --    macroBtn:Show()
 end
 
 local function updateRaidRoster()
@@ -94,7 +94,8 @@ local function givenPlayerIsInMyRaid(player)
 end
 
 local function isValidInvFormat(text)
-    return (text == "inv") or (text == "Inv") or (text == "invite") or (text == "Invite") or (text == "INVITE") or (text == "INV")
+    local lowerCase = string.lower(text)
+    return (lowerCase == "inv") or (text == "invite") or (text == "invit") or (text == "invi")
 end
 
 local function shouldInviteToRaid(text, sender)
@@ -117,12 +118,60 @@ local function shouldConvertToRaid()
     return (GetNumGroupMembers() == 5) and not Utils:selfIsInRaid() and UnitIsGroupLeader("player")
 end
 
+local function leaderTextIsValid(text)
+    local lowerCase = string.lower(text)
+    return (lowerCase == "leader") or (text == "lead")
+end
+
+local function shouldPassLeader(text, sender)
+    return leaderTextIsValid(text) and GuildRosterHandler:isOfficer(sender)
+end
+
+local function masterLooterTextIsValid(masterLooterText)
+    local lowerCase = string.lower(masterLooterText)
+    return (lowerCase == "ml") or (lowerCase == "masterloot") or (lowerCase == "masterlooter")
+end
+
+local function shouldPromoteMasterLooter(masterLooterText, sender)
+    return masterLooterTextIsValid(masterLooterText) and GuildRosterHandler:isOfficer(sender)
+end
+
+local function promoteToMasterLooter(playerGiven, sender)
+    if (playerGiven ~= nil) and givenPlayerIsInMyRaid(playerGiven) then
+        SetLootMethod("master", playerGiven)
+    else
+        SetLootMethod("master", sender)
+    end
+end
+
+local function splitStringBySpace(text)
+    local count = 1
+    local first
+    local second
+    for match in string.gmatch(text, "%S+") do
+        if (count == 1) then
+            first = match
+            count = count + 1
+        else
+            second = match
+        end
+    end
+    return first, second
+end
+
 local function handleWhisper(text, sender)
     if shouldInviteToRaid(text, sender) then
         if shouldConvertToRaid() then
             ConvertToRaid()
         end
         InviteUnit(sender)
+    elseif shouldPassLeader(text, sender) then
+        PromoteToLeader(sender)
+    else
+        local masterLooterText, playerGiven = splitStringBySpace(text)
+        if shouldPromoteMasterLooter(masterLooterText, sender) then
+            promoteToMasterLooter(playerGiven, sender)
+        end
     end
 end
 
@@ -160,7 +209,6 @@ function Invite:assistButtonClick()
 end
 
 function Invite:mainTankButtonClick()
-
 end
 
 function Invite:loadTables(_, addonName)

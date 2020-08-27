@@ -55,18 +55,36 @@ local RequiredConsumables = {
     [48] = { "Monster Omelet", { HEALER, CASTER, HUNTER, TANK, MELEE } },
     [49] = { "Dirge's Kickin' Chimaerok Chops", { HEALER, CASTER, HUNTER, TANK, MELEE } },
     [50] = { "Gordok Green Grog", { HEALER, CASTER, HUNTER, TANK, MELEE } },
+    [51] = { "Greater Mana Potion", { HEALER, CASTER, HUNTER } },
 }
 
 local Roles = {}
 local NameToAbb = {}
 local AbbToName = {}
 
+local function abbExist(abb)
+    for _, cons in pairs(JP_Required_Cons_List) do
+        if (abb == cons[2]) then
+            return true
+        end
+    end
+    return false
+end
+
+local function renameIfExist(abb)
+    local count = 2
+    while abbExist(abb) do
+        abb = abb .. count
+    end
+    return abb
+end
+
 local function getAbb(name)
     local abb = ""
     for match in string.gmatch(name, "%S+") do
         abb = abb .. string.sub(match, 1, 1)
     end
-    return abb
+    return renameIfExist(abb)
 end
 
 function Consumables:addonLoaded()
@@ -114,10 +132,6 @@ function Consumables:getAbbFromName(name)
     return NameToAbb[name]
 end
 
-function Consumables:clearConsumes()
-    JP_Required_Cons_List = {}
-end
-
 local function createRoleTableIfNeeded(role)
     if (Roles[role] == nil) then
         Roles[role] = {}
@@ -134,4 +148,48 @@ end
 function Consumables:getRoleConsumables(role)
     createRoleTableIfNeeded(role)
     return Roles[role]
+end
+
+function Consumables:shareConsumes()
+    Utils:sendOfficerAddonMsg(CONS_CLEAR, "GUILD")
+    local msg = CONS_SHARE
+    for _, consumeInfo in pairs(JP_Required_Cons_List) do
+        msg = msg .. "&" .. consumeInfo[1]
+        for _, role in pairs(consumeInfo[3]) do
+            msg = msg .. "&" .. role
+        end
+    end
+    Utils:sendOfficerAddonMsg(msg, "GUILD")
+end
+
+local function isRole(text)
+    return (text == HEALER) or (text == TANK) or (text == CASTER) or (text == MELEE) or (text == HUNTER)
+end
+
+function Consumables:updateConsume(msg)
+    local consume = {}
+    local roles = {}
+    for match in string.gmatch(msg, "([^&]*)") do
+        if (match ~= CONS_SHARE) then
+            if isRole(match) then
+                table.insert(roles, match)
+            elseif (match ~= "") then
+                consume[1] = match
+                consume[2] = getAbb(match)
+            end
+        end
+    end
+    consume[3] = roles
+    table.insert(JP_Required_Cons_List, consume)
+end
+
+function Consumables:clearCons()
+    JP_Required_Cons_List = {}
+end
+
+function Consumables:printCons()
+    for _, cons in pairs(JP_Required_Cons_List) do
+        print(cons[1])
+        print(cons[2])
+    end
 end
