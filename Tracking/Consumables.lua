@@ -2,7 +2,12 @@ JP_Required_Cons_List = {}
 local Jp = _G.Jp
 local Utils = Jp.Utils
 local Consumables = {}
+local DateEditBox = Jp.DateEditBox
+local FrameHandler = Jp.FrameHandler
 Jp.Consumables = Consumables
+
+local MaximumConsShown = 12
+local ConsIndex = 1
 
 local RequiredConsumables = {
     [1] = { "Major Mana Potion", { HEALER, CASTER, HUNTER } },
@@ -191,5 +196,81 @@ function Consumables:printCons()
     for _, cons in pairs(JP_Required_Cons_List) do
         print(cons[1])
         print(cons[2])
+    end
+end
+
+function Consumables:createConsumeEntries()
+    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_TrackingFrameConsTabList, "JP_ConsumeListEntry")
+    initialEntry:SetID(1)
+    initialEntry:SetPoint("TOPLEFT")
+    for entryNr = 2, MaximumConsShown, 1 do
+        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_TrackingFrameConsTabList, "JP_ConsumeListEntry")
+        followingEntries:SetID(entryNr)
+        followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
+    end
+end
+
+local function setCurrentDateConsTab()
+    DateEditBox:setCurrentDate("JP_TrackingFrameConsTabDateFrameValue")
+end
+
+local function clearConsEntries()
+    for member = 1, MaximumConsShown, 1 do
+        local entry = getglobal("JP_TrackingFrameConsTabListEntry" .. member)
+        getglobal(entry:GetName() .. "Cons"):SetText("")
+        entry:Hide()
+    end
+end
+
+local function getSortedCons()
+    local sortedCons = Utils:copyTable(JP_Required_Cons_List)
+    table.sort(sortedCons, function(member1, member2)
+        return member1[1] < member2[1]
+    end)
+    return sortedCons
+end
+
+local function updateConsEntries()
+    clearConsEntries()
+    local sortedEntries = getSortedCons()
+    local entryCounter = 1
+    for memberIndex = ConsIndex, #sortedEntries, 1 do
+        if entryCounter > MaximumConsShown then
+            return
+        end
+        local entry = getglobal("JP_TrackingFrameConsTabListEntry" .. entryCounter)
+        entry:Show()
+        getglobal(entry:GetName() .. BACKGROUND):Hide()
+        local fontString = getglobal(entry:GetName() .. "Cons")
+        fontString:SetText(sortedEntries[memberIndex][1])
+        entryCounter = entryCounter + 1
+    end
+end
+
+function Consumables:loadTables(_, addonName)
+    if addonName == "jpdkp" then
+        updateConsEntries()
+    end
+end
+
+function Consumables:onLoad()
+    FrameHandler:setOnClickTrackingFrameButtons("Cons", setCurrentDateConsTab)
+end
+
+local function newIndexIsValid(delta)
+    if (ConsIndex == 1) and (delta < 0) then
+        return false
+    end
+    if (ConsIndex + delta > Utils:getTableSize(JP_Required_Cons_List) - MaximumConsShown + 1) then
+        return false
+    end
+    return true
+end
+
+function Consumables:onMouseWheel(delta)
+    local negativeDelta = -delta
+    if newIndexIsValid(negativeDelta) then
+        ConsIndex = ConsIndex + negativeDelta
+        updateConsEntries()
     end
 end

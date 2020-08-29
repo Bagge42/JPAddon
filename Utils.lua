@@ -127,9 +127,9 @@ function Utils:isOfficer()
     return CanEditOfficerNote()
 end
 
-function Utils:sendOfficerAddonMsg(msg, targetChannel)
+function Utils:sendOfficerAddonMsg(msg, targetChannel, targetPlayer)
     if Utils:isOfficer() then
-        C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel)
+        C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel, targetPlayer)
     end
 end
 

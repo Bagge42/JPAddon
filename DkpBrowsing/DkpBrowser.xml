@@ -383,7 +383,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentCons" text="CONS_BUTTON_TEXT" inherits="JP_AllClassToggle">
+                    <Button name="$parentTracking" text="CONS_BUTTON_TEXT" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="75" y="24"/>
                         </Size>

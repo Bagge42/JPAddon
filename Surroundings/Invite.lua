@@ -73,7 +73,7 @@ function Invite:onLoad()
     if Utils:selfIsInRaid() then
         updateRaidRoster()
     end
-    FrameHandler:createInviteTabs()
+    FrameHandler:createInviteTabButtons()
     FrameHandler:setOnClick("Assist", updateAssistEntries)
 
     local autoInvSetting = CreateFrame("Frame", "$parentAutoInvSetting", JP_InviteFrameInviteTab, "JP_SettingEntry")

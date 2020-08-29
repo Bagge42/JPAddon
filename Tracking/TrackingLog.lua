@@ -5,11 +5,16 @@ local Utils = Jp.Utils
 local TrackingLog = {}
 local Consumables = Jp.Consumables
 local Buffs = Jp.Buffs
+local BrowserSelection = Jp.BrowserSelection
 local GuildRosterHandler = Jp.GuildRosterHandler
+local FrameHandler = Jp.FrameHandler
+local DateEditBox = Jp.DateEditBox
 Jp.TrackingLog = TrackingLog
 
 function TrackingLog:onLoad()
-    getglobal("JP_ConsFrameTitleFrameText"):SetText(CONS_FRAME_TITLE)
+    FrameHandler:createTrackingTabButtons()
+    Buffs:onLoad()
+    Consumables:onLoad()
 end
 
 local function existRecordingsForDate(table, date)
@@ -80,6 +85,12 @@ local function isMatchingRole(roleToMatch, name)
     end
 end
 
+function TrackingLog:onListEntryClick(entryId)
+    local cons = getglobal("JP_TrackingFrameConsTabListEntry" .. entryId .. "Cons"):GetText()
+    local date = getglobal("JP_TrackingFrameConsTabDateFrameValue"):GetText()
+    TrackingLog:getItemFromLog(date, cons)
+end
+
 function TrackingLog:getItemFromLog(date, item, role)
     if not isRecordings(date) then
         return
@@ -136,8 +147,9 @@ function TrackingLog:getRole(date, role)
     iterateThroughConsumes(date, roleConsumes, role)
 end
 
-function TrackingLog:getRequiredBuffsFromLog(date)
+function TrackingLog:getRequiredBuffsFromLog()
     local requiredBuffs = Buffs:getRequiredBuffs()
+    local date = DateEditBox:getDateFromBox("JP_TrackingFrameBuffTabDateFrameValue")
     for _, buff in pairs(requiredBuffs) do
         local callSucceeded = TrackingLog:getBuffFromLog(date, buff)
         if not callSucceeded then
@@ -209,7 +221,7 @@ local function createPrefixEntryIfNeeded(datestamp, prefix)
     end
 end
 
-local function getPostRaidConsSilent()
+function TrackingLog:getPostRaidConsSilent()
     local msg = REQUEST_POST_CONS
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
@@ -221,7 +233,7 @@ function TrackingLog:getInitialCons()
 end
 
 function TrackingLog:getPostRaidCons()
-    getPostRaidConsSilent()
+    TrackingLog:getPostRaidConsSilent()
     Utils:sendWarningMessage("Post-raid consumable check performed")
 end
 
@@ -358,13 +370,13 @@ function TrackingLog:onEvent(event, ...)
                 sendBuffs()
             elseif (msgPrefix == REQUEST_POST_CONS) then
                 sendCons(POST_CONS)
-            elseif (msgPrefix == CONS_SHARE) then
+            elseif (msgPrefix == CONS_SHARE) and GuildRosterHandler:isOfficer(sender) then
                 Consumables:updateConsume(msg)
-            elseif (msgPrefix == CONS_CLEAR) then
+            elseif (msgPrefix == CONS_CLEAR) and GuildRosterHandler:isOfficer(sender) then
                 Consumables:clearCons()
-            elseif (msgPrefix == BUFF_CLEAR) then
+            elseif (msgPrefix == BUFF_CLEAR) and GuildRosterHandler:isOfficer(sender) then
                 Buffs:clearBuffs()
-            elseif (msgPrefix == BUFF_SHARE) then
+            elseif (msgPrefix == BUFF_SHARE) and GuildRosterHandler:isOfficer(sender) then
                 Buffs:updateBuff(msg)
             end
         end
@@ -374,6 +386,22 @@ function TrackingLog:onEvent(event, ...)
     elseif (event == "READY_CHECK") then
         sendCons(POST_CONS)
     end
+end
+
+function TrackingLog:requestSingleInitCheck(player)
+    local msg = REQUEST_INIT_CONS
+    if not player then
+        player = BrowserSelection:getSelectedPlayer()
+    end
+    Utils:sendOfficerAddonMsg(msg, "WHISPER", player)
+end
+
+function TrackingLog:requestSinglePostCheck(player)
+    local msg = REQUEST_POST_CONS
+    if not player then
+        player = BrowserSelection:getSelectedPlayer()
+    end
+    Utils:sendOfficerAddonMsg(msg, "WHISPER", player)
 end
 
 function TrackingLog:removeEntry(date)

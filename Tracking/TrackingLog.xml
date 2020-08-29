@@ -1,5 +1,114 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Frame name="JP_ConsFrame" inherits="JP_CenterFrameStatic" hidden="true">
+    <Frame name="JP_DateFrame" virtual="true">
+        <Size>
+            <AbsDimension x="283" y="24"/>
+        </Size>
+        <Layers>
+            <Layer>
+                <FontString name="$parentText" justifyH="LEFT" inherits="GameFontNormal" text="Query date:">
+                    <Size>
+                        <AbsDimension x="85" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="$parentLeft" text="&lt;" inherits="JP_HoverLight">
+                <Size>
+                    <AbsDimension x="24" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            Jp.DateEditBox:decrementDate(self:GetParent():GetName())
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <EditBox name="$parentValue" font="GameFontHighlight" autoFocus="false">
+                <Size>
+                    <AbsDimension x="85" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+                </Anchors>
+                <TextInsets>
+                    <AbsInset left="5" right="0" top="0" bottom="0"/>
+                </TextInsets>
+                <FontString>
+                    <Color r="1" g="1" b="1" a="0.9"/>
+                </FontString>
+                <Scripts>
+                    <OnEscapePressed>
+                        self:ClearFocus()
+                    </OnEscapePressed>
+                </Scripts>
+                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                    <Color r="0" g="0" b="0" a="1"/>
+                </Backdrop>
+            </EditBox>
+            <Button name="$parentRight" text="&gt;" inherits="JP_HoverLight">
+                <Size>
+                    <AbsDimension x="24" y="24"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentValue" relativePoint="RIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            Jp.DateEditBox:incrementDate(self:GetParent():GetName())
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+    <Button name="JP_ConsumeListEntry" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="283" y="19"/>
+        </Size>
+        <Layers>
+            <Layer>
+                <FontString name="$parentCons" justifyH="LEFT" inherits="GameFontNormal">
+                    <Size>
+                        <AbsDimension x="283" y="21"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="6" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                    getglobal(self:GetName() .. BACKGROUND):Hide()
+            </OnLoad>
+            <OnClick>
+                    Jp.TrackingLog:onListEntryClick(self:GetID())
+            </OnClick>
+            <OnEnter>
+                    getglobal(self:GetName() .. BACKGROUND):Show()
+            </OnEnter>
+            <OnLeave>
+                    getglobal(self:GetName() .. BACKGROUND):Hide()
+            </OnLeave>
+        </Scripts>
+        <NormalTexture name="$parentBackground">
+            <Color r="0" g="0" b="0.5" a="0.33"/>
+        </NormalTexture>
+    </Button>
+    <Frame name="JP_TrackingFrame" inherits="JP_CenterFrameDynamic" hidden="true">
         <Scripts>
             <OnLoad>
                     self:RegisterEvent("CHAT_MSG_ADDON")
@@ -12,32 +121,126 @@
             </OnEvent>
         </Scripts>
         <Frames>
-            <Button name="$parentPost" text="POST_CHECK" inherits="JP_HoverLight">
-                <Size>
-                    <AbsDimension x="283" y="48"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOM"/>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                            Jp.TrackingLog:getPostRaidCons()
-                    </OnClick>
-                </Scripts>
-            </Button>
-            <Button name="$parentInit" text="INITIAL_CHECK" inherits="JP_HoverLight">
-                <Size>
-                    <AbsDimension x="283" y="48"/>
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOM" relativeTo="$parentPost" relativePoint="TOP"/>
-                </Anchors>
-                <Scripts>
-                    <OnClick>
-                            Jp.TrackingLog:getInitialCons()
-                    </OnClick>
-                </Scripts>
-            </Button>
+            <Frame name="$parentTrackingTab" inherits="JP_CenterFrameTab">
+                <Frames>
+                    <Button name="$parentVersion" text="VERSION_CHECK_BUTTON_TEXT" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="51"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.VersionCheck:requestCheck()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentPost" text="POST_CHECK" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="51"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOM"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.TrackingLog:getPostRaidCons()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentInit" text="INITIAL_CHECK" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="50"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOM" relativeTo="$parentPost" relativePoint="TOP"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.TrackingLog:getInitialCons()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentSinglePost" text="SINGLE_POST_CHECK_BUTTON_TEXT" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="50"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOM" relativeTo="$parentInit" relativePoint="TOP"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.TrackingLog:requestSinglePostCheck()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentSingleInit" text="SINGLE_INIT_CHECK_BUTTON_TEXT" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="50"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOM" relativeTo="$parentSinglePost" relativePoint="TOP"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.TrackingLog:requestSingleInitCheck()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="$parentBuffTab" inherits="JP_CenterFrameTab" hidden="true">
+                <Frames>
+                    <Frame name="$parentDateFrame" inherits="JP_DateFrame">
+                        <Anchors>
+                            <Anchor point="TOP"/>
+                        </Anchors>
+                    </Frame>
+                    <Button name="$parentRequired" text="REQUIRED_BUFFS_BUTTON_TEXT" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="45"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOM"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.TrackingLog:getRequiredBuffsFromLog()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="$parentConsTab" inherits="JP_CenterFrameTab" hidden="true">
+                <Frames>
+                    <Frame name="$parentDateFrame" inherits="JP_DateFrame">
+                        <Anchors>
+                            <Anchor point="TOP"/>
+                        </Anchors>
+                    </Frame>
+                    <Frame name="$parentList">
+                        <Scripts>
+                            <OnLoad>
+                                    Jp.Consumables:createConsumeEntries()
+                                    self:RegisterEvent("ADDON_LOADED")
+                            </OnLoad>
+                            <OnEvent>
+                                    Jp.Consumables:loadTables(event, ...)
+                            </OnEvent>
+                            <OnMouseWheel>
+                                    Jp.Consumables:onMouseWheel(delta)
+                            </OnMouseWheel>
+                        </Scripts>
+                        <Size>
+                            <AbsDimension x="283" y="228"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="$parentDateFrame" relativePoint="BOTTOM"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+            </Frame>
         </Frames>
     </Frame>
 </Ui>

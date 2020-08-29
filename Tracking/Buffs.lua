@@ -2,6 +2,8 @@ JP_Required_Buff_List = {}
 local Jp = _G.Jp
 local Buffs = {}
 local Utils = Jp.Utils
+local FrameHandler = Jp.FrameHandler
+local DateEditBox = Jp.DateEditBox
 Jp.Buffs = Buffs
 
 local BuffCap = 32
@@ -21,25 +23,27 @@ local RaidBuffNamesToIds = {
     ["Fengus' Ferocity"] = 22817,
     ["Slip'kik's Savvy"] = 22820,
     ["Mol'dar's Moxie"] = 22818,
-    ["Spirit of Zandalar"] = 24425
+    ["Spirit of Zandalar"] = 24425,
+    ["Spirit of Zanza"] = 24382,
 }
 
 local RaidBuffNamesToAbb = {
-    ["Rallying Cry of the Dragonslayer"] = "RCotD",
-    ["Songflower Serenade"] = "SSe",
-    ["Warchief's Blessing"] = "WB",
-    ["Sayge's Dark Fortune of Agility"] = "SDFoAg",
-    ["Sayge's Dark Fortune of Intelligence"] = "SDFoI",
-    ["Sayge's Dark Fortune of Spirit"] = "SDFoSp",
-    ["Sayge's Dark Fortune of Stamina"] = "SDFoSta",
-    ["Sayge's Dark Fortune of Strength"] = "SDFoStr",
-    ["Sayge's Dark Fortune of Armor"] = "SDFoAr",
-    ["Sayge's Dark Fortune of Resistance"] = "SDFoR",
-    ["Sayge's Dark Fortune of Damage"] = "SDFoD",
-    ["Fengus' Ferocity"] = "FF",
-    ["Slip'kik's Savvy"] = "SSa",
-    ["Mol'dar's Moxie"] = "MM",
-    ["Spirit of Zandalar"] = "SoS"
+    ["Rallying Cry of the Dragonslayer"] = "Ony",
+    ["Songflower Serenade"] = "SF",
+    ["Warchief's Blessing"] = "Rend",
+    ["Sayge's Dark Fortune of Agility"] = "DMFAgi",
+    ["Sayge's Dark Fortune of Intelligence"] = "DMFInt",
+    ["Sayge's Dark Fortune of Spirit"] = "DMFSpi",
+    ["Sayge's Dark Fortune of Stamina"] = "DMFSta",
+    ["Sayge's Dark Fortune of Strength"] = "DMFStr",
+    ["Sayge's Dark Fortune of Armor"] = "DMFArm",
+    ["Sayge's Dark Fortune of Resistance"] = "DMFRes",
+    ["Sayge's Dark Fortune of Damage"] = "DMFDam",
+    ["Fengus' Ferocity"] = "DMTA",
+    ["Slip'kik's Savvy"] = "DMTC",
+    ["Mol'dar's Moxie"] = "DMTS",
+    ["Spirit of Zandalar"] = "ZG",
+    ["Spirit of Zanza"] = "SoZ",
 }
 
 local RaidBuffAbbToName = {
@@ -57,7 +61,23 @@ local RaidBuffAbbToName = {
     ["FF"] = "Fengus' Ferocity",
     ["SSa"] = "Slip'kik's Savvy",
     ["MM"] = "Mol'dar's Moxie",
-    ["SoS"] = "Spirit of Zandalar"
+    ["SoS"] = "Spirit of Zandalar",
+    ["Ony"] = "Rallying Cry of the Dragonslayer",
+    ["SF"] = "Songflower Serenade",
+    ["Rend"] = "Warchief's Blessing",
+    ["DMFAgi"] = "Sayge's Dark Fortune of Agility",
+    ["DMFInt"] = "Sayge's Dark Fortune of Intelligence",
+    ["DMFSpi"] = "Sayge's Dark Fortune of Spirit",
+    ["DMFSta"] = "Sayge's Dark Fortune of Stamina",
+    ["DMFStr"] = "Sayge's Dark Fortune of Strength",
+    ["DMFArm"] = "Sayge's Dark Fortune of Armor",
+    ["DMFRes"] = "Sayge's Dark Fortune of Resistance",
+    ["DMFDam"] = "Sayge's Dark Fortune of Damage",
+    ["DMTA"] = "Fengus' Ferocity",
+    ["DMTC"] = "Slip'kik's Savvy",
+    ["DMTS"] = "Mol'dar's Moxie",
+    ["ZG"] = "Spirit of Zandalar",
+    ["SoZ"] = "Spirit of Zanza",
 }
 
 local RequiredBuffs = {
@@ -67,6 +87,13 @@ local RequiredBuffs = {
 
 function Buffs:getRequiredBuffs()
     return JP_Required_Buff_List
+end
+
+function Buffs:printAbbs()
+    for name, abb in pairs(RaidBuffNamesToAbb) do
+        local msg = name .. ": " .. abb
+        Utils:jpMsg(msg)
+    end
 end
 
 function Buffs:getRaidBuffNamesAndIds()
@@ -131,4 +158,12 @@ end
 
 function Buffs:clearBuffs()
     JP_Required_Buff_List = {}
+end
+
+local function setCurrentDateBuffTab()
+    DateEditBox:setCurrentDate("JP_TrackingFrameBuffTabDateFrameValue")
+end
+
+function Buffs:onLoad()
+    FrameHandler:setOnClickTrackingFrameButtons("Buff", setCurrentDateBuffTab)
 end
