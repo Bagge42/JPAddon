@@ -278,17 +278,17 @@ end
 
 function TrackingLog:getPostRaidConsSilent()
     local msg = REQUEST_POST_CONS
-    Utils:sendOfficerAddonMsg(msg, "GUILD")
+    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 local function sendInitRequest()
     local msg = REQUEST_INIT_CONS
-    Utils:sendOfficerAddonMsg(msg, "GUILD")
+    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 local function sendConsBuffStatus(cons, buffs)
     local msg = SHOULD_SAVE_CONS_BUFFS .. "&" .. cons .. "&" .. buffs
-    Utils:sendOfficerAddonMsg(msg, "GUILD")
+    Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 function TrackingLog:getInitialCons()
@@ -390,7 +390,7 @@ local function sendCons(prefix)
             msg = msg .. "&" .. Consumables:getAbbFromName(requiredCons[conNr][1]) .. conCount
         end
     end
-    Utils:sendAddonMsg(msg, "GUILD")
+    Utils:sendAddonMsg(msg, "RAID")
 end
 
 local function sendBuffs()
@@ -400,7 +400,7 @@ local function sendBuffs()
         local buffInfo = currentBuffs[buff]
         msg = msg .. "&" .. Buffs:getAbbFromName(buffInfo[1]) .. "?" .. buffInfo[2] .. "?" .. buffInfo[3]
     end
-    Utils:sendAddonMsg(msg, "GUILD")
+    Utils:sendAddonMsg(msg, "RAID")
 end
 
 local function insertOrEditBuff(datestamp, sender, name, duration, expirationTime)
