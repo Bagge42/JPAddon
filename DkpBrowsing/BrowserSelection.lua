@@ -17,6 +17,8 @@ function BrowserSelection:selectEntry(entryId)
         getglobal(PLAYER_MANAGEMENT):Hide()
         CurrentSelection = ""
         EntryIdOfSelection = 0
+        getglobal("JP_TrackingFrameTrackingTabSingleInit"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
+        getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
     else
         getglobal(PLAYER_MANAGEMENT):Show()
         local playerNameFrame = getglobal(PLAYER_MANAGEMENT .. "PlayerName")

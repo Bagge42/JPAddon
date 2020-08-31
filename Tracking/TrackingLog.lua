@@ -11,6 +11,29 @@ local FrameHandler = Jp.FrameHandler
 local DateEditBox = Jp.DateEditBox
 Jp.TrackingLog = TrackingLog
 
+local ShowInit = false
+local ShowPost = false
+local RequestedInitBuffs
+local RequestedInitCons
+
+local function toggleInit()
+    if (ShowInit == true) then
+        ShowInit = false
+    else
+        ShowPost = false
+        ShowInit = true
+    end
+end
+
+local function togglePost()
+    if (ShowPost == true) then
+        ShowPost = false
+    else
+        ShowInit = false
+        ShowPost = true
+    end
+end
+
 function TrackingLog:onLoad()
     FrameHandler:createTrackingTabButtons()
     Buffs:onLoad()
@@ -91,6 +114,26 @@ function TrackingLog:onListEntryClick(entryId)
     TrackingLog:getItemFromLog(date, cons)
 end
 
+local function getItemNr(initEntries, postEntries, name)
+    if ShowInit then
+        return initEntries[name]
+    elseif ShowPost then
+        return postEntries[name]
+    else
+        return initEntries[name] - postEntries[name]
+    end
+end
+
+local function getInitAndPostEntriesForItem(date, item)
+    local initEntries = JP_Consumables_Log[date][INIT_CONS][item]
+    local postEntries = JP_Consumables_Log[date][POST_CONS][item]
+    initEntries = convertToNameNumberTable(initEntries)
+    postEntries = convertToNameNumberTable(postEntries)
+    insertZeros(initEntries, postEntries)
+    insertZeros(postEntries, initEntries)
+    return initEntries, postEntries
+end
+
 function TrackingLog:getItemFromLog(date, item, role)
     if not isRecordings(date) then
         return
@@ -105,18 +148,13 @@ function TrackingLog:getItemFromLog(date, item, role)
         end
     end
 
-    local initEntries = JP_Consumables_Log[date][INIT_CONS][item]
-    local postEntries = JP_Consumables_Log[date][POST_CONS][item]
-    initEntries = convertToNameNumberTable(initEntries)
-    postEntries = convertToNameNumberTable(postEntries)
-    insertZeros(initEntries, postEntries)
-    insertZeros(postEntries, initEntries)
+    local initEntries, postEntries = getInitAndPostEntriesForItem(date, item)
 
     Utils:jpMsg(item)
     Utils:jpMsg("----------------------------------------")
     local msg = ""
     for name, _ in pairs(initEntries) do
-        local itemsUsed = initEntries[name] - postEntries[name]
+        local itemsUsed = getItemNr(initEntries, postEntries, name)
         local matchRole = isMatchingRole(role, name)
         if (itemsUsed ~= 0) and matchRole then
             msg = msg .. name .. ": " .. itemsUsed .. "  "
@@ -193,6 +231,24 @@ function TrackingLog:getAllItems(date)
     end
 end
 
+function TrackingLog:getItemsForPlayer(date, player)
+    if not isRecordings(date) then
+        return
+    end
+
+    local requiredCons = Consumables:getRequiredConsumables()
+    Utils:jpMsg(player)
+    Utils:jpMsg("----------------------------------------")
+    for con = 1, #requiredCons, 1 do
+        local nameOfCon = requiredCons[con][1]
+        local initEntries, postEntries = getInitAndPostEntriesForItem(date, nameOfCon)
+        if (initEntries[player] ~= nil) then
+            local consUsed = initEntries[player] - postEntries[player]
+            Utils:jpMsg(nameOfCon .. ": " .. consUsed)
+        end
+    end
+end
+
 local function createBuffEntries(datestamp)
     JP_Buff_Log[datestamp] = {}
     for name, _ in pairs(Buffs:getRaidBuffNamesAndIds()) do
@@ -203,7 +259,6 @@ end
 local function createDateEntryIfNeeded(datestamp)
     if (JP_Consumables_Log[datestamp] == nil) then
         JP_Consumables_Log[datestamp] = {}
-        createBuffEntries(datestamp)
     end
 end
 
@@ -223,13 +278,35 @@ end
 
 function TrackingLog:getPostRaidConsSilent()
     local msg = REQUEST_POST_CONS
-    Utils:sendOfficerAddonMsg(msg, "RAID")
+    Utils:sendOfficerAddonMsg(msg, "GUILD")
+end
+
+local function sendInitRequest()
+    local msg = REQUEST_INIT_CONS
+    Utils:sendOfficerAddonMsg(msg, "GUILD")
+end
+
+local function sendConsBuffStatus(cons, buffs)
+    local msg = SHOULD_SAVE_CONS_BUFFS .. "&" .. cons .. "&" .. buffs
+    Utils:sendOfficerAddonMsg(msg, "GUILD")
 end
 
 function TrackingLog:getInitialCons()
-    local msg = REQUEST_INIT_CONS
+    sendConsBuffStatus(1, 0)
+    sendInitRequest()
     Utils:sendWarningMessage("Pre-raid consumable check performed")
-    Utils:sendOfficerAddonMsg(msg, "RAID")
+end
+
+function TrackingLog:getInitialBuffs()
+    sendConsBuffStatus(0, 1)
+    sendInitRequest()
+    Utils:sendWarningMessage("Pre-raid buff check performed")
+end
+
+function TrackingLog:getInitialConsAndBuffs()
+    sendConsBuffStatus(1, 1)
+    sendInitRequest()
+    Utils:sendWarningMessage("Pre-raid consumable and buff check performed")
 end
 
 function TrackingLog:getPostRaidCons()
@@ -286,6 +363,10 @@ local function removeConsIfUsed(datestamp, msgPrefix, sender, consReported)
 end
 
 local function insertInLog(msg, msgPrefix, sender)
+    if (msgPrefix == INIT_CONS) and (RequestedInitCons == 0) then
+        return
+    end
+
     local noPrefixMsg = string.gsub(msg, msgPrefix .. "&", "")
     local currentTime = time()
     local datestamp = date("%d/%m/%Y", currentTime)
@@ -309,7 +390,7 @@ local function sendCons(prefix)
             msg = msg .. "&" .. Consumables:getAbbFromName(requiredCons[conNr][1]) .. conCount
         end
     end
-    Utils:sendAddonMsg(msg, "RAID")
+    Utils:sendAddonMsg(msg, "GUILD")
 end
 
 local function sendBuffs()
@@ -319,7 +400,7 @@ local function sendBuffs()
         local buffInfo = currentBuffs[buff]
         msg = msg .. "&" .. Buffs:getAbbFromName(buffInfo[1]) .. "?" .. buffInfo[2] .. "?" .. buffInfo[3]
     end
-    Utils:sendAddonMsg(msg, "RAID")
+    Utils:sendAddonMsg(msg, "GUILD")
 end
 
 local function insertOrEditBuff(datestamp, sender, name, duration, expirationTime)
@@ -342,11 +423,20 @@ local function addBuff(datestamp, sender, buff)
     end
 end
 
+local function createBuffEntriesIfNeeded(datestamp)
+    if (JP_Buff_Log[datestamp] == nil) then
+        createBuffEntries(datestamp)
+    end
+end
 
 local function insertBuffsInLog(msg, msgPrefix, sender)
+    if (RequestedInitBuffs == 0) then
+        return
+    end
     local noPrefixMsg = string.gsub(msg, msgPrefix .. "&", "")
     local currentTime = time()
     local datestamp = date("%d/%m/%Y", currentTime)
+    createBuffEntriesIfNeeded(datestamp)
     for buff in string.gmatch(noPrefixMsg, "([^&]+)") do
         addBuff(datestamp, sender, buff)
     end
@@ -368,6 +458,10 @@ function TrackingLog:onEvent(event, ...)
             elseif (msgPrefix == REQUEST_INIT_CONS) then
                 sendCons(INIT_CONS)
                 sendBuffs()
+            elseif (msgPrefix == SHOULD_SAVE_CONS_BUFFS) and Utils:isOfficer() then
+                local _, cons, buffs = string.split("&", msg)
+                RequestedInitCons = tonumber(cons)
+                RequestedInitBuffs = tonumber(buffs)
             elseif (msgPrefix == REQUEST_POST_CONS) then
                 sendCons(POST_CONS)
             elseif (msgPrefix == CONS_SHARE) and GuildRosterHandler:isOfficer(sender) then
@@ -392,6 +486,9 @@ function TrackingLog:requestSingleInitCheck(player)
     local msg = REQUEST_INIT_CONS
     if not player then
         player = BrowserSelection:getSelectedPlayer()
+        if (player == "") then
+            return
+        end
     end
     Utils:sendOfficerAddonMsg(msg, "WHISPER", player)
 end
@@ -400,10 +497,17 @@ function TrackingLog:requestSinglePostCheck(player)
     local msg = REQUEST_POST_CONS
     if not player then
         player = BrowserSelection:getSelectedPlayer()
+        if (player == "") then
+            return
+        end
     end
     Utils:sendOfficerAddonMsg(msg, "WHISPER", player)
 end
 
-function TrackingLog:removeEntry(date)
+function TrackingLog:removeConsEntry(date)
     JP_Consumables_Log[date] = nil
+end
+
+function TrackingLog:removeBuffEntry(date)
+    JP_Buff_Log[date] = nil
 end

@@ -136,7 +136,12 @@ local function shouldPromoteMasterLooter(masterLooterText, sender)
     return masterLooterTextIsValid(masterLooterText) and GuildRosterHandler:isOfficer(sender)
 end
 
+local function uppercaseFirstLetter(text)
+    return text:gsub("^%l", string.upper)
+end
+
 local function promoteToMasterLooter(playerGiven, sender)
+    playerGiven = uppercaseFirstLetter(playerGiven)
     if (playerGiven ~= nil) and givenPlayerIsInMyRaid(playerGiven) then
         SetLootMethod("master", playerGiven)
     else

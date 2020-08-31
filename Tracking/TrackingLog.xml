@@ -158,11 +158,11 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    Jp.TrackingLog:getInitialCons()
+                                    Jp.TrackingLog:getInitialConsAndBuffs()
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentSinglePost" text="SINGLE_POST_CHECK_BUTTON_TEXT" inherits="JP_HoverLight">
+                    <Button name="$parentSinglePost" text="SINGLE_CHECK_BUTTON_TEXT_EMPTY" inherits="JP_HoverLight">
                         <Size>
                             <AbsDimension x="283" y="50"/>
                         </Size>
@@ -175,7 +175,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentSingleInit" text="SINGLE_INIT_CHECK_BUTTON_TEXT" inherits="JP_HoverLight">
+                    <Button name="$parentSingleInit" text="SINGLE_CHECK_BUTTON_TEXT_EMPTY" inherits="JP_HoverLight">
                         <Size>
                             <AbsDimension x="283" y="50"/>
                         </Size>
