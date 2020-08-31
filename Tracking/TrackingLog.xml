@@ -138,10 +138,10 @@
                     </Button>
                     <Button name="$parentPost" text="POST_CHECK" inherits="JP_HoverLight">
                         <Size>
-                            <AbsDimension x="283" y="51"/>
+                            <AbsDimension x="142" y="51"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="BOTTOM"/>
+                            <Anchor point="BOTTOMRIGHT"/>
                         </Anchors>
                         <Scripts>
                             <OnClick>
@@ -151,10 +151,10 @@
                     </Button>
                     <Button name="$parentInit" text="INITIAL_CHECK" inherits="JP_HoverLight">
                         <Size>
-                            <AbsDimension x="283" y="50"/>
+                            <AbsDimension x="141" y="50"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="BOTTOM" relativeTo="$parentPost" relativePoint="TOP"/>
+                            <Anchor point="BOTTOMLEFT"/>
                         </Anchors>
                         <Scripts>
                             <OnClick>
@@ -162,16 +162,29 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentSinglePost" text="SINGLE_CHECK_BUTTON_TEXT_EMPTY" inherits="JP_HoverLight">
+                    <Button name="$parentConsInit" text="CONS_INIT_BUTTON_TEXT" inherits="JP_HoverLight">
                         <Size>
-                            <AbsDimension x="283" y="50"/>
+                            <AbsDimension x="141" y="51"/>
                         </Size>
                         <Anchors>
                             <Anchor point="BOTTOM" relativeTo="$parentInit" relativePoint="TOP"/>
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                    Jp.TrackingLog:requestSinglePostCheck()
+                                    Jp.TrackingLog:getInitialCons()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentBuffsInit" text="BUFFS_INIT_BUTTON_TEXT" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="142" y="51"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOM" relativeTo="$parentPost" relativePoint="TOP"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.TrackingLog:getInitialBuffs()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -180,11 +193,24 @@
                             <AbsDimension x="283" y="50"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="BOTTOM" relativeTo="$parentSinglePost" relativePoint="TOP"/>
+                            <Anchor point="TOP" relativeTo="$parentVersion" relativePoint="BOTTOM"/>
                         </Anchors>
                         <Scripts>
                             <OnClick>
                                     Jp.TrackingLog:requestSingleInitCheck()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="$parentSinglePost" text="SINGLE_CHECK_BUTTON_TEXT_EMPTY" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="50"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="$parentSingleInit" relativePoint="BOTTOM"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.TrackingLog:requestSinglePostCheck()
                             </OnClick>
                         </Scripts>
                     </Button>
