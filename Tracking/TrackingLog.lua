@@ -9,30 +9,16 @@ local BrowserSelection = Jp.BrowserSelection
 local GuildRosterHandler = Jp.GuildRosterHandler
 local FrameHandler = Jp.FrameHandler
 local DateEditBox = Jp.DateEditBox
+local DkpManager = Jp.DkpManager
 Jp.TrackingLog = TrackingLog
 
-local ShowInit = false
-local ShowPost = false
 local RequestedInitBuffs
 local RequestedInitCons
-
-local function toggleInit()
-    if (ShowInit == true) then
-        ShowInit = false
-    else
-        ShowPost = false
-        ShowInit = true
-    end
-end
-
-local function togglePost()
-    if (ShowPost == true) then
-        ShowPost = false
-    else
-        ShowInit = false
-        ShowPost = true
-    end
-end
+local CreatedBuffCheck = false
+local BuffBonus = 3
+local NrOfRequiredBuffs = 2
+local TradeTarget
+local LootWasFromTrade
 
 function TrackingLog:onLoad()
     FrameHandler:createTrackingTabButtons()
@@ -115,9 +101,9 @@ function TrackingLog:onListEntryClick(entryId)
 end
 
 local function getItemNr(initEntries, postEntries, name)
-    if ShowInit then
+    if Consumables:getShowInit() then
         return initEntries[name]
-    elseif ShowPost then
+    elseif Consumables:getShowPost() then
         return postEntries[name]
     else
         return initEntries[name] - postEntries[name]
@@ -222,7 +208,7 @@ function TrackingLog:getBuffFromLog(date, buff)
 end
 
 function TrackingLog:getAllItems(date)
-    local requiredCons = Consumables:getRequiredConsumables()
+    local requiredCons = Consumables:getConsumableList()
     for con = 1, #requiredCons, 1 do
         local callSucceeded = TrackingLog:getItemFromLog(date, requiredCons[con][1])
         if not callSucceeded then
@@ -236,7 +222,7 @@ function TrackingLog:getItemsForPlayer(date, player)
         return
     end
 
-    local requiredCons = Consumables:getRequiredConsumables()
+    local requiredCons = Consumables:getConsumableList()
     Utils:jpMsg(player)
     Utils:jpMsg("----------------------------------------")
     for con = 1, #requiredCons, 1 do
@@ -263,7 +249,7 @@ local function createDateEntryIfNeeded(datestamp)
 end
 
 local function createConsEntries(datestamp, prefix)
-    local requiredCons = Consumables:getRequiredConsumables()
+    local requiredCons = Consumables:getConsumableList()
     for requiredConNr = 1, #requiredCons, 1 do
         JP_Consumables_Log[datestamp][prefix][requiredCons[requiredConNr][1]] = {}
     end
@@ -383,7 +369,7 @@ end
 
 local function sendCons(prefix)
     local msg = prefix
-    local requiredCons = Consumables:getRequiredConsumables()
+    local requiredCons = Consumables:getConsumableList()
     for conNr = 1, #requiredCons, 1 do
         local conCount = GetItemCount(requiredCons[conNr][1], nil, true)
         if (conCount > 0) then
@@ -403,16 +389,16 @@ local function sendBuffs()
     Utils:sendAddonMsg(msg, "RAID")
 end
 
-local function insertOrEditBuff(datestamp, sender, name, duration, expirationTime)
+local function insertOrEditBuff(datestamp, sender, buffName, duration, expirationTime)
     local edited = false
-    for entry = 1, #JP_Buff_Log[datestamp][name], 1 do
-        if (JP_Buff_Log[datestamp][name][entry][1] == sender) then
-            JP_Buff_Log[datestamp][name][entry] = { sender, duration, expirationTime }
+    for entry = 1, #JP_Buff_Log[datestamp][buffName], 1 do
+        if (JP_Buff_Log[datestamp][buffName][entry][1] == sender) then
+            JP_Buff_Log[datestamp][buffName][entry] = { sender, duration, expirationTime }
             edited = true
         end
     end
     if not edited then
-        table.insert(JP_Buff_Log[datestamp][name], { sender, duration, expirationTime })
+        table.insert(JP_Buff_Log[datestamp][buffName], { sender, duration, expirationTime })
     end
 end
 
@@ -429,7 +415,25 @@ local function createBuffEntriesIfNeeded(datestamp)
     end
 end
 
-local function insertBuffsInLog(msg, msgPrefix, sender)
+local function addDkpForHavingBuffs(datestamp, sender)
+    local requiredBuffs = Buffs:getRequiredBuffs()
+    local requiredBuffsObtained = {}
+    for _, buff in pairs(requiredBuffs) do
+        for _, playerInfo in pairs(JP_Buff_Log[datestamp][buff]) do
+            if (playerInfo[1] == sender) then
+                if (tonumber(playerInfo[3]) >= 60) then
+                    table.insert(requiredBuffsObtained, buff)
+                end
+                break
+            end
+        end
+    end
+    if (#requiredBuffsObtained >= NrOfRequiredBuffs) then
+        DkpManager:singleDkpAddition(sender, BuffBonus, "Buff bonus")
+    end
+end
+
+local function handleBuffs(msg, msgPrefix, sender)
     if (RequestedInitBuffs == 0) then
         return
     end
@@ -439,6 +443,101 @@ local function insertBuffsInLog(msg, msgPrefix, sender)
     createBuffEntriesIfNeeded(datestamp)
     for buff in string.gmatch(noPrefixMsg, "([^&]+)") do
         addBuff(datestamp, sender, buff)
+    end
+    --    addDkpForHavingBuffs(datestamp, sender)
+end
+
+local function setCreatedBuffCheck(sender)
+    if Utils:isSelf(sender) then
+        CreatedBuffCheck = true
+    else
+        CreatedBuffCheck = false
+    end
+end
+
+local function consumableIsBeingTracked(cons, consList)
+    for index, itemTable in pairs(consList) do
+        if (itemTable[1] == cons) then
+            return true
+        end
+    end
+    return false
+end
+
+local function findLootMethod(lootString)
+    if (string.find(lootString, "You receive item")) then
+        return TRADE
+    elseif (string.find(lootString, "You receive loot")) then
+        return PICK_UP
+    else
+        return CREATE
+    end
+end
+
+local function findItemNumber(lootString)
+    local match = string.match(lootString, "x[0-9]*\.")
+    if (match) then
+        return string.match(match, "%d+")
+    end
+    return 1
+end
+
+local function reactToLoot(lootString, sender)
+    if not Utils:isSelf(sender) then
+        return
+    end
+
+    local lootMethod = findLootMethod(lootString)
+    local itemLink = string.match(lootString, "|%x+|Hitem:.-|h.-|h|r")
+    local itemName = GetItemInfo(itemLink)
+    local consumablesBeingTracked = Consumables:getConsumableList()
+    if consumableIsBeingTracked(itemName, consumablesBeingTracked) then
+        local itemNumber = findItemNumber(lootString)
+        local msg = INIT_UPDATE .. "&" .. itemName .. "&" .. itemNumber
+        if (lootMethod == TRADE) then
+            msg = msg .. "&" .. TradeTarget
+        end
+        Utils:sendAddonMsg(msg, "RAID")
+    end
+end
+
+local function isCurrentlyTracking(date)
+    if (JP_Consumables_Log[date] == nil) then
+        return false
+    end
+    local initCheckDone = JP_Consumables_Log[date][INIT_CONS] ~= nil
+    local postCheckDone = JP_Consumables_Log[date][POST_CONS] ~= nil
+    return initCheckDone and not postCheckDone
+end
+
+local function getSenderIndex(table, value)
+    for key, val in pairs(table) do
+        if (val[1] == value) then
+            return key
+        end
+    end
+end
+
+local function updateInit(msg, msgSender)
+    local currentTime = time()
+    local date = date("%d/%m/%Y", currentTime)
+    if not isCurrentlyTracking(date) then
+        return
+    end
+
+    local prefix, itemName, itemNumber, itemSender = string.split("&", msg)
+    local msgSenderIndex = getSenderIndex(JP_Consumables_Log[date][INIT_CONS][itemName], msgSender)
+    if (msgSenderIndex == nil) then
+        table.insert(JP_Consumables_Log[date][INIT_CONS][itemName], { msgSender, tonumber(itemNumber) })
+    else
+        local priorItemHoldings = JP_Consumables_Log[date][INIT_CONS][itemName][msgSenderIndex][2]
+        JP_Consumables_Log[date][INIT_CONS][itemName][msgSenderIndex][2] = priorItemHoldings + tonumber(itemNumber)
+    end
+
+    if (itemSender ~= nil) then
+        local itemSenderIndex = getSenderIndex(JP_Consumables_Log[date][INIT_CONS][itemName], itemSender)
+        local itemSenderHoldings = JP_Consumables_Log[date][INIT_CONS][itemName][itemSenderIndex][2]
+        JP_Consumables_Log[date][INIT_CONS][itemName][itemSenderIndex][2] = itemSenderHoldings - tonumber(itemNumber)
     end
 end
 
@@ -453,8 +552,8 @@ function TrackingLog:onEvent(event, ...)
             local msgPrefix = string.split("&", msg)
             if (msgPrefix == INIT_CONS or msgPrefix == POST_CONS) and Utils:isOfficer() then
                 insertInLog(msg, msgPrefix, sender)
-            elseif (msgPrefix == BUFFS) then
-                insertBuffsInLog(msg, msgPrefix, sender)
+            elseif (msgPrefix == BUFFS) and Utils:isOfficer() then
+                handleBuffs(msg, msgPrefix, sender)
             elseif (msgPrefix == REQUEST_INIT_CONS) then
                 sendCons(INIT_CONS)
                 sendBuffs()
@@ -462,6 +561,7 @@ function TrackingLog:onEvent(event, ...)
                 local _, cons, buffs = string.split("&", msg)
                 RequestedInitCons = tonumber(cons)
                 RequestedInitBuffs = tonumber(buffs)
+                setCreatedBuffCheck(sender)
             elseif (msgPrefix == REQUEST_POST_CONS) then
                 sendCons(POST_CONS)
             elseif (msgPrefix == CONS_SHARE) and GuildRosterHandler:isOfficer(sender) then
@@ -472,6 +572,8 @@ function TrackingLog:onEvent(event, ...)
                 Buffs:clearBuffs()
             elseif (msgPrefix == BUFF_SHARE) and GuildRosterHandler:isOfficer(sender) then
                 Buffs:updateBuff(msg)
+            elseif (msgPrefix == INIT_UPDATE) and Utils:isOfficer() then
+                updateInit(msg, sender)
             end
         end
     elseif (event == "ADDON_LOADED") and (prefix == ADDON_PREFIX) then
@@ -479,10 +581,14 @@ function TrackingLog:onEvent(event, ...)
         Buffs:addonLoaded()
     elseif (event == "READY_CHECK") then
         sendCons(POST_CONS)
+    elseif (event == "CHAT_MSG_LOOT") then
+        reactToLoot(prefix, target)
+    elseif (event == "TRADE_SHOW") then
+        TradeTarget = UnitName("npc")
     end
 end
 
-function TrackingLog:requestSingleInitCheck(player)
+local function sendWhisperRequest(player)
     local msg = REQUEST_INIT_CONS
     if not player then
         player = BrowserSelection:getSelectedPlayer()
@@ -491,6 +597,21 @@ function TrackingLog:requestSingleInitCheck(player)
         end
     end
     Utils:sendOfficerAddonMsg(msg, "WHISPER", player)
+end
+
+function TrackingLog:requestSingleInitBoth(player)
+    sendConsBuffStatus(1, 1)
+    sendWhisperRequest(player)
+end
+
+function TrackingLog:requestSingleInitBuffs(player)
+    sendConsBuffStatus(0, 1)
+    sendWhisperRequest(player)
+end
+
+function TrackingLog:requestSingleInitCons(player)
+    sendConsBuffStatus(1, 0)
+    sendWhisperRequest(player)
 end
 
 function TrackingLog:requestSinglePostCheck(player)

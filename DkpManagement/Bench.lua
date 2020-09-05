@@ -14,25 +14,10 @@ function isBenched(player)
     return JP_Current_Bench[player] ~= nil
 end
 
-function Bench:printBench()
-    for name, class in pairs(JP_Current_Bench) do
-        print(name)
-        print(class)
-    end
-end
-
-local function clearBenchEntries()
-    for member = 1, MaximumMembersShown, 1 do
-        local benchEntry = getglobal("JP_BenchFrameListEntry" .. member)
-        getglobal(benchEntry:GetName() .. PLAYER):SetText("")
-        benchEntry:Hide()
-    end
-end
-
 local function updateBenchEntries()
-    clearBenchEntries()
+    Utils:clearEntries("JP_BenchFrameListEntry", MaximumMembersShown, PLAYER)
     local entryCounter = 1
-    local sortedBench = Utils:getSortedTableWhereNameKeyClassValue(JP_Current_Bench)
+    local sortedBench = Utils:sortTableWhereKeyIsName(JP_Current_Bench)
     for memberIndex = BenchIndex, #sortedBench, 1 do
         if entryCounter > MaximumMembersShown then
             return
@@ -106,15 +91,8 @@ function Bench:removeFromBench(entryId)
     end
 end
 
-function Bench:createBenchEntries()
-    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_BenchFrameList, BENCH_ENTRY)
-    initialEntry:SetID(1)
-    initialEntry:SetPoint("TOPLEFT")
-    for entryNr = 2, MaximumMembersShown, 1 do
-        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_BenchFrameList, BENCH_ENTRY)
-        followingEntries:SetID(entryNr)
-        followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
-    end
+function Bench:getMaximumMembersShown()
+    return MaximumMembersShown
 end
 
 function Bench:clearBench()
@@ -174,7 +152,7 @@ end
 
 local function onSyncAttempt(prefix, msg, sender)
     if (prefix == ADDON_PREFIX) then
-        if Utils:isSelf(sender) then
+        if Utils:isSelfRemoveRealm(sender) then
             return
         end
 

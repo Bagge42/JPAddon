@@ -11,6 +11,9 @@ Jp.Invite = Invite
 
 local RaidRoster = {}
 local MaximumAssistsShown = 11
+local MaximumImportsShown = 10
+local ImportIndex = 1
+local ImportList = {}
 
 local function shouldGiveAssist(player, rank)
     local isOfficer = GuildRosterHandler:isOfficer(player)
@@ -37,6 +40,43 @@ local function addRoles(player, rank, role)
     --    macroBtn:Show()
 end
 
+local function updateEntries(list, entryFrameNames, maximumEntriesShown, index)
+    local entryCounter = 1
+    local sortedEntries = Utils:sortTableWhereKeyIsName(list)
+    for memberIndex = index, #sortedEntries, 1 do
+        if entryCounter > maximumEntriesShown then
+            return
+        end
+        local entry = getglobal(entryFrameNames .. entryCounter)
+        entry:Show()
+        getglobal(entry:GetName() .. BACKGROUND):Hide()
+        local fontString = getglobal(entry:GetName() .. PLAYER)
+        fontString:SetText(sortedEntries[memberIndex])
+        Utils:setClassColor(fontString, list[sortedEntries[memberIndex]])
+        entryCounter = entryCounter + 1
+    end
+end
+
+local function updateAssistEntries()
+    local entryFrameName = "JP_InviteFrameAssistTabListEntry"
+    Utils:clearEntries(entryFrameName, MaximumAssistsShown, PLAYER)
+    updateEntries(JP_Assist_List, entryFrameName, MaximumAssistsShown, 1)
+end
+
+local function updateImportEntries()
+    local entryFrameName = "JP_InviteFrameImportTabListEntry"
+    Utils:clearEntries(entryFrameName, MaximumImportsShown, PLAYER)
+    updateEntries(ImportList, entryFrameName, MaximumImportsShown, ImportIndex)
+end
+
+
+local function removeFromImportList(player)
+    if (ImportList[player] ~= nil) then
+        ImportList[player] = nil
+        updateImportEntries()
+    end
+end
+
 local function updateRaidRoster()
     local membersInRaid = GetNumGroupMembers()
     for member = 1, membersInRaid do
@@ -44,28 +84,8 @@ local function updateRaidRoster()
         if name then
             RaidRoster[name] = class
             addRoles(name, rank, role)
+            removeFromImportList(name)
         end
-    end
-end
-
-local function clearAssistEntries()
-    for member = 1, MaximumAssistsShown, 1 do
-        local entry = getglobal("JP_InviteFrameAssistTabListEntry" .. member)
-        getglobal(entry:GetName() .. PLAYER):SetText("")
-        entry:Hide()
-    end
-end
-
-local function updateAssistEntries()
-    clearAssistEntries()
-    local sortedEntries = Utils:getSortedTableWhereNameKeyClassValue(JP_Assist_List)
-    for memberIndex = 1, #sortedEntries, 1 do
-        local entry = getglobal("JP_InviteFrameAssistTabListEntry" .. memberIndex)
-        entry:Show()
-        getglobal(entry:GetName() .. BACKGROUND):Hide()
-        local fontString = getglobal(entry:GetName() .. PLAYER)
-        fontString:SetText(sortedEntries[memberIndex])
-        Utils:setClassColor(fontString, JP_Assist_List[sortedEntries[memberIndex]])
     end
 end
 
@@ -102,15 +122,19 @@ local function shouldInviteToRaid(text, sender)
     return isValidInvFormat(text) and Settings:getSetting(AUTO_INV_BOOLEAN_SETTING) and GuildRosterHandler:isInGuild(sender) and not givenPlayerIsInMyRaid(sender)
 end
 
+local function checkAndInvite(player)
+    if IsInGroup() and not Utils:selfIsInRaid() then
+        ConvertToRaid()
+    end
+    if not isBenched(player) and not givenPlayerIsInMyRaid(player) then
+        InviteUnit(player)
+    end
+end
+
 function Invite:massInvite()
     local raiders = GuildRosterHandler:getRaiders()
     for _, name in pairs(raiders) do
-        if IsInGroup() and not Utils:selfIsInRaid() then
-            ConvertToRaid()
-        end
-        if not isBenched(name) and not givenPlayerIsInMyRaid(name) then
-            InviteUnit(name)
-        end
+        checkAndInvite(name)
     end
 end
 
@@ -170,9 +194,9 @@ local function handleWhisper(text, sender)
             ConvertToRaid()
         end
         InviteUnit(sender)
-    elseif shouldPassLeader(text, sender) then
+    elseif IsInGroup() and shouldPassLeader(text, sender) then
         PromoteToLeader(sender)
-    else
+    elseif IsInGroup() then
         local masterLooterText, playerGiven = splitStringBySpace(text)
         if shouldPromoteMasterLooter(masterLooterText, sender) then
             promoteToMasterLooter(playerGiven, sender)
@@ -190,21 +214,20 @@ function Invite:onEvent(event, ...)
     end
 end
 
-function Invite:createAssistEntries()
-    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_InviteFrameAssistTabList, "JP_InviteListEntry")
-    initialEntry:SetID(1)
-    initialEntry:SetPoint("TOPLEFT")
-    for entryNr = 2, MaximumAssistsShown, 1 do
-        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_InviteFrameAssistTabList, "JP_InviteListEntry")
-        followingEntries:SetID(entryNr)
-        followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
-    end
+function Invite:getMaximumAssistsShown()
+    return MaximumAssistsShown
 end
 
-function Invite:onListEntryClick(id)
+function Invite:onAssistEntryClick(id)
     local player = getglobal("JP_InviteFrameAssistTabListEntry" .. id .. PLAYER):GetText()
     JP_Assist_List[player] = nil
     updateAssistEntries()
+end
+
+function Invite:onImportEntryClick(id)
+    local player = getglobal("JP_InviteFrameImportTabListEntry" .. id .. PLAYER):GetText()
+    ImportList[player] = nil
+    updateImportEntries()
 end
 
 function Invite:assistButtonClick()
@@ -219,5 +242,42 @@ end
 function Invite:loadTables(_, addonName)
     if addonName == "jpdkp" then
         updateAssistEntries()
+    end
+end
+
+local function isNotSelf(name)
+    local self = UnitName("player")
+    if (name ~= self) then
+        return true
+    end
+    return false
+end
+
+function Invite:import()
+    ImportList = {}
+    local editBoxText = getglobal("JP_InviteFrameImportTabFrameEditBox"):GetText()
+    for player in string.gmatch(editBoxText, "([^,]*)") do
+        local potentialSpacesRemoved = string.gsub(player, "%s+", "")
+        local lowerCase = string.lower(potentialSpacesRemoved)
+        local firstLetterUpper = uppercaseFirstLetter(lowerCase)
+        local class = GuildRosterHandler:getPlayerClass(firstLetterUpper)
+        if (class ~= nil) and isNotSelf(firstLetterUpper) then
+            ImportList[firstLetterUpper] = class
+        end
+    end
+    updateImportEntries()
+end
+
+function Invite:inviteImports()
+    for player, _ in pairs(ImportList) do
+        checkAndInvite(player)
+    end
+end
+
+function Invite:onMouseWheelImports(delta)
+    local negativeDelta = -delta
+    if Utils:indexIsValidForList(negativeDelta, ImportIndex, MaximumImportsShown, Utils:getTableSize(ImportList)) then
+        ImportIndex = ImportIndex + negativeDelta
+        updateImportEntries()
     end
 end

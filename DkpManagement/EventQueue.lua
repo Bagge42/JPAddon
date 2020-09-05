@@ -8,8 +8,8 @@ local EventInProgress = false
 local Queue = {}
 local LatestEvent = {}
 
-function EventQueue:addEvent(event, eventName, zone, arg1, arg2)
-    Queue[table.getn(Queue) + 1] = {event, eventName, zone, arg1, arg2}
+function EventQueue:addEvent(event, eventName, zone, arg1, arg2, arg3)
+    Queue[table.getn(Queue) + 1] = {event, eventName, zone, arg1, arg2, arg3}
     if not EventInProgress then
         EventQueue:executeEvent()
     end

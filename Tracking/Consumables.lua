@@ -8,6 +8,8 @@ Jp.Consumables = Consumables
 
 local MaximumConsShown = 12
 local ConsIndex = 1
+local ShowInit = false
+local ShowPost = false
 
 local RequiredConsumables = {
     [1] = { "Major Mana Potion", { HEALER, CASTER, HUNTER } },
@@ -115,7 +117,7 @@ function Consumables:removeConsumable(name)
     table.remove(JP_Required_Cons_List, indexToRemove)
 end
 
-function Consumables:getRequiredConsumables()
+function Consumables:getConsumableList()
     return JP_Required_Cons_List
 end
 
@@ -157,14 +159,14 @@ end
 
 function Consumables:shareConsumes()
     Utils:sendOfficerAddonMsg(CONS_CLEAR, "GUILD")
-    local msg = CONS_SHARE
     for _, consumeInfo in pairs(JP_Required_Cons_List) do
+        local msg = CONS_SHARE
         msg = msg .. "&" .. consumeInfo[1]
         for _, role in pairs(consumeInfo[3]) do
             msg = msg .. "&" .. role
         end
+        Utils:sendOfficerAddonMsg(msg, "GUILD")
     end
-    Utils:sendOfficerAddonMsg(msg, "GUILD")
 end
 
 local function isRole(text)
@@ -197,29 +199,15 @@ function Consumables:printCons()
         print(cons[1])
         print(cons[2])
     end
+    print(#JP_Required_Cons_List)
 end
 
-function Consumables:createConsumeEntries()
-    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_TrackingFrameConsTabList, "JP_ConsumeListEntry")
-    initialEntry:SetID(1)
-    initialEntry:SetPoint("TOPLEFT")
-    for entryNr = 2, MaximumConsShown, 1 do
-        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_TrackingFrameConsTabList, "JP_ConsumeListEntry")
-        followingEntries:SetID(entryNr)
-        followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
-    end
+function Consumables:getMaximumConsShown()
+    return MaximumConsShown
 end
 
 local function setCurrentDateConsTab()
     DateEditBox:setCurrentDate("JP_TrackingFrameConsTabDateFrameValue")
-end
-
-local function clearConsEntries()
-    for member = 1, MaximumConsShown, 1 do
-        local entry = getglobal("JP_TrackingFrameConsTabListEntry" .. member)
-        getglobal(entry:GetName() .. "Cons"):SetText("")
-        entry:Hide()
-    end
 end
 
 local function getSortedCons()
@@ -231,7 +219,7 @@ local function getSortedCons()
 end
 
 local function updateConsEntries()
-    clearConsEntries()
+    Utils:clearEntries("JP_TrackingFrameConsTabListEntry", MaximumConsShown, "Cons")
     local sortedEntries = getSortedCons()
     local entryCounter = 1
     for memberIndex = ConsIndex, #sortedEntries, 1 do
@@ -253,23 +241,55 @@ function Consumables:loadTables(_, addonName)
     end
 end
 
-function Consumables:onLoad()
-    FrameHandler:setOnClickTrackingFrameButtons("Cons", setCurrentDateConsTab)
+local function toggleInit()
+    if (ShowInit == true) then
+        ShowInit = false
+    else
+        ShowPost = false
+        getglobal("JP_TrackingFrameConsTabDateFramePost"):SetChecked(false)
+        ShowInit = true
+    end
 end
 
-local function newIndexIsValid(delta)
-    if (ConsIndex == 1) and (delta < 0) then
-        return false
+local function togglePost()
+    if (ShowPost == true) then
+        ShowPost = false
+    else
+        ShowInit = false
+        getglobal("JP_TrackingFrameConsTabDateFrameInit"):SetChecked(false)
+        ShowPost = true
     end
-    if (ConsIndex + delta > Utils:getTableSize(JP_Required_Cons_List) - MaximumConsShown + 1) then
-        return false
-    end
-    return true
+end
+
+function Consumables:getShowInit()
+    return ShowInit
+end
+
+function Consumables:getShowPost()
+    return ShowPost
+end
+
+function Consumables:onLoad()
+    FrameHandler:setOnClickTrackingFrameButtons("Cons", setCurrentDateConsTab)
+
+    local checkButtonPost = CreateFrame("CheckButton", "$parentPost", JP_TrackingFrameConsTabDateFrame, "JP_TrackingCheckButton")
+    checkButtonPost:SetPoint("RIGHT")
+    checkButtonPost.tooltip = "Check off this box to print post consumable holdings instead of consumables used."
+    checkButtonPost:SetScript("OnClick", function()
+        togglePost()
+    end)
+
+    local checkButtonInit = CreateFrame("CheckButton", "$parentInit", JP_TrackingFrameConsTabDateFrame, "JP_TrackingCheckButton")
+    checkButtonInit:SetPoint("RIGHT", JP_TrackingFrameConsTabDateFramePost, "LEFT")
+    checkButtonInit.tooltip = "Check off this box to print initial consumable holdings instead of consumables used."
+    checkButtonInit:SetScript("OnClick", function()
+        toggleInit()
+    end)
 end
 
 function Consumables:onMouseWheel(delta)
     local negativeDelta = -delta
-    if newIndexIsValid(negativeDelta) then
+    if Utils:indexIsValidForList(negativeDelta, ConsIndex, MaximumConsShown, Utils:getTableSize(JP_Required_Cons_List)) then
         ConsIndex = ConsIndex + negativeDelta
         updateConsEntries()
     end

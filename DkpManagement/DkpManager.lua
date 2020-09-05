@@ -13,7 +13,7 @@ Jp.DkpManager = DkpManager
 local ButtonIdToIcon = { ONY_RES, MC_RES, BWL_RES, AQ_RES, NAXX_RES }
 local IdToButton = {}
 local RaidIdToName = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME }
-local RaidNameToId = { [ONY_NAME] = 1, [MC_NAME] = 2, [BWL_NAME] = 3, [AQ_NAME] = 4, [NAXX_NAME] = 5,}
+local RaidNameToId = { [ONY_NAME] = 1, [MC_NAME] = 2, [BWL_NAME] = 3, [AQ_NAME] = 4, [NAXX_NAME] = 5, }
 local RosterAtDecay = {}
 
 local function attachIcons()
@@ -40,9 +40,9 @@ end
 
 local function isRaidSetting(settingName)
     for _, raidName in pairs(RaidIdToName) do
-       if raidName == settingName then
-           return true
-       end
+        if raidName == settingName then
+            return true
+        end
     end
     return false
 end
@@ -176,17 +176,26 @@ local function addWarn(player, dkp)
     end
 end
 
-local function adjustPlayerDkp(player, dkp, zone)
-    local event = "Single"
-    if dkp < 0 then
-        subWarn(player, -dkp)
-        event = event .. "Sub"
+local function adjustPlayerDkp(player, dkp, zone, givenEvent)
+    local event
+    if (givenEvent) then
+        event = givenEvent
     else
-        addWarn(player, dkp)
-        event = event .. "Add"
+        event = "Single"
+        if dkp < 0 then
+            subWarn(player, -dkp)
+            event = event .. "Sub"
+        else
+            addWarn(player, dkp)
+            event = event .. "Add"
+        end
     end
 
     modifyPlayerDkp(player, dkp, event, zone)
+end
+
+function DkpManager:singleDkpAddition(player, dkp, givenEvent)
+    EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3], event[6]) end, UNDO_ACTION_ADDED, GetRealZoneText(), player, dkp, givenEvent)
 end
 
 function DkpManager:adjustDkpOnClick(id)

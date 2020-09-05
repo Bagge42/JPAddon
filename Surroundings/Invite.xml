@@ -31,9 +31,6 @@
             <OnLoad>
                     getglobal(self:GetName() .. BACKGROUND):Hide()
             </OnLoad>
-            <OnClick>
-                    Jp.Invite:onListEntryClick(self:GetID())
-            </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. BACKGROUND):Show()
             </OnEnter>
@@ -44,6 +41,20 @@
         <NormalTexture name="$parentBackground">
             <Color r="0" g="0" b="0.5" a="0.33"/>
         </NormalTexture>
+    </Button>
+    <Button name="JP_AssistListEntry" hidden="true" inherits="JP_InviteListEntry" virtual="true">
+        <Scripts>
+            <OnClick>
+                    Jp.Invite:onAssistEntryClick(self:GetID())
+            </OnClick>
+        </Scripts>
+    </Button>
+    <Button name="JP_ImportListEntry" hidden="true" inherits="JP_InviteListEntry" virtual="true">
+        <Scripts>
+            <OnClick>
+                    Jp.Invite:onImportEntryClick(self:GetID())
+            </OnClick>
+        </Scripts>
     </Button>
     <Frame name="JP_InviteFrame" inherits="JP_CenterFrameDynamic" hidden="true">
         <Scripts>
@@ -119,7 +130,7 @@
                     <Frame name="$parentList">
                         <Scripts>
                             <OnLoad>
-                                    Jp.Invite:createAssistEntries()
+                                    Jp.Utils:createEntries("Button", JP_InviteFrameAssistTabList, "JP_AssistListEntry", Jp.Invite:getMaximumAssistsShown())
                                     self:RegisterEvent("ADDON_LOADED")
                             </OnLoad>
                             <OnEvent>
@@ -140,6 +151,99 @@
             </Frame>
             <Frame name="$parentImportTab" inherits="JP_CenterFrameTab" hidden="true">
                 <Frames>
+                    <Frame name="$parentFrame">
+                        <Anchors>
+                            <Anchor point="TOP"/>
+                        </Anchors>
+                        <Size>
+                            <AbsDimension x="283" y="21"/>
+                        </Size>
+                        <Layers>
+                            <Layer>
+                                <FontString name="$parentText" justifyH="LEFT" inherits="GameFontNormal" text="Import string: ">
+                                    <Size>
+                                        <AbsDimension x="85" y="21"/>
+                                    </Size>
+                                    <Anchors>
+                                        <Anchor point="LEFT">
+                                            <Offset>
+                                                <AbsDimension x="4" y="0"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Frames>
+                            <EditBox name="$parentEditBox" font="GameFontHighlight" autoFocus="false">
+                                <Size>
+                                    <AbsDimension x="146" y="21"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT"/>
+                                </Anchors>
+                                <TextInsets>
+                                    <AbsInset left="5" right="0" top="0" bottom="0"/>
+                                </TextInsets>
+                                <FontString>
+                                    <Color r="1" g="1" b="1" a="0.9"/>
+                                </FontString>
+                                <Scripts>
+                                    <OnEscapePressed>
+                                        self:ClearFocus()
+                                    </OnEscapePressed>
+                                    <OnEnterPressed>
+                                        Jp.Invite:import()
+                                    </OnEnterPressed>
+                                </Scripts>
+                                <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+                                    <Color r="0" g="0" b="0" a="1"/>
+                                </Backdrop>
+                            </EditBox>
+                            <Button name="$parentImport" text="Import" inherits="JP_HoverLight">
+                                <Size>
+                                    <AbsDimension x="48" y="21"/>
+                                </Size>
+                                <Anchors>
+                                    <Anchor point="LEFT" relativeTo="$parentEditBox" relativePoint="RIGHT"/>
+                                </Anchors>
+                                <Scripts>
+                                    <OnClick>
+                                            Jp.Invite:import()
+                                    </OnClick>
+                                </Scripts>
+                            </Button>
+                        </Frames>
+                    </Frame>
+                    <Frame name="$parentList">
+                        <Scripts>
+                            <OnLoad>
+                                    Jp.Utils:createEntries("Button", JP_InviteFrameImportTabList, "JP_InviteListEntry", Jp.Invite:getMaximumAssistsShown())
+                            </OnLoad>
+                            <OnMouseWheel>
+                                    Jp.Invite:onMouseWheelImports(delta)
+                            </OnMouseWheel>
+                        </Scripts>
+                        <Size>
+                            <AbsDimension x="283" y="210"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="$parentFrame" relativePoint="BOTTOM"/>
+                        </Anchors>
+                    </Frame>
+                    <Button name="$parentInvite" text="Invite players in the list" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="21"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOM"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.Invite:inviteImports()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
                 </Frames>
             </Frame>
         </Frames>

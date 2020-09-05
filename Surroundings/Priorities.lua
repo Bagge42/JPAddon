@@ -115,7 +115,7 @@ local function linkPriorityIfAny(item, sender)
         end
     end
     if (priority ~= nil) then
-        if Settings:getSetting(LINK_PRIO_BOOLEAN_SETTING) and Utils:isSelf(sender) then
+        if Settings:getSetting(LINK_PRIO_BOOLEAN_SETTING) and Utils:isSelfRemoveRealm(sender) then
             local msg = "Priority: " .. priority
             SendChatMessage(msg, "RAID_WARNING")
         end
@@ -137,7 +137,7 @@ function Priorities:onEvent(event, ...)
     if (event == "CHAT_MSG_ADDON") then
         if (prefix == ADDON_PREFIX) and GuildRosterHandler:isOfficer(Utils:removeRealmName(sender)) then
             local msgPrefix, item, prio = string.split("&", msg)
-            if Utils:isSelf(sender) then
+            if Utils:isSelfRemoveRealm(sender) then
                 return
             elseif (msgPrefix == PRIORITY_MSG_SHARE_START) then
                 JP_Priority_List = {}

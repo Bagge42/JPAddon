@@ -7,6 +7,7 @@ local DateEditBox = Jp.DateEditBox
 Jp.Buffs = Buffs
 
 local BuffCap = 32
+local MaximumDmtEntriesShown = 11
 
 local RaidBuffNamesToIds = {
     ["Rallying Cry of the Dragonslayer"] = 22888,
@@ -82,7 +83,10 @@ local RaidBuffAbbToName = {
 
 local RequiredBuffs = {
     [1] = "Rallying Cry of the Dragonslayer",
-    [2] = "Spirit of Zandalar"
+    [2] = "Spirit of Zandalar",
+    [3] = "Fengus' Ferocity",
+    [4] = "Slip'kik's Savvy",
+    [5] = "Mol'dar's Moxie",
 }
 
 function Buffs:getRequiredBuffs()
@@ -141,11 +145,11 @@ end
 
 function Buffs:shareBuffs()
     Utils:sendOfficerAddonMsg(BUFF_CLEAR, "GUILD")
-    local msg = BUFF_SHARE
     for _, buff in pairs(JP_Required_Buff_List) do
+        local msg = BUFF_SHARE
         msg = msg .. "&" .. buff
+        Utils:sendOfficerAddonMsg(msg, "GUILD")
     end
-    Utils:sendOfficerAddonMsg(msg, "GUILD")
 end
 
 function Buffs:updateBuff(msg)
@@ -166,4 +170,26 @@ end
 
 function Buffs:onLoad()
     FrameHandler:setOnClickTrackingFrameButtons("Buff", setCurrentDateBuffTab)
+end
+
+function Buffs:printRequiredBuffs()
+    for _, buff in pairs(JP_Required_Buff_List) do
+        print(buff)
+    end
+end
+
+function Buffs:loadDmtLists(event, ...)
+
+end
+
+function Buffs:onMouseWheelDmtCrit(delta)
+
+end
+
+function Buffs:getMaximumDmtEntriesShown()
+    return MaximumDmtEntriesShown
+end
+
+function Buffs:onListEntryClick(frameName)
+
 end

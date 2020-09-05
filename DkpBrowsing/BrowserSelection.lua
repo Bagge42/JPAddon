@@ -8,6 +8,20 @@ Jp.BrowserSelection = BrowserSelection
 local CurrentSelection = ""
 local EntryIdOfSelection = 0
 
+local function setTrackingButtonsText(playerInEntry)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitCons"):SetText(SINGLE_INIT_CONS_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitBuff"):SetText(SINGLE_INIT_BUFF_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitBoth"):SetText(SINGLE_INIT_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
+    getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(SINGLE_POST_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
+end
+
+local function setTrackingButtonsTextEmpty()
+    getglobal("JP_TrackingFrameTrackingTabSingleInitCons"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitBuff"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitBoth"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
+    getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
+end
+
 function BrowserSelection:selectEntry(entryId)
     if EntryIdOfSelection ~= 0 then
         getglobal(OUTER_FRAME_LIST_ENTRY .. EntryIdOfSelection .. BACKGROUND):Hide()
@@ -17,14 +31,12 @@ function BrowserSelection:selectEntry(entryId)
         getglobal(PLAYER_MANAGEMENT):Hide()
         CurrentSelection = ""
         EntryIdOfSelection = 0
-        getglobal("JP_TrackingFrameTrackingTabSingleInit"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
-        getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
+        setTrackingButtonsTextEmpty()
     else
         getglobal(PLAYER_MANAGEMENT):Show()
         local playerNameFrame = getglobal(PLAYER_MANAGEMENT .. "PlayerName")
         playerNameFrame:SetText(playerInEntry)
-        getglobal("JP_TrackingFrameTrackingTabSingleInit"):SetText(SINGLE_INIT_CHECK_BUTTON_TEXT .. playerInEntry)
-        getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(SINGLE_POST_CHECK_BUTTON_TEXT .. playerInEntry)
+        setTrackingButtonsText(playerInEntry)
         Utils:setClassColor(playerNameFrame, GuildRosterHandler:getPlayerClass(playerInEntry))
         getglobal(PLAYER_MANAGEMENT .. "Value"):SetFocus()
         Bidding:setBidInPlayerManagement(playerInEntry)

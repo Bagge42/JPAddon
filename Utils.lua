@@ -29,7 +29,7 @@ function Utils:selfIsInRaid()
     return false
 end
 
-function Utils:getSortedTableWhereNameKeyClassValue(tableToSort)
+function Utils:sortTableWhereKeyIsName(tableToSort)
     local sortedTable = {}
 
     for member, _ in pairs(tableToSort) do
@@ -107,12 +107,14 @@ function Utils:isMsgTypeAndNotFromSelf(msg, msgType, sender)
     return false
 end
 
+function Utils:isSelfRemoveRealm(sender)
+    local selfName = UnitName("player")
+    return (Utils:removeRealmName(sender) == selfName)
+end
+
 function Utils:isSelf(sender)
-    local self = UnitName("player")
-    if (Utils:removeRealmName(sender) == self) then
-        return true
-    end
-    return false
+    local selfName = UnitName("player")
+    return (selfName == sender)
 end
 
 function Utils:isMsgType(msg, msgType)
@@ -185,4 +187,33 @@ function Utils:jpWait(delay, func, ...)
     end
     tinsert(waitTable, { delay, func, { ... } })
     return true
+end
+
+function Utils:createEntries(frameType, parentFrame, frameTemplate, numberOfEntries)
+    local initialEntry = CreateFrame(frameType, "$parentEntry1", parentFrame, frameTemplate)
+    initialEntry:SetID(1)
+    initialEntry:SetPoint("TOPLEFT")
+    for entryNr = 2, numberOfEntries, 1 do
+        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, parentFrame, frameTemplate)
+        followingEntries:SetID(entryNr)
+        followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
+    end
+end
+
+function Utils:indexIsValidForList(delta, index, maximumEntriesShown, listSize)
+    if (index == 1) and (delta < 0) then
+        return false
+    end
+    if (index + delta > listSize - maximumEntriesShown + 1) then
+        return false
+    end
+    return true
+end
+
+function Utils:clearEntries(entryFrameNames, maximumEntries, entryText)
+    for member = 1, maximumEntries, 1 do
+        local entry = getglobal(entryFrameNames .. member)
+        getglobal(entry:GetName() .. entryText):SetText("")
+        entry:Hide()
+    end
 end

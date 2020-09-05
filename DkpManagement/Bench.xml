@@ -86,7 +86,7 @@
             <Frame name="$parentList">
                 <Scripts>
                     <OnLoad>
-                            Jp.Bench:createBenchEntries()
+                            Jp.Utils:createEntries("Button", JP_BenchFrameList, BENCH_ENTRY, Jp.Bench:getMaximumMembersShown())
                             self:RegisterEvent("ADDON_LOADED")
                     </OnLoad>
                     <OnEvent>
