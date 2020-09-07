@@ -21,16 +21,16 @@
         </Layers>
         <Scripts>
             <OnLoad>
-                    getglobal(self:GetName() .. BACKGROUND):Hide()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
                     Jp.Bench:removeFromBench(self:GetID())
             </OnClick>
             <OnEnter>
-                    getglobal(self:GetName() .. BACKGROUND):Show()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Show()
             </OnEnter>
             <OnLeave>
-                    getglobal(self:GetName() .. BACKGROUND):Hide()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
             </OnLeave>
         </Scripts>
         <NormalTexture name="$parentBackground">
@@ -71,7 +71,7 @@
                 </Backdrop>
                 <Layers>
                     <Layer level="ARTWORK">
-                        <FontString inherits="GameFontHighlight" text="BENCH_TITLE">
+                        <FontString inherits="GameFontHighlight" text="Bench">
                             <Anchors>
                                 <Anchor point="CENTER">
                                     <Offset>
@@ -86,7 +86,7 @@
             <Frame name="$parentList">
                 <Scripts>
                     <OnLoad>
-                            Jp.Utils:createEntries("Button", JP_BenchFrameList, BENCH_ENTRY, Jp.Bench:getMaximumMembersShown())
+                            Jp.Utils:createEntries("Button", JP_BenchFrameList, Jp.Localization.BENCH_ENTRY, Jp.Bench:getMaximumMembersShown())
                             self:RegisterEvent("ADDON_LOADED")
                     </OnLoad>
                     <OnEvent>
@@ -107,7 +107,7 @@
                     </Anchor>
                 </Anchors>
             </Frame>
-            <Button name="$parentClearBench" inherits="JP_HoverLight" text="CLEAR_BENCH">
+            <Button name="$parentClearBench" inherits="JP_HoverLight" text="Clear bench">
                 <Size>
                     <AbsDimension x="85" y="45"/>
                 </Size>

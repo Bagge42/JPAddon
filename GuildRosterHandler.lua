@@ -1,10 +1,11 @@
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Utils = Jp.Utils
 local GuildRosterHandler = {}
 Jp.GuildRosterHandler = GuildRosterHandler
 
 local CurrentIdUsed = 2
-local CurrentOrderUsed = DESCENDING
+local CurrentOrderUsed = Localization.DESCENDING
 local Roster = {}
 local NameToRosterId = {}
 local GuildIndex = {}
@@ -27,7 +28,7 @@ function GuildRosterHandler:update()
             isOnline = 1
         end
         local name = Utils:removeRealmName(nameAndRealm)
-        if rank ~= ALT and rank ~= OFFICER_ALT then
+        if rank ~= Localization.ALT and rank ~= Localization.OFFICER_ALT then
             if name ~= "" then
                 local dkp = 0
                 local _, _, dkpInNote = string.find(officernote, "<(-?%d*)>")
@@ -46,7 +47,7 @@ function GuildRosterHandler:update()
             end
         else
             AltRoster[name] = { class, isOnline }
-            if (rank == OFFICER_ALT) then
+            if (rank == Localization.OFFICER_ALT) then
                 OfficerRoster[name] = class
             end
         end
@@ -67,8 +68,8 @@ local function bid1LargerThanBid2(member1, member2, bids)
         end
     elseif not member2Bid then
         return true
-    elseif (member2Bid == FULL_DKP) then
-        if (member1Bid == FULL_DKP) then
+    elseif (member2Bid == Localization.FULL_DKP) then
+        if (member1Bid == Localization.FULL_DKP) then
             return member1[2] > member2[2]
         else
             return false
@@ -80,7 +81,7 @@ end
 
 local function sortByBids(roster, bids)
     table.sort(roster, function(member1, member2)
-        if CurrentOrderUsed == DESCENDING then
+        if CurrentOrderUsed == Localization.DESCENDING then
             return bid1LargerThanBid2(member2, member1, bids)
         else
             return bid1LargerThanBid2(member1, member2, bids)
@@ -90,7 +91,7 @@ end
 
 local function sortByNameOrDkp(roster)
     table.sort(roster, function(member1, member2)
-        if CurrentOrderUsed == DESCENDING then
+        if CurrentOrderUsed == Localization.DESCENDING then
             return member1[CurrentIdUsed] > member2[CurrentIdUsed]
         else
             return member1[CurrentIdUsed] < member2[CurrentIdUsed]
@@ -113,14 +114,14 @@ end
 
 function GuildRosterHandler:getSortedRoster(id, bids)
     if CurrentIdUsed == id then
-        if CurrentOrderUsed == ASCENDING then
-            CurrentOrderUsed = DESCENDING
+        if CurrentOrderUsed == Localization.ASCENDING then
+            CurrentOrderUsed = Localization.DESCENDING
         else
-            CurrentOrderUsed = ASCENDING
+            CurrentOrderUsed = Localization.ASCENDING
         end
     elseif id then
         CurrentIdUsed = id
-        CurrentOrderUsed = ASCENDING
+        CurrentOrderUsed = Localization.ASCENDING
     end
     local sortedRoster = Utils:copyTable(Roster)
     sortRoster(sortedRoster, bids)
@@ -177,18 +178,18 @@ end
 
 function GuildRosterHandler:getRole(player)
     local playerClass = GuildRosterHandler:getPlayerClass(player)
-    if (playerClass == PRIEST or playerClass == SHAMAN) then
-        return HEALER
-    elseif (playerClass == ROGUE) then
-        return MELEE
-    elseif (playerClass == DRUID) then
-        return HEALER, TANK
-    elseif (playerClass == WARRIOR) then
-        return MELEE, TANK
-    elseif (playerClass == MAGE or playerClass == WARLOCK) then
-        return CASTER
+    if (playerClass == Localization.PRIEST or playerClass == Localization.SHAMAN) then
+        return Localization.HEALER
+    elseif (playerClass == Localization.ROGUE) then
+        return Localization.MELEE
+    elseif (playerClass == Localization.DRUID) then
+        return Localization.HEALER, Localization.TANK
+    elseif (playerClass == Localization.WARRIOR) then
+        return Localization.MELEE, Localization.TANK
+    elseif (playerClass == Localization.MAGE or playerClass == Localization.WARLOCK) then
+        return Localization.CASTER
     else
-        return HUNTER
+        return Localization.HUNTER
     end
 end
 

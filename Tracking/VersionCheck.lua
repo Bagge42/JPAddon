@@ -1,4 +1,5 @@
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local VersionCheck = {}
 local Utils = Jp.Utils
 local GuildRosterHandler = Jp.GuildRosterHandler
@@ -24,7 +25,7 @@ local function printVersions()
 end
 
 function VersionCheck:requestCheck()
-    local msg = VERSION_CHECK_REQUEST
+    local msg = Localization.VERSION_CHECK_REQUEST
     playersOnlineAtCheck = GuildRosterHandler:getOnlinePeople()
     Utils:sendAddonMsg(msg, "GUILD")
     Utils:jpWait(3, printVersions)
@@ -32,7 +33,7 @@ end
 
 local function getAndSendVersion()
     local version = GetAddOnMetadata("Jpdkp", "Version")
-    local msg = VERSION .. "&" .. version
+    local msg = Localization.VERSION .. "&" .. version
     Utils:sendAddonMsg(msg, "GUILD")
 end
 
@@ -40,11 +41,11 @@ function VersionCheck:onEvent(event, ...)
     local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
 
     if (event == "CHAT_MSG_ADDON") then
-        if (prefix == ADDON_PREFIX) then
+        if (prefix == Localization.ADDON_PREFIX) then
             local msgPrefix, version = string.split("&", msg)
-            if (msgPrefix == VERSION_CHECK_REQUEST) then
+            if (msgPrefix == Localization.VERSION_CHECK_REQUEST) then
                 getAndSendVersion()
-            elseif (msgPrefix == VERSION) and Utils:isOfficer() and (Utils:removeRealmName(sender) ~= nil) then
+            elseif (msgPrefix == Localization.VERSION) and Utils:isOfficer() and (Utils:removeRealmName(sender) ~= nil) then
                 versions[Utils:removeRealmName(sender)] = version
             end
         end

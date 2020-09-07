@@ -1,4 +1,5 @@
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local GuildRosterHandler = Jp.GuildRosterHandler
 local BrowserSelection = Jp.BrowserSelection
 local Utils = Jp.Utils
@@ -10,10 +11,10 @@ local Bidding = Jp.Bidding
 local DkpManager = {}
 Jp.DkpManager = DkpManager
 
-local ButtonIdToIcon = { ONY_RES, MC_RES, BWL_RES, AQ_RES, NAXX_RES }
+local ButtonIdToIcon = { Localization.ONY_RES, Localization.MC_RES, Localization.BWL_RES, Localization.AQ_RES, Localization.NAXX_RES }
 local IdToButton = {}
-local RaidIdToName = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME }
-local RaidNameToId = { [ONY_NAME] = 1, [MC_NAME] = 2, [BWL_NAME] = 3, [AQ_NAME] = 4, [NAXX_NAME] = 5, }
+local RaidIdToName = { Localization.ONY_NAME, Localization.MC_NAME, Localization.BWL_NAME, Localization.AQ_NAME, Localization.NAXX_NAME }
+local RaidNameToId = { [Localization.ONY_NAME] = 1, [Localization.MC_NAME] = 2, [Localization.BWL_NAME] = 3, [Localization.AQ_NAME] = 4, [Localization.NAXX_NAME] = 5, }
 local RosterAtDecay = {}
 
 local function attachIcons()
@@ -155,7 +156,7 @@ end
 function DkpManager:raidDkpButtonOnClick(id)
     local value = Settings:getSetting(RaidIdToName[id])
     local benchAtClickTime = Utils:copyTable(Bench:getBench())
-    EventQueue:addEvent(function(event) modifyRaidDkp(event[4], event[5], event[3]) end, UNDO_ACTION_RAIDADD, GetRealZoneText(), value, benchAtClickTime)
+    EventQueue:addEvent(function(event) modifyRaidDkp(event[4], event[5], event[3]) end, Localization.UNDO_ACTION_RAIDADD, GetRealZoneText(), value, benchAtClickTime)
 end
 
 local function subWarn(player, dkp)
@@ -195,16 +196,16 @@ local function adjustPlayerDkp(player, dkp, zone, givenEvent)
 end
 
 function DkpManager:singleDkpAddition(player, dkp, givenEvent)
-    EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3], event[6]) end, UNDO_ACTION_ADDED, GetRealZoneText(), player, dkp, givenEvent)
+    EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3], event[6]) end, Localization.UNDO_ACTION_ADDED, GetRealZoneText(), player, dkp, givenEvent)
 end
 
 function DkpManager:adjustDkpOnClick(id)
-    local dkp = getglobal(PLAYER_MANAGEMENT .. "Value"):GetNumber()
+    local dkp = getglobal(Localization.PLAYER_MANAGEMENT .. "Value"):GetNumber()
     local playerName = BrowserSelection:getSelectedPlayer()
     if id == 1 then
-        EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3]) end, UNDO_ACTION_ADDED, GetRealZoneText(), playerName, dkp)
+        EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3]) end, Localization.UNDO_ACTION_ADDED, GetRealZoneText(), playerName, dkp)
     else
-        EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3]) end, UNDO_ACTION_SUBBED, GetRealZoneText(), playerName, -dkp)
+        EventQueue:addEvent(function(event) adjustPlayerDkp(event[4], event[5], event[3]) end, Localization.UNDO_ACTION_SUBBED, GetRealZoneText(), playerName, -dkp)
     end
 end
 
@@ -212,7 +213,7 @@ local function decay()
     RosterAtDecay = Utils:copyTable(GuildRosterHandler:getRoster())
     local rosterSize = table.getn(RosterAtDecay)
     local totalDecayedDkp = 0
-    local decayPercentage = Settings:getSetting(DECAY_SETTING_NAME)
+    local decayPercentage = Settings:getSetting(Localization.DECAY_SETTING_NAME)
     for member = 1, rosterSize, 1 do
         local memberEntry = RosterAtDecay[member]
         local currentDkp = memberEntry[2]
@@ -272,26 +273,26 @@ function DkpManager:undo()
         return
     end
     local nameOfLatestQueuedEvent = latestQueuedEvent[2]
-    if nameOfLatestQueuedEvent == UNDO_ACTION_SUBBED then
+    if nameOfLatestQueuedEvent == Localization.UNDO_ACTION_SUBBED then
         EventQueue:addEvent(function(event) singlePlayerUndo(event[4], event[5], event[3]) end, nil, latestQueuedEvent[3], latestQueuedEvent[4], -latestQueuedEvent[5])
-    elseif nameOfLatestQueuedEvent == UNDO_ACTION_ADDED then
+    elseif nameOfLatestQueuedEvent == Localization.UNDO_ACTION_ADDED then
         EventQueue:addEvent(function(event) singlePlayerUndo(event[4], event[5], event[3]) end, nil, latestQueuedEvent[3], latestQueuedEvent[4], -latestQueuedEvent[5])
-    elseif nameOfLatestQueuedEvent == UNDO_ACTION_DECAY then
+    elseif nameOfLatestQueuedEvent == Localization.UNDO_ACTION_DECAY then
         EventQueue:addEvent(function() undoDecay() end, nil, "Decay")
-    elseif nameOfLatestQueuedEvent == UNDO_ACTION_RAIDADD then
+    elseif nameOfLatestQueuedEvent == Localization.UNDO_ACTION_RAIDADD then
         EventQueue:addEvent(function(event) raidUndo(event[4], event[5], event[3]) end, nil, latestQueuedEvent[3], -latestQueuedEvent[4], latestQueuedEvent[5])
     end
 end
 
 function DkpManager:resetPlayerEditBox()
     Bidding:stopBiddingRound()
-    local editBox = getglobal(PLAYER_MANAGEMENT .. "Value")
+    local editBox = getglobal(Localization.PLAYER_MANAGEMENT .. "Value")
     editBox:SetNumber("")
     editBox:ClearFocus()
 end
 
 function DkpManager:addDecayEvent()
-    EventQueue:addEvent(function() decay() end, UNDO_ACTION_DECAY, "Decay")
+    EventQueue:addEvent(function() decay() end, Localization.UNDO_ACTION_DECAY, "Decay")
 end
 
 function DkpManager:createDkpSnapshot()

@@ -1,6 +1,8 @@
 JP_Log_History = {}
 JP_Log_Date_To_Id = {}
+
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Utils = Jp.Utils
 local GuildRosterHandler = Jp.GuildRosterHandler
 local Log = {}
@@ -13,11 +15,11 @@ local RaidToDateZoneIndex = {}
 local DateIndex = 0
 local ZoneIndex = 0
 local Icons = {
-    [ONY_NAME] = ONY_RES,
-    [MC_NAME] = MC_RES,
-    [BWL_NAME] = BWL_RES,
-    [AQ_NAME] = AQ_RES,
-    [NAXX_NAME] = NAXX_RES,
+    [Localization.ONY_NAME] = Localization.ONY_RES,
+    [Localization.MC_NAME] = Localization.MC_RES,
+    [Localization.BWL_NAME] = Localization.BWL_RES,
+    [Localization.AQ_NAME] = Localization.AQ_RES,
+    [Localization.NAXX_NAME] = Localization.NAXX_RES,
     ["Orgrimmar"] = "Interface\\ICONS\\Spell_Arcane_TeleportOrgrimmar",
     ["Thunder Bluff"] = "Interface\\ICONS\\Spell_Arcane_TeleportThunderBluff",
     ["Undercity"] = "Interface\\ICONS\\Spell_Arcane_TeleportUnderCity",
@@ -28,7 +30,7 @@ local DataEntryIndex = 1
 local LatestButtonId
 
 function Log:onLoad()
-    getglobal("JP_LogFrameTitleFrameName"):SetText(LOG_FRAME_TITLE)
+    getglobal("JP_LogFrameTitleFrameName"):SetText(Localization.LOG_FRAME_TITLE)
 end
 
 local function getZoneNrIfExist(dateEntry, zone)
@@ -63,7 +65,7 @@ local function addToSubTable(datestamp, zone, entry)
 end
 
 local function sendSyncMsg(zone, dataEntry)
-    local msg = LOG_MSG_ENTRY .. "&" .. zone
+    local msg = Localization.LOG_MSG_ENTRY .. "&" .. zone
     for _, data in pairs(dataEntry) do
         msg = msg .. "&" .. data
     end
@@ -78,9 +80,9 @@ end
 function Log:onSyncAttempt(event, ...)
     local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
 
-    if (prefix == ADDON_PREFIX) and (event == "CHAT_MSG_ADDON") then
+    if (prefix == Localization.ADDON_PREFIX) and (event == "CHAT_MSG_ADDON") then
         local _, zone, datestamp, timestamp, player, change, total, event, class, executingOfficer = string.split("&", msg)
-        if Utils:isMsgTypeAndNotFromSelf(msg, LOG_MSG_ENTRY, sender) then
+        if Utils:isMsgTypeAndNotFromSelf(msg, Localization.LOG_MSG_ENTRY, sender) then
             addEntryFromSync(zone, datestamp, timestamp, player, change, total, event, class, executingOfficer)
         end
     end
@@ -97,7 +99,7 @@ function Log:addEntry(player, change, total, event, class, zone)
 end
 
 local function textureNeedsCropping(texture)
-    if (texture == ONY_RES) or (texture == MC_RES) or (texture == BWL_RES) or (texture == AQ_RES) or (texture == NAXX_RES) then
+    if (texture == Localization.ONY_RES) or (texture == Localization.MC_RES) or (texture == Localization.BWL_RES) or (texture == Localization.AQ_RES) or (texture == Localization.NAXX_RES) then
         return true
     end
     return false
@@ -224,7 +226,7 @@ local function resetIndexes()
 end
 
 function Log:onClick()
-    local logFrame = getglobal(LOG_FRAME)
+    local logFrame = getglobal(Localization.LOG_FRAME)
     if not logFrame:IsVisible() then
         resetIndexes()
         updateRaidEntries()
@@ -249,7 +251,7 @@ local function clearEntries()
     for entry = 1, MaximumMembersShown, 1 do
         local listEntry = getglobal("JP_LogFrameDisplayFrameListEntry" .. entry)
         getglobal(listEntry:GetName() .. "Time"):SetText("")
-        getglobal(listEntry:GetName() .. PLAYER):SetText("")
+        getglobal(listEntry:GetName() .. Localization.PLAYER):SetText("")
         getglobal(listEntry:GetName() .. "Change"):SetText("")
         getglobal(listEntry:GetName() .. "Total"):SetText("")
         getglobal(listEntry:GetName() .. "Event"):SetText("")
@@ -271,7 +273,7 @@ end
 local function insertDataInEntry(data, entryIndex)
     local logEntryFrame = getglobal("JP_LogFrameDisplayFrameListEntry" .. entryIndex)
     getglobal(logEntryFrame:GetName() .. "Time"):SetText(data[2])
-    local playerFrame = getglobal(logEntryFrame:GetName() .. PLAYER)
+    local playerFrame = getglobal(logEntryFrame:GetName() .. Localization.PLAYER)
     playerFrame:SetText(data[3])
     Utils:setClassColor(playerFrame, data[7])
     getglobal(logEntryFrame:GetName() .. "Change"):SetText(data[4])

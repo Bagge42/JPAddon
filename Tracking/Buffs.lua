@@ -1,5 +1,7 @@
 JP_Required_Buff_List = {}
+
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Buffs = {}
 local Utils = Jp.Utils
 local FrameHandler = Jp.FrameHandler
@@ -144,9 +146,9 @@ function Buffs:getCurrentBuffs()
 end
 
 function Buffs:shareBuffs()
-    Utils:sendOfficerAddonMsg(BUFF_CLEAR, "GUILD")
+    Utils:sendOfficerAddonMsg(Localization.BUFF_CLEAR, "GUILD")
     for _, buff in pairs(JP_Required_Buff_List) do
-        local msg = BUFF_SHARE
+        local msg = Localization.BUFF_SHARE
         msg = msg .. "&" .. buff
         Utils:sendOfficerAddonMsg(msg, "GUILD")
     end
@@ -154,7 +156,7 @@ end
 
 function Buffs:updateBuff(msg)
     for match in string.gmatch(msg, "([^&]*)") do
-        if (match ~= BUFF_SHARE) then
+        if (match ~= Localization.BUFF_SHARE) then
             table.insert(JP_Required_Buff_List, match)
         end
     end

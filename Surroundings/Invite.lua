@@ -1,6 +1,7 @@
 JP_Assist_List = {}
 
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Invite = {}
 local GuildRosterHandler = Jp.GuildRosterHandler
 local FrameHandler = Jp.FrameHandler
@@ -17,7 +18,7 @@ local ImportList = {}
 
 local function shouldGiveAssist(player, rank)
     local isOfficer = GuildRosterHandler:isOfficer(player)
-    local officersShouldHaveAssist = Settings:getSetting(OFFICER_ASSIST_BOOLEAN_SETTING)
+    local officersShouldHaveAssist = Settings:getSetting(Localization.OFFICER_ASSIST_BOOLEAN_SETTING)
     local isNotAssistAlready = (rank == 0)
     local isOnAssistList = JP_Assist_List[player] ~= nil
 
@@ -49,8 +50,8 @@ local function updateEntries(list, entryFrameNames, maximumEntriesShown, index)
         end
         local entry = getglobal(entryFrameNames .. entryCounter)
         entry:Show()
-        getglobal(entry:GetName() .. BACKGROUND):Hide()
-        local fontString = getglobal(entry:GetName() .. PLAYER)
+        getglobal(entry:GetName() .. Localization.BACKGROUND):Hide()
+        local fontString = getglobal(entry:GetName() .. Localization.PLAYER)
         fontString:SetText(sortedEntries[memberIndex])
         Utils:setClassColor(fontString, list[sortedEntries[memberIndex]])
         entryCounter = entryCounter + 1
@@ -59,13 +60,13 @@ end
 
 local function updateAssistEntries()
     local entryFrameName = "JP_InviteFrameAssistTabListEntry"
-    Utils:clearEntries(entryFrameName, MaximumAssistsShown, PLAYER)
+    Utils:clearEntries(entryFrameName, MaximumAssistsShown, Localization.PLAYER)
     updateEntries(JP_Assist_List, entryFrameName, MaximumAssistsShown, 1)
 end
 
 local function updateImportEntries()
     local entryFrameName = "JP_InviteFrameImportTabListEntry"
-    Utils:clearEntries(entryFrameName, MaximumImportsShown, PLAYER)
+    Utils:clearEntries(entryFrameName, MaximumImportsShown, Localization.PLAYER)
     updateEntries(ImportList, entryFrameName, MaximumImportsShown, ImportIndex)
 end
 
@@ -100,12 +101,12 @@ function Invite:onLoad()
     autoInvSetting:SetPoint("TOP")
     autoInvSetting.text = autoInvSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     autoInvSetting.text:SetPoint("LEFT", 5, 0)
-    autoInvSetting.text:SetText(AUTO_INV_SETTING)
+    autoInvSetting.text:SetText(Localization.AUTO_INV_SETTING)
     autoInvSetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_InviteFrameInviteTabAutoInvSetting, "JP_SettingCheckButton")
     autoInvSetting.checkButton:SetPoint("RIGHT")
     autoInvSetting.checkButton.tooltip = "Toggle automatic inviting of guild members. Valid formats: 'Inv', 'inv', 'Invite', 'invite, INV, INVITE'"
     autoInvSetting.checkButton:SetScript("OnClick", function()
-        Settings:toggleBooleanSetting(AUTO_INV_BOOLEAN_SETTING)
+        Settings:toggleBooleanSetting(Localization.AUTO_INV_BOOLEAN_SETTING)
     end)
 end
 
@@ -119,7 +120,7 @@ local function isValidInvFormat(text)
 end
 
 local function shouldInviteToRaid(text, sender)
-    return isValidInvFormat(text) and Settings:getSetting(AUTO_INV_BOOLEAN_SETTING) and GuildRosterHandler:isInGuild(sender) and not givenPlayerIsInMyRaid(sender)
+    return isValidInvFormat(text) and Settings:getSetting(Localization.AUTO_INV_BOOLEAN_SETTING) and GuildRosterHandler:isInGuild(sender) and not givenPlayerIsInMyRaid(sender)
 end
 
 local function checkAndInvite(player)
@@ -219,13 +220,13 @@ function Invite:getMaximumAssistsShown()
 end
 
 function Invite:onAssistEntryClick(id)
-    local player = getglobal("JP_InviteFrameAssistTabListEntry" .. id .. PLAYER):GetText()
+    local player = getglobal("JP_InviteFrameAssistTabListEntry" .. id .. Localization.PLAYER):GetText()
     JP_Assist_List[player] = nil
     updateAssistEntries()
 end
 
 function Invite:onImportEntryClick(id)
-    local player = getglobal("JP_InviteFrameImportTabListEntry" .. id .. PLAYER):GetText()
+    local player = getglobal("JP_InviteFrameImportTabListEntry" .. id .. Localization.PLAYER):GetText()
     ImportList[player] = nil
     updateImportEntries()
 end

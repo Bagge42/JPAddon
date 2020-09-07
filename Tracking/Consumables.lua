@@ -1,5 +1,7 @@
 JP_Required_Cons_List = {}
+
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Utils = Jp.Utils
 local Consumables = {}
 local DateEditBox = Jp.DateEditBox
@@ -12,57 +14,57 @@ local ShowInit = false
 local ShowPost = false
 
 local RequiredConsumables = {
-    [1] = { "Major Mana Potion", { HEALER, CASTER, HUNTER } },
-    [2] = { "Mageblood Potion", { HEALER, CASTER, HUNTER } },
-    [3] = { "Nightfin Soup", { HEALER, CASTER, HUNTER } },
-    [4] = { "Runn Tum Tuber Surprise", { HEALER, CASTER, HUNTER } },
-    [5] = { "Superior Mana Potion", { HEALER, CASTER, HUNTER } },
-    [6] = { "Spirit of Zanza", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [7] = { "Greater Nature Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [8] = { "Greater Arcane Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [9] = { "Greater Fire Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [10] = { "Greater Frost Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [11] = { "Greater Shadow Protection Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [12] = { "Brilliant Mana Oil", { HEALER, HUNTER } },
-    [13] = { "Brilliant Wizard Oil", { CASTER, HEALER } },
-    [14] = { "Limited Invulnerability Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [15] = { "Demonic Rune", { HEALER, CASTER, HUNTER } },
-    [16] = { "Dark Rune", { HEALER, CASTER, HUNTER } },
-    [17] = { "Goblin Sapper Charge", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [18] = { "Elixir of Poison Resistance", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [19] = { "Flask of Distilled Wisdom", { HEALER, CASTER, HUNTER } },
-    [20] = { "Elixir of the Mongoose", { HUNTER, TANK, MELEE } },
-    [21] = { "Grilled Squid", { HUNTER, TANK, MELEE } },
-    [22] = { "Juju might", { HUNTER, TANK, MELEE } },
-    [23] = { "Winterfall Firewater", { HUNTER, TANK, MELEE } },
-    [24] = { "Juju power", { HUNTER, TANK, MELEE } },
-    [25] = { "Elixir of Giants", { HUNTER, TANK, MELEE } },
-    [26] = { "Dense Sharpening Stone", { TANK, MELEE } },
-    [27] = { "Elemental Sharpening Stone", { TANK, MELEE } },
-    [28] = { "Frost Oil", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [29] = { "Thistle Tea", { MELEE } },
-    [30] = { "Major Healing Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [31] = { "Flask of the Titans", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [32] = { "Elixir of Fortitude", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [33] = { "Elixir of Superior Defense", { TANK } },
-    [34] = { "Gift of Arthas", { TANK } },
-    [35] = { "Rumsey Rum Black Label", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [36] = { "Free Action Potion", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [37] = { "Greater Stoneshield Potion", { TANK } },
-    [38] = { "Manual Crowd Pummeler", { TANK } },
-    [39] = { "Blessed Sunfruit", { HUNTER, TANK, MELEE } },
-    [40] = { "Smoked Desert Dumplings", { HUNTER, TANK, MELEE } },
-    [41] = { "Greater Arcane Elixir", { CASTER } },
-    [42] = { "Elixir of Greater Firepower", { CASTER } },
-    [43] = { "Elixir of Shadow Power", { CASTER } },
-    [44] = { "Heavy Runecloth Bandage", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [45] = { "Flask of Supreme Power", { CASTER } },
-    [46] = { "Elixir of Frost Power", { CASTER } },
-    [47] = { "Juju Ember", { CASTER } },
-    [48] = { "Monster Omelet", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [49] = { "Dirge's Kickin' Chimaerok Chops", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [50] = { "Gordok Green Grog", { HEALER, CASTER, HUNTER, TANK, MELEE } },
-    [51] = { "Greater Mana Potion", { HEALER, CASTER, HUNTER } },
+    [1] = { "Major Mana Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
+    [2] = { "Mageblood Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
+    [3] = { "Nightfin Soup", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
+    [4] = { "Runn Tum Tuber Surprise", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
+    [5] = { "Superior Mana Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
+    [6] = { "Spirit of Zanza", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [7] = { "Greater Nature Protection Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [8] = { "Greater Arcane Protection Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [9] = { "Greater Fire Protection Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [10] = { "Greater Frost Protection Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [11] = { "Greater Shadow Protection Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [12] = { "Brilliant Mana Oil", { Localization.HEALER, Localization.HUNTER } },
+    [13] = { "Brilliant Wizard Oil", { Localization.CASTER, Localization.HEALER } },
+    [14] = { "Limited Invulnerability Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [15] = { "Demonic Rune", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
+    [16] = { "Dark Rune", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
+    [17] = { "Goblin Sapper Charge", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [18] = { "Elixir of Poison Resistance", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [19] = { "Flask of Distilled Wisdom", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
+    [20] = { "Elixir of the Mongoose", { Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [21] = { "Grilled Squid", { Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [22] = { "Juju might", { Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [23] = { "Winterfall Firewater", { Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [24] = { "Juju power", { Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [25] = { "Elixir of Giants", { Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [26] = { "Dense Sharpening Stone", { Localization.TANK, Localization.MELEE } },
+    [27] = { "Elemental Sharpening Stone", { Localization.TANK, Localization.MELEE } },
+    [28] = { "Frost Oil", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [29] = { "Thistle Tea", { Localization.MELEE } },
+    [30] = { "Major Healing Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [31] = { "Flask of the Titans", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [32] = { "Elixir of Fortitude", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [33] = { "Elixir of Superior Defense", { Localization.TANK } },
+    [34] = { "Gift of Arthas", { Localization.TANK } },
+    [35] = { "Rumsey Rum Black Label", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [36] = { "Free Action Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [37] = { "Greater Stoneshield Potion", { Localization.TANK } },
+    [38] = { "Manual Crowd Pummeler", { Localization.TANK } },
+    [39] = { "Blessed Sunfruit", { Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [40] = { "Smoked Desert Dumplings", { Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [41] = { "Greater Arcane Elixir", { Localization.CASTER } },
+    [42] = { "Elixir of Greater Firepower", { Localization.CASTER } },
+    [43] = { "Elixir of Shadow Power", { Localization.CASTER } },
+    [44] = { "Heavy Runecloth Bandage", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [45] = { "Flask of Supreme Power", { Localization.CASTER } },
+    [46] = { "Elixir of Frost Power", { Localization.CASTER } },
+    [47] = { "Juju Ember", { Localization.CASTER } },
+    [48] = { "Monster Omelet", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [49] = { "Dirge's Kickin' Chimaerok Chops", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [50] = { "Gordok Green Grog", { Localization.HEALER, Localization.CASTER, Localization.HUNTER, Localization.TANK, Localization.MELEE } },
+    [51] = { "Greater Mana Potion", { Localization.HEALER, Localization.CASTER, Localization.HUNTER } },
 }
 
 local Roles = {}
@@ -158,9 +160,9 @@ function Consumables:getRoleConsumables(role)
 end
 
 function Consumables:shareConsumes()
-    Utils:sendOfficerAddonMsg(CONS_CLEAR, "GUILD")
+    Utils:sendOfficerAddonMsg(Localization.CONS_CLEAR, "GUILD")
     for _, consumeInfo in pairs(JP_Required_Cons_List) do
-        local msg = CONS_SHARE
+        local msg = Localization.CONS_SHARE
         msg = msg .. "&" .. consumeInfo[1]
         for _, role in pairs(consumeInfo[3]) do
             msg = msg .. "&" .. role
@@ -170,14 +172,14 @@ function Consumables:shareConsumes()
 end
 
 local function isRole(text)
-    return (text == HEALER) or (text == TANK) or (text == CASTER) or (text == MELEE) or (text == HUNTER)
+    return (text == Localization.HEALER) or (text == Localization.TANK) or (text == Localization.CASTER) or (text == Localization.MELEE) or (text == Localization.HUNTER)
 end
 
 function Consumables:updateConsume(msg)
     local consume = {}
     local roles = {}
     for match in string.gmatch(msg, "([^&]*)") do
-        if (match ~= CONS_SHARE) then
+        if (match ~= Localization.CONS_SHARE) then
             if isRole(match) then
                 table.insert(roles, match)
             elseif (match ~= "") then
@@ -228,7 +230,7 @@ local function updateConsEntries()
         end
         local entry = getglobal("JP_TrackingFrameConsTabListEntry" .. entryCounter)
         entry:Show()
-        getglobal(entry:GetName() .. BACKGROUND):Hide()
+        getglobal(entry:GetName() .. Localization.BACKGROUND):Hide()
         local fontString = getglobal(entry:GetName() .. "Cons")
         fontString:SetText(sortedEntries[memberIndex][1])
         entryCounter = entryCounter + 1

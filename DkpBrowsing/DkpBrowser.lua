@@ -1,5 +1,6 @@
 local Jp = _G.Jp
 local DkpBrowser = {}
+local Localization = Jp.Localization
 local GuildRosterHandler = Jp.GuildRosterHandler
 local BrowserSelection = Jp.BrowserSelection
 local Utils = Jp.Utils
@@ -9,7 +10,16 @@ local Bidding = Jp.Bidding
 Jp.DkpBrowser = DkpBrowser
 
 local MaximumMembersShown = 8
-local IdsToClasses = { WARRIOR, MAGE, ROGUE, DRUID, HUNTER, SHAMAN, PRIEST, WARLOCK }
+local IdsToClasses = {
+    Localization.WARRIOR,
+    Localization.MAGE,
+    Localization.ROGUE,
+    Localization.DRUID,
+    Localization.HUNTER,
+    Localization.SHAMAN,
+    Localization.PRIEST,
+    Localization.WARLOCK
+}
 local ToggledClasses = {}
 
 local function showHideJp()
@@ -55,10 +65,10 @@ end
 
 local function clearEntries()
     for member = 1, MaximumMembersShown, 1 do
-        local listEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. member)
-        getglobal(listEntry:GetName() .. PLAYER):SetText("")
+        local listEntry = getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. member)
+        getglobal(listEntry:GetName() .. Localization.PLAYER):SetText("")
         getglobal(listEntry:GetName() .. "Bid"):SetText("")
-        getglobal(listEntry:GetName() .. AMOUNT):SetText("")
+        getglobal(listEntry:GetName() .. Localization.AMOUNT):SetText("")
     end
 end
 
@@ -73,7 +83,7 @@ end
 local function setBidText(player, entry)
     local bid = Bidding:getBid(player)
     if bid then
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):SetText(bid)
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):SetText(bid)
     end
 end
 
@@ -85,25 +95,25 @@ function JP_UpdateBrowserEntries(sortButtonId)
         toggledRoster = getToggledRoster()
     end
     FauxScrollFrame_Update(JP_OuterFrameListScrollFrame, table.getn(toggledRoster), MaximumMembersShown, 24,
-        OUTER_FRAME_LIST_ENTRY, 267, 283)
+        Localization.OUTER_FRAME_LIST_ENTRY, 267, 283)
     clearEntries()
     local numberToFillIn = getNumberOfEntriesToFill(toggledRoster)
     for member = 1, numberToFillIn, 1 do
         local rosterEntry = toggledRoster[member + JP_OuterFrameListScrollFrame.offset]
         local name = rosterEntry[1]
         local dkp = rosterEntry[2]
-        local listEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. member)
+        local listEntry = getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. member)
         if rosterEntry then
             listEntry:Show()
-            local playerFrame = getglobal(listEntry:GetName() .. PLAYER)
+            local playerFrame = getglobal(listEntry:GetName() .. Localization.PLAYER)
             playerFrame:SetText(name)
             Utils:setClassColor(playerFrame, rosterEntry[3])
             setBidText(name, member)
-            getglobal(listEntry:GetName() .. AMOUNT):SetText(dkp)
+            getglobal(listEntry:GetName() .. Localization.AMOUNT):SetText(dkp)
             if name == BrowserSelection:getSelectedPlayer() then
-                getglobal(listEntry:GetName() .. BACKGROUND):Show()
+                getglobal(listEntry:GetName() .. Localization.BACKGROUND):Show()
             else
-                getglobal(listEntry:GetName() .. BACKGROUND):Hide()
+                getglobal(listEntry:GetName() .. Localization.BACKGROUND):Hide()
             end
         else
             listEntry:Hide()
@@ -112,11 +122,11 @@ function JP_UpdateBrowserEntries(sortButtonId)
 end
 
 function DkpBrowser:createEntries()
-    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_OuterFrameList, LIST_ENTRY)
+    local initialEntry = CreateFrame("Button", "$parentEntry1", JP_OuterFrameList, Localization.LIST_ENTRY)
     initialEntry:SetID(1)
     initialEntry:SetPoint("TOPLEFT", 0, -28)
     for entryNr = 2, MaximumMembersShown, 1 do
-        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_OuterFrameList, LIST_ENTRY)
+        local followingEntries = CreateFrame("Button", "$parentEntry" .. entryNr, JP_OuterFrameList, Localization.LIST_ENTRY)
         followingEntries:SetID(entryNr)
         followingEntries:SetPoint("TOP", "$parentEntry" .. (entryNr - 1), "BOTTOM")
     end
@@ -149,7 +159,7 @@ function DkpBrowser:clearOverview()
 end
 
 local function startBiddingRound(textInWarning)
-    if Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
+    if Settings:getSetting(Localization.BIDDERS_ONLY_BOOLEAN_SETTING) then
         DkpBrowser:clearOverview()
         if Utils:isItemLink(textInWarning) then
             Bidding:setAuctionInProgress(true)
@@ -172,9 +182,9 @@ end
 
 local function addBidToEntries()
     for entry = 1, MaximumMembersShown, 1 do
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. PLAYER):SetSize(111, 24)
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):Show()
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. AMOUNT):SetPoint("LEFT", OUTER_FRAME_LIST_ENTRY .. entry .. "Bid", "RIGHT")
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entry .. Localization.PLAYER):SetSize(111, 24)
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):Show()
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entry .. Localization.AMOUNT):SetPoint("LEFT", Localization.OUTER_FRAME_LIST_ENTRY .. entry .. "Bid", "RIGHT")
     end
 end
 
@@ -187,9 +197,9 @@ end
 
 local function removeBidFromEntries()
     for entry = 1, MaximumMembersShown, 1 do
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. PLAYER):SetSize(184, 24)
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):Hide()
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entry .. AMOUNT):SetPoint("LEFT", OUTER_FRAME_LIST_ENTRY .. entry .. PLAYER, "RIGHT", 4, 0)
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entry .. Localization.PLAYER):SetSize(184, 24)
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entry .. "Bid"):Hide()
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entry .. Localization.AMOUNT):SetPoint("LEFT", Localization.OUTER_FRAME_LIST_ENTRY .. entry .. Localization.PLAYER, "RIGHT", 4, 0)
     end
 end
 
@@ -201,7 +211,7 @@ function DkpBrowser:removeBidFromOverview()
 end
 
 local function handleWhisper(text, sender)
-    if GuildRosterHandler:isInGuild(sender) and Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
+    if GuildRosterHandler:isInGuild(sender) and Settings:getSetting(Localization.BIDDERS_ONLY_BOOLEAN_SETTING) then
         local bidAmount = string.match(text, "%d+")
         if bidAmount then
             addBidder(sender, bidAmount)
@@ -224,7 +234,7 @@ function DkpBrowser:onEvent(event, ...)
     elseif (event == "GUILD_ROSTER_UPDATE") then
         updateRoster()
     elseif (event == "ADDON_LOADED") then
-        if Settings:getSetting(BIDDERS_ONLY_BOOLEAN_SETTING) then
+        if Settings:getSetting(Localization.BIDDERS_ONLY_BOOLEAN_SETTING) then
             DkpBrowser:addBidToOverview()
         end
     end
@@ -244,20 +254,20 @@ local function toggleAllFilters()
 end
 
 function DkpBrowser:createFilterButtons()
-    local initialButton = CreateFrame("Button", "$parentClassButton1", JP_OuterFrameFilter, CLASS_BUTTON)
+    local initialButton = CreateFrame("Button", "$parentClassButton1", JP_OuterFrameFilter, Localization.CLASS_BUTTON)
     initialButton:SetID(1)
     initialButton:SetPoint("LEFT", JP_OuterFrameFilter, "LEFT")
     attachClassIcon(initialButton, 0, 0.25, 0, 0.25)
 
     for firstRowCount = 2, 4, 1 do
-        local firstImageRow = CreateFrame("Button", "$parentClassButton" .. firstRowCount, JP_OuterFrameFilter, CLASS_BUTTON)
+        local firstImageRow = CreateFrame("Button", "$parentClassButton" .. firstRowCount, JP_OuterFrameFilter, Localization.CLASS_BUTTON)
         firstImageRow:SetID(firstRowCount)
         firstImageRow:SetPoint("LEFT", "$parentClassButton" .. (firstRowCount - 1), "RIGHT")
         attachClassIcon(firstImageRow, 0 + 0.25 * (firstRowCount - 1), 0.25 * firstRowCount, 0, 0.25)
     end
 
     for secondRowCount = 5, 8, 1 do
-        local secondImageRow = CreateFrame("Button", "$parentClassButton" .. secondRowCount, JP_OuterFrameFilter, CLASS_BUTTON)
+        local secondImageRow = CreateFrame("Button", "$parentClassButton" .. secondRowCount, JP_OuterFrameFilter, Localization.CLASS_BUTTON)
         secondImageRow:SetID(secondRowCount)
         secondImageRow:SetPoint("LEFT", "$parentClassButton" .. (secondRowCount - 1), "RIGHT")
         attachClassIcon(secondImageRow, 0 + 0.25 * (secondRowCount - 4 - 1), 0.25 * (secondRowCount - 4), 0.25, 0.50)
@@ -267,7 +277,7 @@ function DkpBrowser:createFilterButtons()
 end
 
 function DkpBrowser:relayCommands()
-    Utils:jpMsg(INTRO)
+    Utils:jpMsg(Localization.INTRO)
 end
 
 function DkpBrowser:classButtonOnClick(id)

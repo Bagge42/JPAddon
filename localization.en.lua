@@ -1,148 +1,110 @@
-TITLE = "J&P DKP"
-CLOSE_BUTTON = "x"
-ADD_BUTTON = "+"
-SUB_BUTTON = "-"
-PLAYER_HEADER = "Player"
-AMOUNT_HEADER = "DKP"
-BID_HEADER = "Bid"
-DRUID = "Druid"
-HUNTER = "Hunter"
-MAGE = "Mage"
-PRIEST = "Priest"
-ROGUE = "Rogue"
-SHAMAN = "Shaman"
-WARLOCK = "Warlock"
-WARRIOR = "Warrior"
-INTRO = "----J&P---- Type /jp to open and close the dkp window ----J&P----"
-OFFICER_ALT = "Officer Alt"
-ALT = "Alt"
-ASCENDING = "asc"
-DESCENDING = "des"
-PLAYER_MAN_DESCRIPTION = "Enter amount:"
-QUEUE_BUTTON = "Benched"
-DECAY = "Decay"
-UNDO = "Undo last action"
-UNDO_ACTION_ADDED = "Added"
-UNDO_ACTION_SUBBED = "Subbed"
-UNDO_ACTION_DECAY = "Decay"
-UNDO_ACTION_RAIDADD = "RaidAdd"
-BENCH_TITLE = "Bench"
-ALL = "All"
-NONE = "None"
-TOGGLES = "Show:"
-LOG_BUTTON_TEXT = "Log"
-CLEAR_BENCH = "Clear bench"
-SHARE_BENCH = "Share"
-PRIORITY_FRAME_TITLE = "Priorities"
-LOG_FRAME_TITLE = "Transaction log"
-INVITE_FRAME_TITLE = "Inviting"
-INVITE_BUTTON_TEXT = "Inviting"
-CONS_BUTTON_TEXT = "Tracking"
-MASS_INVITE_BUTTON_TEXT = "Mass invite raiders"
-PRIORITY_BUTTON_TEXT = PRIORITY_FRAME_TITLE
-VERSION_CHECK_BUTTON_TEXT = "Version check"
-SINGLE_INIT_CHECK_BUTTON_TEXT = "Init: Buffs and cons"
-SINGLE_INIT_BUFF_CHECK_BUTTON_TEXT = "Init: Buffs only"
-SINGLE_INIT_CONS_CHECK_BUTTON_TEXT = "Init: Cons only"
-SINGLE_POST_CHECK_BUTTON_TEXT = "Post raid cons"
-SINGLE_CHECK_BUTTON_TEXT_EMPTY = "Choose a player\n in the browser"
-CONS_INIT_BUTTON_TEXT = "Init: Cons only"
-BUFFS_INIT_BUTTON_TEXT = "Init: Buffs only"
-REQUIRED_BUFFS_BUTTON_TEXT = "Get required buff data"
-SETTINGS_BUTTON_TEXT = "Settings"
-MANAGEMENT_TITLE = "Management"
-LOG_EVENT_HEADER = "Event"
-LOG_TIME_HEADER = "Time"
-LOG_CHANGE_HEADER = "Change"
-LOG_TOTAL_HEADER = "Sum"
-LOG_MODIFIER_HEADER = "Modifier"
-PRIORITY_ITEM_HEADER = "Item name"
-PRIORITY_HEADER = "Priority"
-OFFICERS = "Officers"
-TANK_BUTTON = "Set main tank"
-ASSIST_BUTTON = "Set raid assist"
-NEXT = "Next page"
-ACCEPT = "Accept"
-CANCEL = "Cancel"
-ADD_PRIO = "Add new priority"
-PRIORITY_ADD_ITEM_DESCRIPTION = "Insert item: "
-PRIORITY_ADD_DESCRIPTION = "Insert priority: "
-PRIORITY_EXPLANATION = "Insert the name of the item. Add the priorities on the item below. \nAccepted separators are > and =. Eg. Tank > Fury = Rogue"
-PREVIOUS = "Previous page"
-BACK = "Back to raids"
-ADDON_PREFIX = "jpdkp"
-BENCH_MSG_SHARE = "ShareBench"
-SETTINGS_FRAME_TITLE = "Settings"
-CONS_FRAME_TITLE = "Tracking"
-SETTING_INFO = "Press enter or escape after edit to save"
-BIDDERS_ONLY_SETTING = "Only show bidders in overview"
-BIDDERS_ONLY_BOOLEAN_SETTING = "biddersOnlyBoolean"
-AUTO_INV_SETTING = "Invite guild members on whisper"
-AUTO_INV_BOOLEAN_SETTING = "autoInvBoolean"
-OFFICER_ASSIST_BOOLEAN_SETTING = "officerAssistBoolean"
-LINK_PRIO_SETTING_TEXT = "Link priority in raid chat"
-LINK_PRIO_BOOLEAN_SETTING = "linkPrioBoolean"
-FULL_DKP = "Full dkp"
-INITIAL_CHECK = "Init: Buffs and cons"
-POST_CHECK = "Post raid cons"
+_G.Jp = {}
+local Jp = _G.Jp
 
--- XML Frame naming related
+Jp.Localization = {
+    ADDON_PREFIX = "jpdkp",
+    ALT = "Alt",
+    ASCENDING = "asc",
+    AUTO_INV_BOOLEAN_SETTING = "autoInvBoolean",
+    BIDDERS_ONLY_BOOLEAN_SETTING = "biddersOnlyBoolean",
+    DESCENDING = "des",
+    LINK_PRIO_BOOLEAN_SETTING = "linkPrioBoolean",
+    OFFICER_ALT = "Officer Alt",
+    OFFICER_ASSIST_BOOLEAN_SETTING = "officerAssistBoolean",
+    UNDO_ACTION_ADDED = "Added",
+    UNDO_ACTION_DECAY = "Decay",
+    UNDO_ACTION_RAIDADD = "RaidAdd",
+    UNDO_ACTION_SUBBED = "Subbed",
 
-PLAYER = "Player"
-AMOUNT = "Amount"
-PLAYER_MANAGEMENT = "JP_ManagementPlayerManagement"
-OUTER_FRAME_LIST_ENTRY = "JP_OuterFrameListEntry"
-BACKGROUND = "Background"
-LIST_ENTRY = "JP_ListEntry"
-CLASS_BUTTON = "JP_ClassButton"
-BENCH_ENTRY = "JP_BenchEntry"
-MANAGEMENT = "JP_Management"
-LOG_FRAME = "JP_LogFrame"
-PRIORITY_FRAME = "JP_PriorityFrame"
-PRIORITIES_SHARE = "Share priorities"
-DECAY_SETTING_NAME = "DecayPercentage"
+    -- Texts/Descriptions --
+    AUTO_INV_SETTING = "Invite guild members on whisper",
+    BIDDERS_ONLY_SETTING = "Only show bidders in overview",
+    FULL_DKP = "Full dkp",
+    INTRO = "----J&P---- Type /jp to open and close the dkp window ----J&P----",
+    LINK_PRIO_SETTING_TEXT = "Link priority in raid chat",
+    SETTING_INFO = "Press enter or escape after edit to save",
 
--- Resource paths --
-ONY_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia"
-BWL_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair"
-MC_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore"
-AQ_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj"
-NAXX_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas"
+    -- Classes --
+    DRUID = "Druid",
+    HUNTER = "Hunter",
+    MAGE = "Mage",
+    PRIEST = "Priest",
+    ROGUE = "Rogue",
+    SHAMAN = "Shaman",
+    WARLOCK = "Warlock",
+    WARRIOR = "Warrior",
 
--- Raid names --
-ONY_NAME = "Onyxia's Lair"
-MC_NAME = "Molten Core"
-BWL_NAME = "Blackwing Lair"
-AQ_NAME = "Ahn'Qiraj"
-NAXX_NAME = "Naxxramas"
+    -- Button texts --
+    SINGLE_CHECK_BUTTON_TEXT_EMPTY = "Choose a player\n in the browser",
+    SINGLE_INIT_BUFF_CHECK_BUTTON_TEXT = "Init: Buffs only",
+    SINGLE_INIT_CHECK_BUTTON_TEXT = "Init: Buffs and cons",
+    SINGLE_INIT_CONS_CHECK_BUTTON_TEXT = "Init: Cons only",
+    SINGLE_POST_CHECK_BUTTON_TEXT = "Post raid cons",
 
--- Addon messages --
-BENCH_MSG_ADD = "AddToBench"
-BENCH_MSG_REMOVE = "RemoveFromBench"
-BENCH_MSG_CLEAR = "ClearBench"
-BENCH_MSG_REQUEST = "RequestBenchUpdate"
-LOG_MSG_ENTRY = "LogEntry"
-REQUEST_INIT_CONS = "RequestConsInit"
-REQUEST_POST_CONS = "RequestConsPost"
-SHOULD_SAVE_CONS_BUFFS = "SaveConsBuffs"
-INIT_CONS = "InitCons"
-POST_CONS = "PostCons"
-VERSION_CHECK_REQUEST = "CheckVersion"
-VERSION = "Version"
-BUFFS = "Buffs"
-CONS_SHARE = "ShareCons"
-CONS_CLEAR = "ClearCons"
-BUFF_CLEAR = "ClearBuffs"
-BUFF_SHARE = "ShareBuffs"
-INIT_UPDATE = "InitUpdate"
+    -- XML Frame naming related
+    AMOUNT = "Amount",
+    BACKGROUND = "Background",
+    BENCH_ENTRY = "JP_BenchEntry",
+    CLASS_BUTTON = "JP_ClassButton",
+    DECAY_SETTING_NAME = "DecayPercentage",
+    LIST_ENTRY = "JP_ListEntry",
+    LOG_FRAME = "JP_LogFrame",
+    LOG_FRAME_TITLE = "Transaction log",
+    OUTER_FRAME_LIST_ENTRY = "JP_OuterFrameListEntry",
+    PLAYER = "Player",
+    PLAYER_MANAGEMENT = "JP_ManagementPlayerManagement",
+    PRIORITIES_SHARE = "Share priorities",
+    PRIORITY_FRAME = "JP_PriorityFrame",
+    PRIORITY_FRAME_TITLE = "Priorities",
+    SETTINGS_FRAME_TITLE = "Settings",
 
--- Role --
-HEALER = "Healer"
-TANK = "Tank"
-MELEE = "Melee"
-CASTER = "Caster"
+    -- Resource paths --
+    AQ_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-TempleofAhnQiraj",
+    BWL_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-BlackwingLair",
+    MC_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-MoltenCore",
+    NAXX_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Naxxramas",
+    ONY_RES = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-DUNGEONBUTTON-Onyxia",
 
--- Loot methods --
-TRADE = "Trade"
-CREATE = "Create"
-PICK_UP = "PickUp"
+    -- Raid names --
+    AQ_NAME = "Ahn'Qiraj",
+    BWL_NAME = "Blackwing Lair",
+    MC_NAME = "Molten Core",
+    NAXX_NAME = "Naxxramas",
+    ONY_NAME = "Onyxia's Lair",
+
+    -- Addon messages --
+    BENCH_MSG_ADD = "AddToBench",
+    BENCH_MSG_CLEAR = "ClearBench",
+    BENCH_MSG_REMOVE = "RemoveFromBench",
+    BENCH_MSG_REQUEST = "RequestBenchUpdate",
+    BENCH_MSG_SHARE = "ShareBench",
+    BUFF_CLEAR = "ClearBuffs",
+    BUFF_SHARE = "ShareBuffs",
+    CONS_CLEAR = "ClearCons",
+    CONS_SHARE = "ShareCons",
+    BUFFS = "Buffs",
+    INIT_CONS = "InitCons",
+    INIT_UPDATE = "InitUpdate",
+    LOG_MSG_ENTRY = "LogEntry",
+    POST_CONS = "PostCons",
+    REQUEST_INIT_CONS = "RequestConsInit",
+    REQUEST_POST_CONS = "RequestConsPost",
+    SHOULD_SAVE_CONS_BUFFS = "SaveConsBuffs",
+    VERSION = "Version",
+    VERSION_CHECK_REQUEST = "CheckVersion",
+
+    -- Role --
+    CASTER = "Caster",
+    HEALER = "Healer",
+    MELEE = "Melee",
+    TANK = "Tank",
+
+    -- Loot methods --
+    CREATE = "Create",
+    PICK_UP = "PickUp",
+    TRADE = "Trade",
+}
+
+JP_NEXT = "Next page"
+JP_PREVIOUS = "Previous page"
+JP_PLAYER_HEADER = "Player"

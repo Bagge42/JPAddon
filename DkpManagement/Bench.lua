@@ -1,5 +1,6 @@
 JP_Current_Bench = {}
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local BrowserSelection = Jp.BrowserSelection
 local GuildRosterHandler = Jp.GuildRosterHandler
 local Utils = Jp.Utils
@@ -15,7 +16,7 @@ function isBenched(player)
 end
 
 local function updateBenchEntries()
-    Utils:clearEntries("JP_BenchFrameListEntry", MaximumMembersShown, PLAYER)
+    Utils:clearEntries("JP_BenchFrameListEntry", MaximumMembersShown, Localization.PLAYER)
     local entryCounter = 1
     local sortedBench = Utils:sortTableWhereKeyIsName(JP_Current_Bench)
     for memberIndex = BenchIndex, #sortedBench, 1 do
@@ -24,8 +25,8 @@ local function updateBenchEntries()
         end
         local benchEntry = getglobal("JP_BenchFrameListEntry" .. entryCounter)
         benchEntry:Show()
-        getglobal(benchEntry:GetName() .. BACKGROUND):Hide()
-        local fontString = getglobal(benchEntry:GetName() .. PLAYER)
+        getglobal(benchEntry:GetName() .. Localization.BACKGROUND):Hide()
+        local fontString = getglobal(benchEntry:GetName() .. Localization.PLAYER)
         fontString:SetText(sortedBench[memberIndex])
         Utils:setClassColor(fontString, JP_Current_Bench[sortedBench[memberIndex]])
         entryCounter = entryCounter + 1
@@ -45,7 +46,7 @@ local function incrementIndexIfNeeded()
 end
 
 local function benchLimitReached(playerToAdd)
-    local benchLength = string.len(BENCH_MSG_SHARE)
+    local benchLength = string.len(Localization.BENCH_MSG_SHARE)
     for player, _ in pairs(JP_Current_Bench) do
         benchLength = benchLength + string.len(player) + 1
     end
@@ -81,12 +82,12 @@ function Bench:removeFromBench(entryId)
         return
     end
 
-    local player = getglobal("JP_BenchFrameListEntry" .. entryId .. PLAYER):GetText()
+    local player = getglobal("JP_BenchFrameListEntry" .. entryId .. Localization.PLAYER):GetText()
     if changeBenchState(player) then
         if BrowserSelection:getSelectedPlayer() == player then
             BrowserSelection:colorBenchButton(player)
         end
-        local msg = BENCH_MSG_REMOVE .. "&" .. player
+        local msg = Localization.BENCH_MSG_REMOVE .. "&" .. player
         Utils:sendOfficerAddonMsg(msg, "RAID")
     end
 end
@@ -99,11 +100,11 @@ function Bench:clearBench()
     JP_Current_Bench = {}
     BenchIndex = 1
     updateBenchEntries()
-    getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
+    getglobal(Localization.PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
 end
 
 function Bench:sendClearBenchMsg()
-    local msg = BENCH_MSG_CLEAR
+    local msg = Localization.BENCH_MSG_CLEAR
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
@@ -131,19 +132,19 @@ function Bench:benchPlayer()
     local selectedPlayer = BrowserSelection:getSelectedPlayer()
     local playerClass = GuildRosterHandler:getPlayerClass(selectedPlayer)
     if changeBenchState(selectedPlayer, playerClass) then
-        local msg = BENCH_MSG_ADD .. "&" .. selectedPlayer .. "&" .. playerClass
+        local msg = Localization.BENCH_MSG_ADD .. "&" .. selectedPlayer .. "&" .. playerClass
         Utils:sendOfficerAddonMsg(msg, "RAID")
         BrowserSelection:colorBenchButton(selectedPlayer)
     end
 end
 
 local function requestUpdate()
-    local msg = BENCH_MSG_REQUEST
+    local msg = Localization.BENCH_MSG_REQUEST
     Utils:sendAddonMsg(msg, "RAID")
 end
 
 local function sendBench(target)
-    local msg = BENCH_MSG_SHARE
+    local msg = Localization.BENCH_MSG_SHARE
     for name, _ in pairs(JP_Current_Bench) do
         msg = msg .. "&" .. name
     end
@@ -151,30 +152,30 @@ local function sendBench(target)
 end
 
 local function onSyncAttempt(prefix, msg, sender)
-    if (prefix == ADDON_PREFIX) then
+    if (prefix == Localization.ADDON_PREFIX) then
         if Utils:isSelfRemoveRealm(sender) then
             return
         end
 
-        if Utils:isMsgType(msg, BENCH_MSG_ADD) then
+        if Utils:isMsgType(msg, Localization.BENCH_MSG_ADD) then
             local _, player, class = string.split("&", msg)
             changeBenchState(player, class)
-        elseif Utils:isMsgType(msg, BENCH_MSG_REMOVE) then
+        elseif Utils:isMsgType(msg, Localization.BENCH_MSG_REMOVE) then
             local _, player = string.split("&", msg)
             if JP_Current_Bench[player] then
                 JP_Current_Bench[player] = nil
                 updateBenchEntries()
             end
-        elseif Utils:isMsgType(msg, BENCH_MSG_CLEAR) then
+        elseif Utils:isMsgType(msg, Localization.BENCH_MSG_CLEAR) then
             Bench:clearBench()
-        elseif Utils:isMsgType(msg, BENCH_MSG_REQUEST) then
+        elseif Utils:isMsgType(msg, Localization.BENCH_MSG_REQUEST) then
             if (Utils:getTableSize(JP_Current_Bench) > 0) then
                 sendBench(sender)
             end
-        elseif Utils:isMsgType(msg, BENCH_MSG_SHARE) then
+        elseif Utils:isMsgType(msg, Localization.BENCH_MSG_SHARE) then
             Bench:clearBench()
             for name, _ in string.gmatch(msg, "([^&]*)") do
-                if (name ~= BENCH_MSG_SHARE) then
+                if (name ~= Localization.BENCH_MSG_SHARE) then
                     local class = GuildRosterHandler:getPlayerClass(name)
                     JP_Current_Bench[name] = class
                 end

@@ -1,4 +1,5 @@
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local GuildRosterHandler = Jp.GuildRosterHandler
 local Utils = Jp.Utils
 local Bidding = Jp.Bidding
@@ -9,38 +10,39 @@ local CurrentSelection = ""
 local EntryIdOfSelection = 0
 
 local function setTrackingButtonsText(playerInEntry)
-    getglobal("JP_TrackingFrameTrackingTabSingleInitCons"):SetText(SINGLE_INIT_CONS_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
-    getglobal("JP_TrackingFrameTrackingTabSingleInitBuff"):SetText(SINGLE_INIT_BUFF_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
-    getglobal("JP_TrackingFrameTrackingTabSingleInitBoth"):SetText(SINGLE_INIT_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
-    getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(SINGLE_POST_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitCons"):SetText(Localization.SINGLE_INIT_CONS_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitBuff"):SetText(Localization.SINGLE_INIT_BUFF_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitBoth"):SetText(Localization.SINGLE_INIT_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
+    getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(Localization.SINGLE_POST_CHECK_BUTTON_TEXT .. "\n" .. playerInEntry)
 end
 
-local function setTrackingButtonsTextEmpty()
-    getglobal("JP_TrackingFrameTrackingTabSingleInitCons"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
-    getglobal("JP_TrackingFrameTrackingTabSingleInitBuff"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
-    getglobal("JP_TrackingFrameTrackingTabSingleInitBoth"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
-    getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(SINGLE_CHECK_BUTTON_TEXT_EMPTY)
+function BrowserSelection:setTrackingButtonsTextEmpty()
+    local emptyText = Localization.SINGLE_CHECK_BUTTON_TEXT_EMPTY
+    getglobal("JP_TrackingFrameTrackingTabSingleInitCons"):SetText(emptyText)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitBuff"):SetText(emptyText)
+    getglobal("JP_TrackingFrameTrackingTabSingleInitBoth"):SetText(emptyText)
+    getglobal("JP_TrackingFrameTrackingTabSinglePost"):SetText(emptyText)
 end
 
 function BrowserSelection:selectEntry(entryId)
     if EntryIdOfSelection ~= 0 then
-        getglobal(OUTER_FRAME_LIST_ENTRY .. EntryIdOfSelection .. BACKGROUND):Hide()
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. EntryIdOfSelection .. Localization.BACKGROUND):Hide()
     end
-    local playerInEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. entryId .. PLAYER):GetText()
+    local playerInEntry = getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entryId .. Localization.PLAYER):GetText()
     if CurrentSelection == playerInEntry then
-        getglobal(PLAYER_MANAGEMENT):Hide()
+        getglobal(Localization.PLAYER_MANAGEMENT):Hide()
         CurrentSelection = ""
         EntryIdOfSelection = 0
-        setTrackingButtonsTextEmpty()
+        BrowserSelection:setTrackingButtonsTextEmpty()
     else
-        getglobal(PLAYER_MANAGEMENT):Show()
-        local playerNameFrame = getglobal(PLAYER_MANAGEMENT .. "PlayerName")
+        getglobal(Localization.PLAYER_MANAGEMENT):Show()
+        local playerNameFrame = getglobal(Localization.PLAYER_MANAGEMENT .. "PlayerName")
         playerNameFrame:SetText(playerInEntry)
         setTrackingButtonsText(playerInEntry)
         Utils:setClassColor(playerNameFrame, GuildRosterHandler:getPlayerClass(playerInEntry))
-        getglobal(PLAYER_MANAGEMENT .. "Value"):SetFocus()
+        getglobal(Localization.PLAYER_MANAGEMENT .. "Value"):SetFocus()
         Bidding:setBidInPlayerManagement(playerInEntry)
-        getglobal(OUTER_FRAME_LIST_ENTRY .. entryId .. BACKGROUND):Show()
+        getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entryId .. Localization.BACKGROUND):Show()
         CurrentSelection = playerInEntry
         BrowserSelection:colorBenchButton(playerInEntry)
         EntryIdOfSelection = entryId
@@ -48,7 +50,7 @@ function BrowserSelection:selectEntry(entryId)
 end
 
 function BrowserSelection:isSelected(entryId)
-    local playerInEntry = getglobal(OUTER_FRAME_LIST_ENTRY .. entryId .. PLAYER):GetText()
+    local playerInEntry = getglobal(Localization.OUTER_FRAME_LIST_ENTRY .. entryId .. Localization.PLAYER):GetText()
     return playerInEntry == CurrentSelection
 end
 
@@ -58,8 +60,8 @@ end
 
 function BrowserSelection:colorBenchButton(selectedPlayer)
     if isBenched(selectedPlayer) then
-        getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(0, 1, 0, 0.5)
+        getglobal(Localization.PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(0, 1, 0, 0.5)
     else
-        getglobal(PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
+        getglobal(Localization.PLAYER_MANAGEMENT .. "QueueText"):SetTextColor(1, 0, 0, 0.7)
     end
 end

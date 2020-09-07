@@ -1,20 +1,22 @@
+JP_Priority_List = {}
+
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Priorities = {}
 local Utils = Jp.Utils
 local Settings = Jp.Settings
 local GuildRosterHandler = Jp.GuildRosterHandler
 Jp.Priorities = Priorities
 
-JP_Priority_List = {}
 local MaximumPrioritiesShown = 24
 local CurrentSelectedEntry
 local PriorityIndex = 0
-local CurrentOrderUsed = ASCENDING
+local CurrentOrderUsed = Localization.ASCENDING
 
 local function getSortedPriorities()
     local tableCopy = Utils:getTableWithNoNils(JP_Priority_List)
     table.sort(tableCopy, function(member1, member2)
-        if CurrentOrderUsed == DESCENDING then
+        if CurrentOrderUsed == Localization.DESCENDING then
             return member1[1] > member2[1]
         else
             return member1[1] < member2[1]
@@ -43,7 +45,7 @@ end
 
 local function createPriorityShareButton()
     local shareButton = CreateFrame("Button", "$parentShare", JP_PriorityFrameTitleFrame, "JP_AllClassToggle")
-    shareButton:SetText(PRIORITIES_SHARE)
+    shareButton:SetText(Localization.PRIORITIES_SHARE)
     shareButton:SetSize(105, 24)
     shareButton:SetPoint("Right", JP_PriorityFrameTitleFrameClose, "Left")
     shareButton:HookScript("OnClick", share)
@@ -51,7 +53,7 @@ local function createPriorityShareButton()
 end
 
 function Priorities:onLoad()
-    getglobal("JP_PriorityFrameTitleFrameName"):SetText(PRIORITY_FRAME_TITLE)
+    getglobal("JP_PriorityFrameTitleFrameName"):SetText(Localization.PRIORITY_FRAME_TITLE)
     createPriorityShareButton()
 end
 
@@ -115,7 +117,7 @@ local function linkPriorityIfAny(item, sender)
         end
     end
     if (priority ~= nil) then
-        if Settings:getSetting(LINK_PRIO_BOOLEAN_SETTING) and Utils:isSelfRemoveRealm(sender) then
+        if Settings:getSetting(Localization.LINK_PRIO_BOOLEAN_SETTING) and Utils:isSelfRemoveRealm(sender) then
             local msg = "Priority: " .. priority
             SendChatMessage(msg, "RAID_WARNING")
         end
@@ -135,7 +137,7 @@ function Priorities:onEvent(event, ...)
         linkPriorityIfAny(text, msg)
     end
     if (event == "CHAT_MSG_ADDON") then
-        if (prefix == ADDON_PREFIX) and GuildRosterHandler:isOfficer(Utils:removeRealmName(sender)) then
+        if (prefix == Localization.ADDON_PREFIX) and GuildRosterHandler:isOfficer(Utils:removeRealmName(sender)) then
             local msgPrefix, item, prio = string.split("&", msg)
             if Utils:isSelfRemoveRealm(sender) then
                 return
@@ -157,11 +159,11 @@ function Priorities:onClick()
         getglobal("JP_PriorityFrameDisplayFrameAdd"):Hide()
         getglobal("JP_PriorityFrameTitleFrameShare"):Hide()
     end
-    if not getglobal(PRIORITY_FRAME):IsVisible() then
+    if not getglobal(Localization.PRIORITY_FRAME):IsVisible() then
         updatePriorityList()
-        getglobal(PRIORITY_FRAME):Show()
+        getglobal(Localization.PRIORITY_FRAME):Show()
     else
-        getglobal(PRIORITY_FRAME):Hide()
+        getglobal(Localization.PRIORITY_FRAME):Hide()
     end
 end
 
@@ -287,14 +289,14 @@ end
 
 function Priorities:selectEntry(id)
     local modifierFrame = getglobal("JP_PriorityFrameDisplayFrameListModifierFrame")
-    local clickedEntryBackground = getglobal("JP_PriorityFrameDisplayFrameListEntry" .. id .. BACKGROUND)
+    local clickedEntryBackground = getglobal("JP_PriorityFrameDisplayFrameListEntry" .. id .. Localization.BACKGROUND)
     if (id == CurrentSelectedEntry) then
         CurrentSelectedEntry = nil
         clickedEntryBackground:Hide()
         modifierFrame:Hide()
     else
         if CurrentSelectedEntry ~= nil then
-            getglobal("JP_PriorityFrameDisplayFrameListEntry" .. CurrentSelectedEntry .. BACKGROUND):Hide()
+            getglobal("JP_PriorityFrameDisplayFrameListEntry" .. CurrentSelectedEntry .. Localization.BACKGROUND):Hide()
         end
         if Utils:isOfficer() then
             modifierFrame:SetPoint("LEFT", "JP_PriorityFrameDisplayFrameListEntry" .. id, "RIGHT")
@@ -306,10 +308,10 @@ function Priorities:selectEntry(id)
 end
 
 function Priorities:itemNameClicked()
-    if (CurrentOrderUsed == ASCENDING) then
-        CurrentOrderUsed = DESCENDING
+    if (CurrentOrderUsed == Localization.ASCENDING) then
+        CurrentOrderUsed = Localization.DESCENDING
     else
-        CurrentOrderUsed = ASCENDING
+        CurrentOrderUsed = Localization.ASCENDING
     end
     updatePriorityList()
 end

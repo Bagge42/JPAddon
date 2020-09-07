@@ -1,5 +1,5 @@
-_G.Jp = {}
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Utils = {}
 Jp.Utils = Utils
 
@@ -54,31 +54,31 @@ function Utils:setClassColor(frame, class)
     local r = 0
     local g = 0
     local b = 0
-    if class == DRUID then
+    if class == Localization.DRUID then
         r = 1.0
         g = 0.49
         b = 0.04
-    elseif class == HUNTER then
+    elseif class == Localization.HUNTER then
         r = 0.67
         g = 0.83
         b = 0.45
-    elseif class == MAGE then
+    elseif class == Localization.MAGE then
         r = 0.41
         g = 0.80
         b = 0.94
-    elseif class == PRIEST then
+    elseif class == Localization.PRIEST then
         r = 1
         g = 1
         b = 1
-    elseif class == ROGUE then
+    elseif class == Localization.ROGUE then
         r = 1
         g = 0.96
         b = 0.41
-    elseif class == SHAMAN then
+    elseif class == Localization.SHAMAN then
         r = 0
         g = 0.44
         b = 0.87
-    elseif class == WARLOCK then
+    elseif class == Localization.WARLOCK then
         r = 0.58
         g = 0.51
         b = 0.79
@@ -131,12 +131,12 @@ end
 
 function Utils:sendOfficerAddonMsg(msg, targetChannel, targetPlayer)
     if Utils:isOfficer() then
-        C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel, targetPlayer)
+        C_ChatInfo.SendAddonMessage(Localization.ADDON_PREFIX, msg, targetChannel, targetPlayer)
     end
 end
 
 function Utils:sendAddonMsg(msg, targetChannel, targetPlayer)
-    C_ChatInfo.SendAddonMessage(ADDON_PREFIX, msg, targetChannel, targetPlayer)
+    C_ChatInfo.SendAddonMessage(Localization.ADDON_PREFIX, msg, targetChannel, targetPlayer)
 end
 
 function Utils:isItemLink(text)

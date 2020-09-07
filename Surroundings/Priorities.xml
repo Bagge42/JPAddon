@@ -33,17 +33,17 @@
         </Layers>
         <Scripts>
             <OnLoad>
-                    getglobal(self:GetName() .. BACKGROUND):Hide()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
                     Jp.Priorities:selectEntry(self:GetID())
             </OnClick>
             <OnEnter>
-                    getglobal(self:GetName() .. BACKGROUND):Show()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Show()
             </OnEnter>
             <OnLeave>
                     if not Jp.Priorities:isSelected(self:GetID()) then
-                        getglobal(self:GetName() .. BACKGROUND):Hide()
+                        getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
                     end
             </OnLeave>
         </Scripts>
@@ -90,7 +90,7 @@
                             </OnLoad>
                         </Scripts>
                         <Frames>
-                            <Button inherits="JP_LogHeader" name="$parentItemHeader" id="1" text="PRIORITY_ITEM_HEADER">
+                            <Button inherits="JP_LogHeader" name="$parentItemHeader" id="1" text="Item name">
                                 <Size>
                                     <AbsDimension x="200" y="20"/>
                                 </Size>
@@ -103,7 +103,7 @@
                                     </OnClick>
                                 </Scripts>
                             </Button>
-                            <Button inherits="JP_LogHeader" name="$parentPriorityHeader" id="2" text="PRIORITY_HEADER">
+                            <Button inherits="JP_LogHeader" name="$parentPriorityHeader" id="2" text="Priority">
                                 <Size>
                                     <AbsDimension x="245" y="20"/>
                                 </Size>
@@ -113,7 +113,7 @@
                             </Button>
                         </Frames>
                     </Frame>
-                    <Button name="$parentAdd" inherits="JP_HoverLight" text="ADD_PRIO">
+                    <Button name="$parentAdd" inherits="JP_HoverLight" text="Add new priority">
                         <Size>
                             <AbsDimension x="125" y="24"/>
                         </Size>
@@ -130,7 +130,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentNext" inherits="JP_HoverLight" text="NEXT">
+                    <Button name="$parentNext" inherits="JP_HoverLight" text="JP_NEXT">
                         <Size>
                             <AbsDimension x="75" y="24"/>
                         </Size>
@@ -147,7 +147,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentPrevious" inherits="JP_HoverLight" text="PREVIOUS">
+                    <Button name="$parentPrevious" inherits="JP_HoverLight" text="JP_PREVIOUS">
                         <Size>
                             <AbsDimension x="95" y="24"/>
                         </Size>
@@ -188,7 +188,7 @@
                         </Size>
                         <Layers>
                             <Layer level="ARTWORK">
-                                <FontString inherits="GameFontHighlight" text="PRIORITY_ADD_ITEM_DESCRIPTION">
+                                <FontString inherits="GameFontHighlight" text="Insert item: ">
                                     <Anchors>
                                         <Anchor point="LEFT">
                                             <Offset>
@@ -234,7 +234,7 @@
                         </Size>
                         <Layers>
                             <Layer level="ARTWORK">
-                                <FontString inherits="GameFontHighlight" text="PRIORITY_ADD_DESCRIPTION">
+                                <FontString inherits="GameFontHighlight" text="Insert priority: ">
                                     <Anchors>
                                         <Anchor point="LEFT">
                                             <Offset>
@@ -280,7 +280,7 @@
                         </Size>
                         <Layers>
                             <Layer level="ARTWORK">
-                                <FontString inherits="GameFontNormal" text="PRIORITY_EXPLANATION">
+                                <FontString inherits="GameFontNormal" text="Insert the name of the item. Add the priorities on the item below. \nAccepted separators are ,> and =. Eg. Tank ,> Fury = Rogue">
                                     <Anchors>
                                         <Anchor point="LEFT">
                                             <Offset>
@@ -295,7 +295,7 @@
                             <Anchor point="TOPLEFT" relativeTo="$parentPriorityDescription" relativePoint="BOTTOMLEFT"/>
                         </Anchors>
                     </Frame>
-                    <Button name="$parentAccept" inherits="JP_AllClassToggle" text="ACCEPT">
+                    <Button name="$parentAccept" inherits="JP_AllClassToggle" text="Accept">
                         <Size>
                             <AbsDimension x="95" y="24"/>
                         </Size>
@@ -308,7 +308,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentCancel" inherits="JP_AllClassToggle" text="CANCEL">
+                    <Button name="$parentCancel" inherits="JP_AllClassToggle" text="Cancel">
                         <Size>
                             <AbsDimension x="95" y="24"/>
                         </Size>

@@ -1,5 +1,7 @@
 JP_Current_Settings = {}
+
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Utils = Jp.Utils
 local Settings = {}
 Jp.Settings = Settings
@@ -8,7 +10,7 @@ local ClassesWaitingForSettings = {}
 local ClassesListeningToChanges = {}
 local SettingsTable = {}
 local SettingsLoaded = false
-local SettingTexts = { ONY_NAME, MC_NAME, BWL_NAME, AQ_NAME, NAXX_NAME, DECAY_SETTING_NAME }
+local SettingTexts = { Localization.ONY_NAME, Localization.MC_NAME, Localization.BWL_NAME, Localization.AQ_NAME, Localization.NAXX_NAME, Localization.DECAY_SETTING_NAME }
 local DefaultSettings = { [SettingTexts[1]] = 12, [SettingTexts[2]] = 33, [SettingTexts[3]] = 27, [SettingTexts[4]] = 0, [SettingTexts[5]] = 0, [SettingTexts[6]] = 20}
 
 local function createEditBox(settingFrame, id)
@@ -43,13 +45,13 @@ function Settings:toggleBooleanSetting(settingName)
 end
 
 function Settings:onLoad()
-    getglobal("JP_SettingsFrameTitleFrameText"):SetText(SETTINGS_FRAME_TITLE)
+    getglobal("JP_SettingsFrameTitleFrameText"):SetText(Localization.SETTINGS_FRAME_TITLE)
 
     local settingInfo = CreateFrame("Frame", "$parentSettingInfo", JP_SettingsFrame, "JP_SettingEntry")
     settingInfo:SetPoint("TOPLEFT", 0, -24)
     settingInfo.text = settingInfo:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     settingInfo.text:SetPoint("LEFT", 5, 0)
-    settingInfo.text:SetText(SETTING_INFO)
+    settingInfo.text:SetText(Localization.SETTING_INFO)
 
     local initialSetting = CreateFrame("Frame", "$parentSetting1", JP_SettingsFrame, "JP_SettingEntry")
     initialSetting:SetPoint("TOP", "$parentSettingInfo", "BOTTOM")
@@ -70,13 +72,13 @@ function Settings:onLoad()
     biddersOnlySetting:SetPoint("BOTTOMLEFT")
     biddersOnlySetting.text = biddersOnlySetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     biddersOnlySetting.text:SetPoint("LEFT", 5, 0)
-    biddersOnlySetting.text:SetText(BIDDERS_ONLY_SETTING)
+    biddersOnlySetting.text:SetText(Localization.BIDDERS_ONLY_SETTING)
     biddersOnlySetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_SettingsFrameBiddersOnlySetting, "JP_SettingCheckButton")
     biddersOnlySetting.checkButton:SetPoint("RIGHT")
     biddersOnlySetting.checkButton.tooltip = "A bidding round is started by linking an item in a raid warning. If this checkbox is marked the only people that will be shown in the overview, after the start of a bidding round, is people linking an item in the raid chat and people whispering a bid. The bidding round lasts until a new round has been started or show none/all is clicked."
     biddersOnlySetting.checkButton:SetScript("OnClick", function()
-        Settings:toggleBooleanSetting(BIDDERS_ONLY_BOOLEAN_SETTING)
-        if SettingsTable[BIDDERS_ONLY_BOOLEAN_SETTING] then
+        Settings:toggleBooleanSetting(Localization.BIDDERS_ONLY_BOOLEAN_SETTING)
+        if SettingsTable[Localization.BIDDERS_ONLY_BOOLEAN_SETTING] then
             Jp.DkpBrowser:addBidToOverview()
         else
             Jp.DkpBrowser:removeBidFromOverview()
@@ -87,12 +89,12 @@ function Settings:onLoad()
     linkPrioSetting:SetPoint("BOTTOM", "$parentBiddersOnlySetting", "TOP")
     linkPrioSetting.text = linkPrioSetting:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     linkPrioSetting.text:SetPoint("LEFT", 5, 0)
-    linkPrioSetting.text:SetText(LINK_PRIO_SETTING_TEXT)
+    linkPrioSetting.text:SetText(Localization.LINK_PRIO_SETTING_TEXT)
     linkPrioSetting.checkButton = CreateFrame("CheckButton", "$parentCheckButton", JP_SettingsFrameLinkPrioSetting, "JP_SettingCheckButton")
     linkPrioSetting.checkButton:SetPoint("RIGHT")
     linkPrioSetting.checkButton.tooltip = "Toggle to link priorities in the raid chat when an item is linked in a raid warning, if such a priority exist"
     linkPrioSetting.checkButton:SetScript("OnClick", function()
-        Settings:toggleBooleanSetting(LINK_PRIO_BOOLEAN_SETTING)
+        Settings:toggleBooleanSetting(Localization.LINK_PRIO_BOOLEAN_SETTING)
     end)
 end
 
@@ -109,10 +111,10 @@ local function loadCheckBoxSetting(settingName, checkBoxName)
 end
 
 local function loadCheckBoxSettings()
-    loadCheckBoxSetting(BIDDERS_ONLY_BOOLEAN_SETTING, "JP_SettingsFrameBiddersOnlySettingCheckButton")
-    loadCheckBoxSetting(AUTO_INV_BOOLEAN_SETTING, "JP_InviteFrameInviteTabAutoInvSettingCheckButton")
-    loadCheckBoxSetting(LINK_PRIO_BOOLEAN_SETTING, "JP_SettingsFrameLinkPrioSettingCheckButton")
-    loadCheckBoxSetting(OFFICER_ASSIST_BOOLEAN_SETTING, "JP_InviteFrameAssistTabOfficerAssistSettingCheckButton")
+    loadCheckBoxSetting(Localization.BIDDERS_ONLY_BOOLEAN_SETTING, "JP_SettingsFrameBiddersOnlySettingCheckButton")
+    loadCheckBoxSetting(Localization.AUTO_INV_BOOLEAN_SETTING, "JP_InviteFrameInviteTabAutoInvSettingCheckButton")
+    loadCheckBoxSetting(Localization.LINK_PRIO_BOOLEAN_SETTING, "JP_SettingsFrameLinkPrioSettingCheckButton")
+    loadCheckBoxSetting(Localization.OFFICER_ASSIST_BOOLEAN_SETTING, "JP_InviteFrameAssistTabOfficerAssistSettingCheckButton")
 end
 
 local function loadSettings()
@@ -134,7 +136,7 @@ end
 
 function Settings:settingsLoaded(event, ...)
     local addonPrefix = select(1, ...)
-    if (addonPrefix == ADDON_PREFIX) and (event == "ADDON_LOADED") then
+    if (addonPrefix == Localization.ADDON_PREFIX) and (event == "ADDON_LOADED") then
         loadSettings()
         sendSettings()
         SettingsLoaded = true

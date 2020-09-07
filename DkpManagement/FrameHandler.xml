@@ -16,7 +16,7 @@
             <Frame name="$parentTitleFrame" inherits="JP_TitleFrame">
                 <Layers>
                     <Layer level="ARTWORK">
-                        <FontString name="$parentText" inherits="GameFontHighlight" text="MANAGEMENT_TITLE">
+                        <FontString name="$parentText" inherits="GameFontHighlight" text="Management">
                             <Anchors>
                                 <Anchor point="LEFT">
                                     <Offset>

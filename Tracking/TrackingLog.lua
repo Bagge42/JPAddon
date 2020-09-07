@@ -1,6 +1,8 @@
 JP_Consumables_Log = {}
 JP_Buff_Log = {}
+
 local Jp = _G.Jp
+local Localization = Jp.Localization
 local Utils = Jp.Utils
 local TrackingLog = {}
 local Consumables = Jp.Consumables
@@ -24,6 +26,7 @@ function TrackingLog:onLoad()
     FrameHandler:createTrackingTabButtons()
     Buffs:onLoad()
     Consumables:onLoad()
+    BrowserSelection:setTrackingButtonsTextEmpty()
 end
 
 local function existRecordingsForDate(table, date)
@@ -37,10 +40,10 @@ end
 local function isRecordings(date)
     if not existRecordingsForDate(JP_Consumables_Log, date) then
         return false
-    elseif (JP_Consumables_Log[date][INIT_CONS] == nil) then
+    elseif (JP_Consumables_Log[date][Localization.INIT_CONS] == nil) then
         Utils:jpMsg("No initial recordings for the specified date")
         return false
-    elseif (JP_Consumables_Log[date][POST_CONS] == nil) then
+    elseif (JP_Consumables_Log[date][Localization.POST_CONS] == nil) then
         Utils:jpMsg("No post raid recordings for the specified date")
         return false
     end
@@ -111,8 +114,8 @@ local function getItemNr(initEntries, postEntries, name)
 end
 
 local function getInitAndPostEntriesForItem(date, item)
-    local initEntries = JP_Consumables_Log[date][INIT_CONS][item]
-    local postEntries = JP_Consumables_Log[date][POST_CONS][item]
+    local initEntries = JP_Consumables_Log[date][Localization.INIT_CONS][item]
+    local postEntries = JP_Consumables_Log[date][Localization.POST_CONS][item]
     initEntries = convertToNameNumberTable(initEntries)
     postEntries = convertToNameNumberTable(postEntries)
     insertZeros(initEntries, postEntries)
@@ -263,17 +266,17 @@ local function createPrefixEntryIfNeeded(datestamp, prefix)
 end
 
 function TrackingLog:getPostRaidConsSilent()
-    local msg = REQUEST_POST_CONS
+    local msg = Localization.REQUEST_POST_CONS
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 local function sendInitRequest()
-    local msg = REQUEST_INIT_CONS
+    local msg = Localization.REQUEST_INIT_CONS
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
 local function sendConsBuffStatus(cons, buffs)
-    local msg = SHOULD_SAVE_CONS_BUFFS .. "&" .. cons .. "&" .. buffs
+    local msg = Localization.SHOULD_SAVE_CONS_BUFFS .. "&" .. cons .. "&" .. buffs
     Utils:sendOfficerAddonMsg(msg, "RAID")
 end
 
@@ -349,7 +352,7 @@ local function removeConsIfUsed(datestamp, msgPrefix, sender, consReported)
 end
 
 local function insertInLog(msg, msgPrefix, sender)
-    if (msgPrefix == INIT_CONS) and (RequestedInitCons == 0) then
+    if (msgPrefix == Localization.INIT_CONS) and (RequestedInitCons == 0) then
         return
     end
 
@@ -380,7 +383,7 @@ local function sendCons(prefix)
 end
 
 local function sendBuffs()
-    local msg = BUFFS
+    local msg = Localization.BUFFS
     local currentBuffs = Buffs:getCurrentBuffs()
     for buff = 1, #currentBuffs, 1 do
         local buffInfo = currentBuffs[buff]
@@ -404,7 +407,7 @@ end
 
 local function addBuff(datestamp, sender, buff)
     local name, duration, expirationTime = string.split("?", buff)
-    if (name ~= BUFFS) then
+    if (name ~= Localization.BUFFS) then
         insertOrEditBuff(datestamp, sender, Buffs:getNameFromAbb(name), duration, expirationTime)
     end
 end
@@ -466,16 +469,16 @@ end
 
 local function findLootMethod(lootString)
     if (string.find(lootString, "You receive item")) then
-        return TRADE
+        return Localization.TRADE
     elseif (string.find(lootString, "You receive loot")) then
-        return PICK_UP
+        return Localization.PICK_UP
     else
-        return CREATE
+        return Localization.CREATE
     end
 end
 
 local function findItemNumber(lootString)
-    local match = string.match(lootString, "x[0-9]*\.")
+    local match = string.match(lootString, "x%d+%.")
     if (match) then
         return string.match(match, "%d+")
     end
@@ -493,8 +496,8 @@ local function reactToLoot(lootString, sender)
     local consumablesBeingTracked = Consumables:getConsumableList()
     if consumableIsBeingTracked(itemName, consumablesBeingTracked) then
         local itemNumber = findItemNumber(lootString)
-        local msg = INIT_UPDATE .. "&" .. itemName .. "&" .. itemNumber
-        if (lootMethod == TRADE) then
+        local msg = Localization.INIT_UPDATE .. "&" .. itemName .. "&" .. itemNumber
+        if (lootMethod == Localization.TRADE) and TradeTarget then
             msg = msg .. "&" .. TradeTarget
         end
         Utils:sendAddonMsg(msg, "RAID")
@@ -505,8 +508,8 @@ local function isCurrentlyTracking(date)
     if (JP_Consumables_Log[date] == nil) then
         return false
     end
-    local initCheckDone = JP_Consumables_Log[date][INIT_CONS] ~= nil
-    local postCheckDone = JP_Consumables_Log[date][POST_CONS] ~= nil
+    local initCheckDone = JP_Consumables_Log[date][Localization.INIT_CONS] ~= nil
+    local postCheckDone = JP_Consumables_Log[date][Localization.POST_CONS] ~= nil
     return initCheckDone and not postCheckDone
 end
 
@@ -526,18 +529,18 @@ local function updateInit(msg, msgSender)
     end
 
     local prefix, itemName, itemNumber, itemSender = string.split("&", msg)
-    local msgSenderIndex = getSenderIndex(JP_Consumables_Log[date][INIT_CONS][itemName], msgSender)
+    local msgSenderIndex = getSenderIndex(JP_Consumables_Log[date][Localization.INIT_CONS][itemName], msgSender)
     if (msgSenderIndex == nil) then
-        table.insert(JP_Consumables_Log[date][INIT_CONS][itemName], { msgSender, tonumber(itemNumber) })
+        table.insert(JP_Consumables_Log[date][Localization.INIT_CONS][itemName], { msgSender, tonumber(itemNumber) })
     else
-        local priorItemHoldings = JP_Consumables_Log[date][INIT_CONS][itemName][msgSenderIndex][2]
-        JP_Consumables_Log[date][INIT_CONS][itemName][msgSenderIndex][2] = priorItemHoldings + tonumber(itemNumber)
+        local priorItemHoldings = JP_Consumables_Log[date][Localization.INIT_CONS][itemName][msgSenderIndex][2]
+        JP_Consumables_Log[date][Localization.INIT_CONS][itemName][msgSenderIndex][2] = priorItemHoldings + tonumber(itemNumber)
     end
 
     if (itemSender ~= nil) then
-        local itemSenderIndex = getSenderIndex(JP_Consumables_Log[date][INIT_CONS][itemName], itemSender)
-        local itemSenderHoldings = JP_Consumables_Log[date][INIT_CONS][itemName][itemSenderIndex][2]
-        JP_Consumables_Log[date][INIT_CONS][itemName][itemSenderIndex][2] = itemSenderHoldings - tonumber(itemNumber)
+        local itemSenderIndex = getSenderIndex(JP_Consumables_Log[date][Localization.INIT_CONS][itemName], itemSender)
+        local itemSenderHoldings = JP_Consumables_Log[date][Localization.INIT_CONS][itemName][itemSenderIndex][2]
+        JP_Consumables_Log[date][Localization.INIT_CONS][itemName][itemSenderIndex][2] = itemSenderHoldings - tonumber(itemNumber)
     end
 end
 
@@ -545,42 +548,42 @@ function TrackingLog:onEvent(event, ...)
     local prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID = ...
 
     if (event == "CHAT_MSG_ADDON") then
-        if (prefix == ADDON_PREFIX) then
+        if (prefix == Localization.ADDON_PREFIX) then
             if sender then
                 sender = Utils:removeRealmName(sender)
             end
             local msgPrefix = string.split("&", msg)
-            if (msgPrefix == INIT_CONS or msgPrefix == POST_CONS) and Utils:isOfficer() then
+            if (msgPrefix == Localization.INIT_CONS or msgPrefix == Localization.POST_CONS) and Utils:isOfficer() then
                 insertInLog(msg, msgPrefix, sender)
-            elseif (msgPrefix == BUFFS) and Utils:isOfficer() then
+            elseif (msgPrefix == Localization.BUFFS) and Utils:isOfficer() then
                 handleBuffs(msg, msgPrefix, sender)
-            elseif (msgPrefix == REQUEST_INIT_CONS) then
-                sendCons(INIT_CONS)
+            elseif (msgPrefix == Localization.REQUEST_INIT_CONS) then
+                sendCons(Localization.INIT_CONS)
                 sendBuffs()
-            elseif (msgPrefix == SHOULD_SAVE_CONS_BUFFS) and Utils:isOfficer() then
+            elseif (msgPrefix == Localization.SHOULD_SAVE_CONS_BUFFS) and Utils:isOfficer() then
                 local _, cons, buffs = string.split("&", msg)
                 RequestedInitCons = tonumber(cons)
                 RequestedInitBuffs = tonumber(buffs)
                 setCreatedBuffCheck(sender)
-            elseif (msgPrefix == REQUEST_POST_CONS) then
-                sendCons(POST_CONS)
-            elseif (msgPrefix == CONS_SHARE) and GuildRosterHandler:isOfficer(sender) then
+            elseif (msgPrefix == Localization.REQUEST_POST_CONS) then
+                sendCons(Localization.POST_CONS)
+            elseif (msgPrefix == Localization.CONS_SHARE) and GuildRosterHandler:isOfficer(sender) then
                 Consumables:updateConsume(msg)
-            elseif (msgPrefix == CONS_CLEAR) and GuildRosterHandler:isOfficer(sender) then
+            elseif (msgPrefix == Localization.CONS_CLEAR) and GuildRosterHandler:isOfficer(sender) then
                 Consumables:clearCons()
-            elseif (msgPrefix == BUFF_CLEAR) and GuildRosterHandler:isOfficer(sender) then
+            elseif (msgPrefix == Localization.BUFF_CLEAR) and GuildRosterHandler:isOfficer(sender) then
                 Buffs:clearBuffs()
-            elseif (msgPrefix == BUFF_SHARE) and GuildRosterHandler:isOfficer(sender) then
+            elseif (msgPrefix == Localization.BUFF_SHARE) and GuildRosterHandler:isOfficer(sender) then
                 Buffs:updateBuff(msg)
-            elseif (msgPrefix == INIT_UPDATE) and Utils:isOfficer() then
+            elseif (msgPrefix == Localization.INIT_UPDATE) and Utils:isOfficer() then
                 updateInit(msg, sender)
             end
         end
-    elseif (event == "ADDON_LOADED") and (prefix == ADDON_PREFIX) then
+    elseif (event == "ADDON_LOADED") and (prefix == Localization.ADDON_PREFIX) then
         Consumables:addonLoaded()
         Buffs:addonLoaded()
     elseif (event == "READY_CHECK") then
-        sendCons(POST_CONS)
+        sendCons(Localization.POST_CONS)
     elseif (event == "CHAT_MSG_LOOT") then
         reactToLoot(prefix, target)
     elseif (event == "TRADE_SHOW") then
@@ -589,7 +592,7 @@ function TrackingLog:onEvent(event, ...)
 end
 
 local function sendWhisperRequest(player)
-    local msg = REQUEST_INIT_CONS
+    local msg = Localization.REQUEST_INIT_CONS
     if not player then
         player = BrowserSelection:getSelectedPlayer()
         if (player == "") then
@@ -615,7 +618,7 @@ function TrackingLog:requestSingleInitCons(player)
 end
 
 function TrackingLog:requestSinglePostCheck(player)
-    local msg = REQUEST_POST_CONS
+    local msg = Localization.REQUEST_POST_CONS
     if not player then
         player = BrowserSelection:getSelectedPlayer()
         if (player == "") then

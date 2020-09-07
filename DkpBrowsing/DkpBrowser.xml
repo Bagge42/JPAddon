@@ -2,13 +2,13 @@
     <Button name="JP_ListHeader" virtual="true">
         <Scripts>
             <OnLoad>
-                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(0, 0, 0, 1)
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):SetVertexColor(0, 0, 0, 1)
             </OnLoad>
             <OnClick>
                     JP_UpdateBrowserEntries(self:GetID())
             </OnClick>
             <OnEnter>
-                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.4)
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):SetVertexColor(1, 1, 1, 0.4)
             </OnEnter>
             <OnLeave>
                     self:GetScript("OnLoad")(self)
@@ -75,17 +75,17 @@
         </Layers>
         <Scripts>
             <OnLoad>
-                    getglobal(self:GetName() .. BACKGROUND):Hide()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
             </OnLoad>
             <OnClick>
                     Jp.BrowserSelection:selectEntry(self:GetID())
             </OnClick>
             <OnEnter>
-                    getglobal(self:GetName() .. BACKGROUND):Show()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Show()
             </OnEnter>
             <OnLeave>
                     if not Jp.BrowserSelection:isSelected(self:GetID()) then
-                        getglobal(self:GetName() .. BACKGROUND):Hide()
+                        getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
                     end
             </OnLeave>
         </Scripts>
@@ -103,7 +103,7 @@
             </OnClick>
         </Scripts>
     </Button>
-    <Button name="JP_CloseButton" text="CLOSE_BUTTON" virtual="true">
+    <Button name="JP_CloseButton" text="x" virtual="true">
         <Size>
             <AbsDimension x="24" y="24"/>
         </Size>
@@ -136,10 +136,10 @@
         <HighlightFont style="GameFontNormal"/>
         <Scripts>
             <OnLoad>
-                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0)
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):SetVertexColor(1, 1, 1, 0)
             </OnLoad>
             <OnEnter>
-                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.2)
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):SetVertexColor(1, 1, 1, 0.2)
             </OnEnter>
             <OnLeave>
                     self:GetScript("OnLoad")(self)
@@ -276,7 +276,7 @@
                             </OnVerticalScroll>
                         </Scripts>
                     </ScrollFrame>
-                    <Button inherits="JP_ListHeader" name="$parentPlayerHeader" id="1" text="PLAYER_HEADER">
+                    <Button inherits="JP_ListHeader" name="$parentPlayerHeader" id="1" text="JP_PLAYER_HEADER">
                         <Size>
                             <AbsDimension x="189" y="24"/>
                         </Size>
@@ -288,7 +288,7 @@
                             </Anchor>
                         </Anchors>
                     </Button>
-                    <Button inherits="JP_ListHeader" name="$parentBidHeader" id="3" text="BID_HEADER" hidden="true">
+                    <Button inherits="JP_ListHeader" name="$parentBidHeader" id="3" text="Bid" hidden="true">
                         <Size>
                             <AbsDimension x="74" y="24"/>
                         </Size>
@@ -296,7 +296,7 @@
                             <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentPlayerHeader"/>
                         </Anchors>
                     </Button>
-                    <Button inherits="JP_ListHeader" name="$parentAmountHeader" id="2" text="AMOUNT_HEADER">
+                    <Button inherits="JP_ListHeader" name="$parentAmountHeader" id="2" text="DKP">
                         <Size>
                             <AbsDimension x="94" y="24"/>
                         </Size>
@@ -318,7 +318,7 @@
                 </Backdrop>
                 <Layers>
                     <Layer level="ARTWORK">
-                        <FontString inherits="GameFontHighlight" text="TITLE">
+                        <FontString inherits="GameFontHighlight" text="J&amp;P DKP">
                             <Anchors>
                                 <Anchor point="RIGHT" relativeTo="JP_OuterFrameTitleFrame" relativePoint="LEFT">
                                     <Offset>
@@ -331,7 +331,7 @@
                 </Layers>
                 <Frames>
                     <Button name="$parentClose" inherits="JP_CloseButton"/>
-                    <Button name="$parentOptions" text="SETTINGS_BUTTON_TEXT" inherits="JP_AllClassToggle">
+                    <Button name="$parentOptions" text="Settings" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="58" y="24"/>
                         </Size>
@@ -344,7 +344,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentLog" text="LOG_BUTTON_TEXT" inherits="JP_AllClassToggle">
+                    <Button name="$parentLog" text="Log" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="48" y="24"/>
                         </Size>
@@ -357,7 +357,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentPriorities" text="PRIORITY_BUTTON_TEXT" inherits="JP_AllClassToggle">
+                    <Button name="$parentPriorities" text="Priorities" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="65" y="24"/>
                         </Size>
@@ -370,7 +370,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentInvite" text="INVITE_BUTTON_TEXT" inherits="JP_AllClassToggle">
+                    <Button name="$parentInvite" text="Inviting" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="58" y="24"/>
                         </Size>
@@ -383,7 +383,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentTracking" text="CONS_BUTTON_TEXT" inherits="JP_AllClassToggle">
+                    <Button name="$parentTracking" text="Tracking" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="75" y="24"/>
                         </Size>
@@ -396,7 +396,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentNone" text="NONE" inherits="JP_AllClassToggle">
+                    <Button name="$parentNone" text="None" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="48" y="24"/>
                         </Size>
@@ -413,7 +413,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentAll" text="ALL" inherits="JP_AllClassToggle">
+                    <Button name="$parentAll" text="All" inherits="JP_AllClassToggle">
                         <Size>
                             <AbsDimension x="40" y="24"/>
                         </Size>
@@ -432,7 +432,7 @@
                         </Size>
                         <Layers>
                             <Layer level="ARTWORK">
-                                <FontString inherits="GameFontHighlight" text="TOGGLES">
+                                <FontString inherits="GameFontHighlight" text="Show:">
                                     <Anchors>
                                         <Anchor point="CENTER"/>
                                     </Anchors>

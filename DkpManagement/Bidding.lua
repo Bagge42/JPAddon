@@ -1,5 +1,6 @@
 local Jp = _G.Jp
 local Bidding = {}
+local Localization = Jp.Localization
 Jp.Bidding = Bidding
 
 local AuctionInProgress = false
@@ -31,14 +32,14 @@ end
 
 function Bidding:addBidder(bidder, amount)
     if not amount then
-        BiddingRoundRoster[bidder] = FULL_DKP
+        BiddingRoundRoster[bidder] = Localization.FULL_DKP
     else
         BiddingRoundRoster[bidder] = amount
     end
 end
 
 function Bidding:getBid(player)
-    if (BiddingRoundRoster[player] == FULL_DKP) then
+    if (BiddingRoundRoster[player] == Localization.FULL_DKP) then
         return FullDkp
     end
     return BiddingRoundRoster[player]
@@ -47,8 +48,8 @@ end
 function Bidding:setBidInPlayerManagement(player)
     local playerBid = Bidding:getBid(player)
     if (playerBid ~= nil) then
-        getglobal(PLAYER_MANAGEMENT .. "Value"):SetText(playerBid)
+        getglobal(Localization.PLAYER_MANAGEMENT .. "Value"):SetText(playerBid)
     else
-        getglobal(PLAYER_MANAGEMENT .. "Value"):SetText("")
+        getglobal(Localization.PLAYER_MANAGEMENT .. "Value"):SetText("")
     end
 end

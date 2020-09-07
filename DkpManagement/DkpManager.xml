@@ -26,10 +26,10 @@
                     Jp.DkpManager:resetPlayerEditBox()
             </OnClick>
             <OnLoad>
-                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0)
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):SetVertexColor(1, 1, 1, 0)
             </OnLoad>
             <OnEnter>
-                    getglobal(self:GetName() .. BACKGROUND):SetVertexColor(1, 1, 1, 0.2)
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):SetVertexColor(1, 1, 1, 0.2)
             </OnEnter>
             <OnLeave>
                     self:GetScript("OnLoad")(self)
@@ -71,7 +71,7 @@
                     </Layer>
                 </Layers>
                 <Frames>
-                    <Button name="$parentSub" text="SUB_BUTTON" inherits="JP_AdjustDkp" id="2">
+                    <Button name="$parentSub" text="-" inherits="JP_AdjustDkp" id="2">
                         <Anchors>
                             <Anchor point="TOPRIGHT">
                                 <Offset>
@@ -89,7 +89,7 @@
                             </Anchors>
                         </ButtonText>
                     </Button>
-                    <Button name="$parentAdd" text="ADD_BUTTON" inherits="JP_AdjustDkp" id="1">
+                    <Button name="$parentAdd" text="+" inherits="JP_AdjustDkp" id="1">
                         <Anchors>
                             <Anchor point="RIGHT" relativeTo="$parentSub" relativePoint="LEFT"/>
                         </Anchors>
@@ -109,7 +109,7 @@
                         </Size>
                         <Layers>
                             <Layer level="ARTWORK">
-                                <FontString inherits="GameFontHighlight" text="PLAYER_MAN_DESCRIPTION">
+                                <FontString inherits="GameFontHighlight" text="Enter amount:">
                                     <Color r="1" g="1" b="1" a="0.9"/>
                                     <Anchors>
                                         <Anchor point="LEFT">
@@ -125,7 +125,7 @@
                             <Anchor point="TOPLEFT"/>
                         </Anchors>
                     </Frame>
-                    <Button name="$parentQueue" text="QUEUE_BUTTON" inherits="JP_AllClassToggle">
+                    <Button name="$parentQueue" text="Benched" inherits="JP_AllClassToggle">
                         <Anchors>
                             <Anchor point="BOTTOMLEFT"/>
                         </Anchors>
@@ -140,7 +140,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentTank" text="TANK_BUTTON" inherits="JP_AllClassToggle">
+                    <Button name="$parentTank" text="Set main tank" inherits="JP_AllClassToggle">
                         <Anchors>
                             <Anchor point="LEFT" relativeTo="$parentQueue" relativePoint="RIGHT"/>
                         </Anchors>
@@ -154,7 +154,7 @@
                             </OnClick>
                         </Scripts>
                     </Button>
-                    <Button name="$parentAssist" text="ASSIST_BUTTON" inherits="JP_AllClassToggle">
+                    <Button name="$parentAssist" text="Set raid assist" inherits="JP_AllClassToggle">
                         <Anchors>
                             <Anchor point="LEFT" relativeTo="$parentTank" relativePoint="RIGHT"/>
                         </Anchors>
@@ -232,7 +232,7 @@
                     </Layer>
                 </Layers>
             </Frame>
-            <Button name="$parentUndo" text="UNDO" inherits="JP_HoverLight">
+            <Button name="$parentUndo" text="Undo last action" inherits="JP_HoverLight">
                 <Size>
                     <AbsDimension x="135" y="45"/>
                 </Size>
@@ -245,7 +245,7 @@
                     </OnClick>
                 </Scripts>
             </Button>
-            <Button name="$parentDecay" text="DECAY" inherits="JP_HoverLight">
+            <Button name="$parentDecay" text="Decay" inherits="JP_HoverLight">
                 <Size>
                     <AbsDimension x="74" y="45"/>
                 </Size>

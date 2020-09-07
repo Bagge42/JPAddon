@@ -29,13 +29,13 @@
         </Layers>
         <Scripts>
             <OnLoad>
-                    getglobal(self:GetName() .. BACKGROUND):Hide()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
             </OnLoad>
             <OnEnter>
-                    getglobal(self:GetName() .. BACKGROUND):Show()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Show()
             </OnEnter>
             <OnLeave>
-                    getglobal(self:GetName() .. BACKGROUND):Hide()
+                    getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
             </OnLeave>
         </Scripts>
         <NormalTexture name="$parentBackground">
@@ -70,7 +70,7 @@
         <Frames>
             <Frame name="$parentInviteTab" inherits="JP_CenterFrameTab">
                 <Frames>
-                    <Button name="$parentMassInvite" text="MASS_INVITE_BUTTON_TEXT" inherits="JP_HoverLight">
+                    <Button name="$parentMassInvite" text="Mass invite raiders" inherits="JP_HoverLight">
                         <Size>
                             <AbsDimension x="283" y="45"/>
                         </Size>
@@ -97,7 +97,7 @@
                         </Size>
                         <Layers>
                             <Layer level="ARTWORK">
-                                <FontString inherits="GameFontNormal" text="OFFICERS">
+                                <FontString inherits="GameFontNormal" text="Officers">
                                     <Anchors>
                                         <Anchor point="LEFT">
                                             <Offset>
@@ -121,7 +121,7 @@
                                 </Anchors>
                                 <Scripts>
                                     <OnClick>
-                                            Jp.Settings:toggleBooleanSetting(OFFICER_ASSIST_BOOLEAN_SETTING)
+                                            Jp.Settings:toggleBooleanSetting(Jp.Localization.OFFICER_ASSIST_BOOLEAN_SETTING)
                                     </OnClick>
                                 </Scripts>
                             </CheckButton>
