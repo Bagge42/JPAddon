@@ -97,7 +97,7 @@ local function getAbb(name)
 end
 
 function Consumables:addonLoaded()
-    if (Utils:getTableSize(JP_Required_Cons_List) == 0) then
+    if (Utils:getSize(JP_Required_Cons_List) == 0) then
         for _, consume in pairs(RequiredConsumables) do
             Consumables:addConsumable(consume[1], consume[2])
         end
@@ -119,12 +119,12 @@ function Consumables:removeConsumable(name)
     table.remove(JP_Required_Cons_List, indexToRemove)
 end
 
-function Consumables:getConsumableList()
+function Consumables:getConsumables()
     return JP_Required_Cons_List
 end
 
 function Consumables:getNameFromAbb(abb)
-    if (Utils:getTableSize(AbbToName) == 0) then
+    if (Utils:getSize(AbbToName) == 0) then
         for _, consumeEntry in pairs(JP_Required_Cons_List) do
             AbbToName[consumeEntry[2]] = consumeEntry[1]
         end
@@ -133,7 +133,7 @@ function Consumables:getNameFromAbb(abb)
 end
 
 function Consumables:getAbbFromName(name)
-    if (Utils:getTableSize(NameToAbb) == 0) then
+    if (Utils:getSize(NameToAbb) == 0) then
         for _, consumeEntry in pairs(JP_Required_Cons_List) do
             NameToAbb[consumeEntry[1]] = consumeEntry[2]
         end
@@ -141,7 +141,7 @@ function Consumables:getAbbFromName(name)
     return NameToAbb[name]
 end
 
-local function createRoleTableIfNeeded(role)
+local function createRoleTableIfNil(role)
     if (Roles[role] == nil) then
         Roles[role] = {}
         for _, consumeEntry in pairs(JP_Required_Cons_List) do
@@ -155,7 +155,7 @@ local function createRoleTableIfNeeded(role)
 end
 
 function Consumables:getRoleConsumables(role)
-    createRoleTableIfNeeded(role)
+    createRoleTableIfNil(role)
     return Roles[role]
 end
 
@@ -213,7 +213,7 @@ local function setCurrentDateConsTab()
 end
 
 local function getSortedCons()
-    local sortedCons = Utils:copyTable(JP_Required_Cons_List)
+    local sortedCons = Utils:copy(JP_Required_Cons_List)
     table.sort(sortedCons, function(member1, member2)
         return member1[1] < member2[1]
     end)
@@ -237,7 +237,7 @@ local function updateConsEntries()
     end
 end
 
-function Consumables:loadTables(_, addonName)
+function Consumables:onAddonLoad(_, addonName)
     if addonName == "jpdkp" then
         updateConsEntries()
     end
@@ -291,7 +291,7 @@ end
 
 function Consumables:onMouseWheel(delta)
     local negativeDelta = -delta
-    if Utils:indexIsValidForList(negativeDelta, ConsIndex, MaximumConsShown, Utils:getTableSize(JP_Required_Cons_List)) then
+    if Utils:indexIsValidForList(negativeDelta, ConsIndex, MaximumConsShown, Utils:getSize(JP_Required_Cons_List)) then
         ConsIndex = ConsIndex + negativeDelta
         updateConsEntries()
     end

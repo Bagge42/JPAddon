@@ -127,7 +127,7 @@ local function checkForBuff(buffId)
 end
 
 function Buffs:addonLoaded()
-    if (Utils:getTableSize(JP_Required_Buff_List) == 0) then
+    if (Utils:getSize(JP_Required_Buff_List) == 0) then
         for _, buff in pairs(RequiredBuffs) do
             table.insert(JP_Required_Buff_List, buff)
         end

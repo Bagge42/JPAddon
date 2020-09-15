@@ -29,8 +29,8 @@ function TrackingLog:onLoad()
     BrowserSelection:setTrackingButtonsTextEmpty()
 end
 
-local function existRecordingsForDate(table, date)
-    if (table[date] == nil) then
+local function existRecordingsForDate(recordings, date)
+    if (recordings[date] == nil) then
         Utils:jpMsg("No recordings for the specified date")
         return false
     end
@@ -63,27 +63,27 @@ function TrackingLog:getItemsFromLog(date, ...)
 end
 
 local function printInventoriesForItem(entries)
-    for _, playerTable in pairs(entries) do
-        local itemsUsed = playerTable[2]
-        local msg = playerTable[1] .. " held " .. itemsUsed
+    for _, playerAndItemsUsed in pairs(entries) do
+        local itemsUsed = playerAndItemsUsed[2]
+        local msg = playerAndItemsUsed[1] .. " held " .. itemsUsed
         Utils:jpMsg(msg)
     end
 end
 
 local function convertToNameNumberTable(indexedTable)
-    local newTable = {}
+    local nameNumberTable = {}
     if indexedTable then
-        for _, entry in pairs(indexedTable) do
-            newTable[entry[1]] = entry[2]
+        for _, nameAndNumber in pairs(indexedTable) do
+            nameNumberTable[nameAndNumber[1]] = nameAndNumber[2]
         end
     end
-    return newTable
+    return nameNumberTable
 end
 
-local function insertZeros(table1, table2)
-    for key, _ in pairs(table1) do
-        if (table2[key] == nil) then
-            table2[key] = 0
+local function insertZeros(keys, tableToPad)
+    for key, _ in pairs(keys) do
+        if (tableToPad[key] == nil) then
+            tableToPad[key] = 0
         end
     end
 end
@@ -175,13 +175,48 @@ function TrackingLog:getRole(date, role)
 end
 
 function TrackingLog:getRequiredBuffsFromLog()
-    local requiredBuffs = Buffs:getRequiredBuffs()
     local date = DateEditBox:getDateFromBox("JP_TrackingFrameBuffTabDateFrameValue")
+    if not existRecordingsForDate(JP_Buff_Log, date) then
+        return
+    end
+
+    Buffs:getRequiredBuffData(date)
+end
+
+local function getBuffsForEachPlayer(date)
+    local playerBuffList = {}
+    local requiredBuffs = Buffs:getRequiredBuffs()
     for _, buff in pairs(requiredBuffs) do
-        local callSucceeded = TrackingLog:getBuffFromLog(date, buff)
-        if not callSucceeded then
-            return
+        local buffEntries = JP_Buff_Log[date][buff]
+        for entry = 1, #buffEntries, 1 do
+            local player = buffEntries[entry][1]
+            local expirationTime = math.floor(buffEntries[entry][3])
+            if (playerBuffList[player] == nil) then
+                playerBuffList[player] = {}
+            end
+            table.insert(playerBuffList[player], { buff, expirationTime })
         end
+    end
+    return playerBuffList
+end
+
+local function sortBuffData(data)
+    local sortedData = {}
+    for player, buffs in pairs(data) do
+        table.insert(sortedData, {player, buffs})
+    end
+    return Utils:sortByFirstEntryInValue(sortedData)
+end
+
+function Buffs:getRequiredBuffData(date)
+    local buffsForEachPlayer = getBuffsForEachPlayer(date)
+    buffsForEachPlayer = sortBuffData(buffsForEachPlayer)
+    for _, playerAndBuffs in pairs(buffsForEachPlayer) do
+        local msg = playerAndBuffs[1] .. ": "
+        for _, buffAndExpirationTime in pairs(playerAndBuffs[2]) do
+            msg = msg .. Buffs:getAbbFromName(buffAndExpirationTime[1]) .. " - " .. buffAndExpirationTime[2] .. "  "
+        end
+        Utils:jpMsg(msg)
     end
 end
 
@@ -200,18 +235,22 @@ function TrackingLog:getBuffFromLog(date, buff)
     end
 
     local buffEntries = JP_Buff_Log[date][buff]
-    Utils:jpMsg(buff .. ": ")
+    buffEntries = Utils:sortByFirstEntryInValue(buffEntries)
+    Utils:jpMsg(buff)
+    Utils:jpMsg("----------------------------------------")
+    local msg = ""
     for entry = 1, #buffEntries, 1 do
         local player = buffEntries[entry][1]
-        local expirationTime = buffEntries[entry][3]
-        local msg = player .. " - Time left in minutes: " .. expirationTime
-        Utils:jpMsg(msg)
+        local expirationTime = math.floor(buffEntries[entry][3])
+        msg = msg .. player .. ": " .. expirationTime .. "  "
     end
+    Utils:jpMsg(msg)
+    Utils:jpMsg("")
     return true
 end
 
 function TrackingLog:getAllItems(date)
-    local requiredCons = Consumables:getConsumableList()
+    local requiredCons = Consumables:getConsumables()
     for con = 1, #requiredCons, 1 do
         local callSucceeded = TrackingLog:getItemFromLog(date, requiredCons[con][1])
         if not callSucceeded then
@@ -225,7 +264,7 @@ function TrackingLog:getItemsForPlayer(date, player)
         return
     end
 
-    local requiredCons = Consumables:getConsumableList()
+    local requiredCons = Consumables:getConsumables()
     Utils:jpMsg(player)
     Utils:jpMsg("----------------------------------------")
     for con = 1, #requiredCons, 1 do
@@ -252,7 +291,7 @@ local function createDateEntryIfNeeded(datestamp)
 end
 
 local function createConsEntries(datestamp, prefix)
-    local requiredCons = Consumables:getConsumableList()
+    local requiredCons = Consumables:getConsumables()
     for requiredConNr = 1, #requiredCons, 1 do
         JP_Consumables_Log[datestamp][prefix][requiredCons[requiredConNr][1]] = {}
     end
@@ -372,7 +411,7 @@ end
 
 local function sendCons(prefix)
     local msg = prefix
-    local requiredCons = Consumables:getConsumableList()
+    local requiredCons = Consumables:getConsumables()
     for conNr = 1, #requiredCons, 1 do
         local conCount = GetItemCount(requiredCons[conNr][1], nil, true)
         if (conCount > 0) then
@@ -447,7 +486,9 @@ local function handleBuffs(msg, msgPrefix, sender)
     for buff in string.gmatch(noPrefixMsg, "([^&]+)") do
         addBuff(datestamp, sender, buff)
     end
-    --    addDkpForHavingBuffs(datestamp, sender)
+--    if CreatedBuffCheck then
+--        addDkpForHavingBuffs(datestamp, sender)
+--    end
 end
 
 local function setCreatedBuffCheck(sender)
@@ -459,8 +500,8 @@ local function setCreatedBuffCheck(sender)
 end
 
 local function consumableIsBeingTracked(cons, consList)
-    for index, itemTable in pairs(consList) do
-        if (itemTable[1] == cons) then
+    for index, itemNameAbbAndRoles in pairs(consList) do
+        if (itemNameAbbAndRoles[1] == cons) then
             return true
         end
     end
@@ -490,10 +531,14 @@ local function reactToLoot(lootString, sender)
         return
     end
 
+    if not Utils:selfIsInRaid() then
+        return
+    end
+
     local lootMethod = findLootMethod(lootString)
     local itemLink = string.match(lootString, "|%x+|Hitem:.-|h.-|h|r")
     local itemName = GetItemInfo(itemLink)
-    local consumablesBeingTracked = Consumables:getConsumableList()
+    local consumablesBeingTracked = Consumables:getConsumables()
     if consumableIsBeingTracked(itemName, consumablesBeingTracked) then
         local itemNumber = findItemNumber(lootString)
         local msg = Localization.INIT_UPDATE .. "&" .. itemName .. "&" .. itemNumber
@@ -513,10 +558,10 @@ local function isCurrentlyTracking(date)
     return initCheckDone and not postCheckDone
 end
 
-local function getSenderIndex(table, value)
-    for key, val in pairs(table) do
-        if (val[1] == value) then
-            return key
+local function getSenderIndex(allSenders, senderName)
+    for index, potentialSender in pairs(allSenders) do
+        if (potentialSender[1] == senderName) then
+            return index
         end
     end
 end
@@ -582,8 +627,6 @@ function TrackingLog:onEvent(event, ...)
     elseif (event == "ADDON_LOADED") and (prefix == Localization.ADDON_PREFIX) then
         Consumables:addonLoaded()
         Buffs:addonLoaded()
-    elseif (event == "READY_CHECK") then
-        sendCons(Localization.POST_CONS)
     elseif (event == "CHAT_MSG_LOOT") then
         reactToLoot(prefix, target)
     elseif (event == "TRADE_SHOW") then

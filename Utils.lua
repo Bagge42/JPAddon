@@ -29,11 +29,11 @@ function Utils:selfIsInRaid()
     return false
 end
 
-function Utils:sortTableWhereKeyIsName(tableToSort)
+function Utils:getTableWithKeysAsValuesSorted(tableToSort)
     local sortedTable = {}
 
-    for member, _ in pairs(tableToSort) do
-        sortedTable[#sortedTable + 1] = member
+    for key, _ in pairs(tableToSort) do
+        sortedTable[#sortedTable + 1] = key
     end
     table.sort(sortedTable, function(member1, member2)
         return member1 < member2
@@ -42,7 +42,7 @@ function Utils:sortTableWhereKeyIsName(tableToSort)
     return sortedTable
 end
 
-function Utils:copyTable(tableToCopy)
+function Utils:copy(tableToCopy)
     local copy = {}
     for k, _ in pairs(tableToCopy) do
         copy[k] = tableToCopy[k]
@@ -90,7 +90,7 @@ function Utils:setClassColor(frame, class)
     frame:SetTextColor(r, g, b)
 end
 
-function Utils:getTableSize(table)
+function Utils:getSize(table)
     local counter = 0
     for _, _ in pairs(table) do
         counter = counter + 1
@@ -100,8 +100,8 @@ end
 
 function Utils:isMsgTypeAndNotFromSelf(msg, msgType, sender)
     local type = string.split("&", msg)
-    local self = UnitName("player")
-    if (type == msgType) and (Utils:removeRealmName(sender) ~= self) then
+    local selfName = UnitName("player")
+    if (type == msgType) and (Utils:removeRealmName(sender) ~= selfName) then
         return true
     end
     return false
@@ -148,14 +148,14 @@ function Utils:isItemLink(text)
     return false
 end
 
-function Utils:getTableWithNoNils(table)
-    local tableWithoutNils = {}
+function Utils:getCopyWithNoNils(table)
+    local copyWithoutNils = {}
     for k, v in pairs(table) do
         if (k ~= nil and v ~= nil) then
-            tableWithoutNils[#tableWithoutNils + 1] = v
+            copyWithoutNils[#copyWithoutNils + 1] = v
         end
     end
-    return tableWithoutNils
+    return copyWithoutNils
 end
 
 -- Wait function from wowwiki --
@@ -216,4 +216,12 @@ function Utils:clearEntries(entryFrameNames, maximumEntries, entryText)
         getglobal(entry:GetName() .. entryText):SetText("")
         entry:Hide()
     end
+end
+
+function Utils:sortByFirstEntryInValue(tableToSort)
+    local resultOfSorting = Utils:copy(tableToSort)
+    table.sort(resultOfSorting, function(member1, member2)
+        return member1[1] < member2[1]
+    end)
+    return resultOfSorting
 end

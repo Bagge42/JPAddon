@@ -151,10 +151,10 @@ local function getZoneTexture(zone)
 end
 
 local function getNumberOfRaidEntries()
-    local nrOfDateEntries = Utils:getTableSize(JP_Log_History)
+    local nrOfDateEntries = Utils:getSize(JP_Log_History)
     local nrOfRaidEntries = 0
     for dateEntry = 1, nrOfDateEntries, 1 do
-        nrOfRaidEntries = nrOfRaidEntries + Utils:getTableSize(JP_Log_History[dateEntry])
+        nrOfRaidEntries = nrOfRaidEntries + Utils:getSize(JP_Log_History[dateEntry])
     end
     return nrOfRaidEntries
 end
@@ -177,7 +177,7 @@ end
 local function updateRaidEntries()
     clearRaidEntries()
     local raidIndexBeforeUpdate = RaidIndex
-    local nrOfDateEntries = Utils:getTableSize(JP_Log_History)
+    local nrOfDateEntries = Utils:getSize(JP_Log_History)
     for raidNumber = 1, MaximumRaidsShown, 1 do
         local logHistoryKey = nrOfDateEntries - DateIndex
         local dateEntry = JP_Log_History[logHistoryKey]

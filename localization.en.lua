@@ -1,6 +1,6 @@
 _G.Jp = {}
-local Jp = _G.Jp
 
+local Jp = _G.Jp
 Jp.Localization = {
     ADDON_PREFIX = "jpdkp",
     ALT = "Alt",
@@ -92,6 +92,9 @@ Jp.Localization = {
     SHOULD_SAVE_CONS_BUFFS = "SaveConsBuffs",
     VERSION = "Version",
     VERSION_CHECK_REQUEST = "CheckVersion",
+    PRIORITY_MSG_SHARE = "SharePrio",
+    PRIORITY_MSG_SHARE_START = "SharePrioStart",
+    PRIORITY_MSG_SHARE_END = "SharePrioEnd",
 
     -- Role --
     CASTER = "Caster",

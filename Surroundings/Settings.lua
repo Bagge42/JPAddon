@@ -8,7 +8,7 @@ Jp.Settings = Settings
 
 local ClassesWaitingForSettings = {}
 local ClassesListeningToChanges = {}
-local SettingsTable = {}
+local SettingStates = {}
 local SettingsLoaded = false
 local SettingTexts = { Localization.ONY_NAME, Localization.MC_NAME, Localization.BWL_NAME, Localization.AQ_NAME, Localization.NAXX_NAME, Localization.DECAY_SETTING_NAME }
 local DefaultSettings = { [SettingTexts[1]] = 12, [SettingTexts[2]] = 33, [SettingTexts[3]] = 27, [SettingTexts[4]] = 0, [SettingTexts[5]] = 0, [SettingTexts[6]] = 20}
@@ -32,12 +32,12 @@ end
 
 local function insertSetting(settingName, settingValue)
     JP_Current_Settings[settingName] = settingValue
-    SettingsTable[settingName] = settingValue
+    SettingStates[settingName] = settingValue
     sendSettingChange(settingName, settingValue)
 end
 
 function Settings:toggleBooleanSetting(settingName)
-    if SettingsTable[settingName] then
+    if SettingStates[settingName] then
         insertSetting(settingName, false)
     else
         insertSetting(settingName, true)
@@ -78,7 +78,7 @@ function Settings:onLoad()
     biddersOnlySetting.checkButton.tooltip = "A bidding round is started by linking an item in a raid warning. If this checkbox is marked the only people that will be shown in the overview, after the start of a bidding round, is people linking an item in the raid chat and people whispering a bid. The bidding round lasts until a new round has been started or show none/all is clicked."
     biddersOnlySetting.checkButton:SetScript("OnClick", function()
         Settings:toggleBooleanSetting(Localization.BIDDERS_ONLY_BOOLEAN_SETTING)
-        if SettingsTable[Localization.BIDDERS_ONLY_BOOLEAN_SETTING] then
+        if SettingStates[Localization.BIDDERS_ONLY_BOOLEAN_SETTING] then
             Jp.DkpBrowser:addBidToOverview()
         else
             Jp.DkpBrowser:removeBidFromOverview()
@@ -98,13 +98,13 @@ function Settings:onLoad()
     end)
 end
 
-local function insertInEditBoxAndSettingsTable(settingValue, editBoxId)
+local function insertInEditBoxAndUpdateState(settingValue, editBoxId)
     getglobal("JP_SettingsFrameSetting" .. editBoxId .. "EditBox"):SetNumber(settingValue)
-    SettingsTable[SettingTexts[editBoxId]] = settingValue
+    SettingStates[SettingTexts[editBoxId]] = settingValue
 end
 
 local function loadCheckBoxSetting(settingName, checkBoxName)
-    SettingsTable[settingName] = JP_Current_Settings[settingName]
+    SettingStates[settingName] = JP_Current_Settings[settingName]
     if JP_Current_Settings[settingName] then
         getglobal(checkBoxName):SetChecked(true)
     end
@@ -118,12 +118,12 @@ local function loadCheckBoxSettings()
 end
 
 local function loadSettings()
-    for settingsCount = 1, Utils:getTableSize(DefaultSettings), 1 do
+    for settingsCount = 1, Utils:getSize(DefaultSettings), 1 do
         local setting = JP_Current_Settings[SettingTexts[settingsCount]]
         if not setting then
             setting = DefaultSettings[SettingTexts[settingsCount]]
         end
-        insertInEditBoxAndSettingsTable(setting, settingsCount)
+        insertInEditBoxAndUpdateState(setting, settingsCount)
     end
     loadCheckBoxSettings()
 end
@@ -150,7 +150,7 @@ function Settings:saveSetting(id)
 end
 
 function Settings:getSetting(settingName)
-    return SettingsTable[settingName]
+    return SettingStates[settingName]
 end
 
 function Settings:subscribeToSettings(class)

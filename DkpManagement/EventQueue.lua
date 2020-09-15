@@ -20,7 +20,7 @@ function EventQueue:getLatestQueuedEvent()
     if queueSize > 0 then
        return Queue[queueSize]
     else
-        return Utils:copyTable(LatestEvent)
+        return Utils:copy(LatestEvent)
     end
 end
 

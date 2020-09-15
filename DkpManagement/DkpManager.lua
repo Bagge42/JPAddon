@@ -85,7 +85,7 @@ local function modifyPlayerDkp(name, dkp, event, zone)
     GuildRosterSetOfficerNote(guildIndex, newOfficerNote)
 end
 
-local function collectPlayerNamesFromTablesNoDups(roster, bench)
+local function getPlayerNamesFromArgsNoDups(roster, bench)
     local playerNames = {}
     for rosterCount = 1, table.getn(roster), 1 do
         playerNames[roster[rosterCount][1]] = true
@@ -123,7 +123,7 @@ end
 local function modifyRaidDkp(dkp, bench, zone, undo)
     if Utils:selfIsInRaid() then
         local jesusIsInRaid = false
-        local playerNames = collectPlayerNamesFromTablesNoDups(GuildRosterHandler:getRaidRoster(), bench)
+        local playerNames = getPlayerNamesFromArgsNoDups(GuildRosterHandler:getRaidRoster(), bench)
         for player, _ in pairs(playerNames) do
             if undo then
                 modifyPlayerDkp(player, dkp, "RaidUndo", zone)
@@ -134,8 +134,8 @@ local function modifyRaidDkp(dkp, bench, zone, undo)
                 jesusIsInRaid = true
             end
         end
-        sendRaidDkpWarning(jesusIsInRaid, dkp, Utils:getTableSize(playerNames))
-        local sizeOfBench = Utils:getTableSize(bench)
+        sendRaidDkpWarning(jesusIsInRaid, dkp, Utils:getSize(playerNames))
+        local sizeOfBench = Utils:getSize(bench)
         if sizeOfBench > 0 then
             sendBenchWarning(bench)
         end
@@ -155,7 +155,7 @@ end
 
 function DkpManager:raidDkpButtonOnClick(id)
     local value = Settings:getSetting(RaidIdToName[id])
-    local benchAtClickTime = Utils:copyTable(Bench:getBench())
+    local benchAtClickTime = Utils:copy(Bench:getBench())
     EventQueue:addEvent(function(event) modifyRaidDkp(event[4], event[5], event[3]) end, Localization.UNDO_ACTION_RAIDADD, GetRealZoneText(), value, benchAtClickTime)
 end
 
@@ -210,7 +210,7 @@ function DkpManager:adjustDkpOnClick(id)
 end
 
 local function decay()
-    RosterAtDecay = Utils:copyTable(GuildRosterHandler:getRoster())
+    RosterAtDecay = Utils:copy(GuildRosterHandler:getRoster())
     local rosterSize = table.getn(RosterAtDecay)
     local totalDecayedDkp = 0
     local decayPercentage = Settings:getSetting(Localization.DECAY_SETTING_NAME)

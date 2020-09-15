@@ -14,7 +14,7 @@ local RaidRoster = {}
 local MaximumAssistsShown = 11
 local MaximumImportsShown = 10
 local ImportIndex = 1
-local ImportList = {}
+local Imports = {}
 
 local function shouldGiveAssist(player, rank)
     local isOfficer = GuildRosterHandler:isOfficer(player)
@@ -41,9 +41,9 @@ local function addRoles(player, rank, role)
     --    macroBtn:Show()
 end
 
-local function updateEntries(list, entryFrameNames, maximumEntriesShown, index)
+local function updateEntries(entries, entryFrameNames, maximumEntriesShown, index)
     local entryCounter = 1
-    local sortedEntries = Utils:sortTableWhereKeyIsName(list)
+    local sortedEntries = Utils:getTableWithKeysAsValuesSorted(entries)
     for memberIndex = index, #sortedEntries, 1 do
         if entryCounter > maximumEntriesShown then
             return
@@ -53,7 +53,7 @@ local function updateEntries(list, entryFrameNames, maximumEntriesShown, index)
         getglobal(entry:GetName() .. Localization.BACKGROUND):Hide()
         local fontString = getglobal(entry:GetName() .. Localization.PLAYER)
         fontString:SetText(sortedEntries[memberIndex])
-        Utils:setClassColor(fontString, list[sortedEntries[memberIndex]])
+        Utils:setClassColor(fontString, entries[sortedEntries[memberIndex]])
         entryCounter = entryCounter + 1
     end
 end
@@ -67,13 +67,13 @@ end
 local function updateImportEntries()
     local entryFrameName = "JP_InviteFrameImportTabListEntry"
     Utils:clearEntries(entryFrameName, MaximumImportsShown, Localization.PLAYER)
-    updateEntries(ImportList, entryFrameName, MaximumImportsShown, ImportIndex)
+    updateEntries(Imports, entryFrameName, MaximumImportsShown, ImportIndex)
 end
 
 
-local function removeFromImportList(player)
-    if (ImportList[player] ~= nil) then
-        ImportList[player] = nil
+local function removeFromImports(player)
+    if (Imports[player] ~= nil) then
+        Imports[player] = nil
         updateImportEntries()
     end
 end
@@ -85,7 +85,7 @@ local function updateRaidRoster()
         if name then
             RaidRoster[name] = class
             addRoles(name, rank, role)
-            removeFromImportList(name)
+            removeFromImports(name)
         end
     end
 end
@@ -148,8 +148,17 @@ local function leaderTextIsValid(text)
     return (lowerCase == "leader") or (text == "lead")
 end
 
-local function shouldPassLeader(text, sender)
+local function shouldHandLeader(text, sender)
     return leaderTextIsValid(text) and GuildRosterHandler:isOfficer(sender)
+end
+
+local function assistTextIsValid(text)
+    local lowerCase = string.lower(text)
+    return (lowerCase == "assist") or (text == "as")
+end
+
+local function shouldHandAssist(text, sender)
+    return assistTextIsValid(text) and GuildRosterHandler:isOfficer(sender)
 end
 
 local function masterLooterTextIsValid(masterLooterText)
@@ -190,14 +199,17 @@ local function splitStringBySpace(text)
 end
 
 local function handleWhisper(text, sender)
+    local isInGroup = IsInGroup()
     if shouldInviteToRaid(text, sender) then
         if shouldConvertToRaid() then
             ConvertToRaid()
         end
         InviteUnit(sender)
-    elseif IsInGroup() and shouldPassLeader(text, sender) then
+    elseif isInGroup and shouldHandLeader(text, sender) then
         PromoteToLeader(sender)
-    elseif IsInGroup() then
+    elseif isInGroup and shouldHandAssist(text, sender) then
+        PromoteToAssistant(sender)
+    elseif isInGroup then
         local masterLooterText, playerGiven = splitStringBySpace(text)
         if shouldPromoteMasterLooter(masterLooterText, sender) then
             promoteToMasterLooter(playerGiven, sender)
@@ -227,7 +239,7 @@ end
 
 function Invite:onImportEntryClick(id)
     local player = getglobal("JP_InviteFrameImportTabListEntry" .. id .. Localization.PLAYER):GetText()
-    ImportList[player] = nil
+    Imports[player] = nil
     updateImportEntries()
 end
 
@@ -240,7 +252,7 @@ end
 function Invite:mainTankButtonClick()
 end
 
-function Invite:loadTables(_, addonName)
+function Invite:onAddonLoad(_, addonName)
     if addonName == "jpdkp" then
         updateAssistEntries()
     end
@@ -255,7 +267,7 @@ local function isNotSelf(name)
 end
 
 function Invite:import()
-    ImportList = {}
+    Imports = {}
     local editBoxText = getglobal("JP_InviteFrameImportTabFrameEditBox"):GetText()
     for player in string.gmatch(editBoxText, "([^,]*)") do
         local potentialSpacesRemoved = string.gsub(player, "%s+", "")
@@ -263,21 +275,21 @@ function Invite:import()
         local firstLetterUpper = uppercaseFirstLetter(lowerCase)
         local class = GuildRosterHandler:getPlayerClass(firstLetterUpper)
         if (class ~= nil) and isNotSelf(firstLetterUpper) then
-            ImportList[firstLetterUpper] = class
+            Imports[firstLetterUpper] = class
         end
     end
     updateImportEntries()
 end
 
 function Invite:inviteImports()
-    for player, _ in pairs(ImportList) do
+    for player, _ in pairs(Imports) do
         checkAndInvite(player)
     end
 end
 
 function Invite:onMouseWheelImports(delta)
     local negativeDelta = -delta
-    if Utils:indexIsValidForList(negativeDelta, ImportIndex, MaximumImportsShown, Utils:getTableSize(ImportList)) then
+    if Utils:indexIsValidForList(negativeDelta, ImportIndex, MaximumImportsShown, Utils:getSize(Imports)) then
         ImportIndex = ImportIndex + negativeDelta
         updateImportEntries()
     end

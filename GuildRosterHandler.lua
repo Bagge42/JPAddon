@@ -123,7 +123,7 @@ function GuildRosterHandler:getSortedRoster(id, bids)
         CurrentIdUsed = id
         CurrentOrderUsed = Localization.ASCENDING
     end
-    local sortedRoster = Utils:copyTable(Roster)
+    local sortedRoster = Utils:copy(Roster)
     sortRoster(sortedRoster, bids)
     return sortedRoster
 end
@@ -211,16 +211,16 @@ end
 function GuildRosterHandler:getRaidRoster()
     local playersInRaid = GetNumGroupMembers()
 
-    local raidRosterTable = {}
+    local raidRoster = {}
     if playersInRaid > 0 then
         for playerCount = 1, playersInRaid, 1 do
             local name, _, _, _, _ = GetRaidRosterInfo(playerCount)
             local playerInfo = GuildRosterHandler:getMemberInfo(name)
-            raidRosterTable[table.getn(raidRosterTable) + 1] = playerInfo
+            raidRoster[table.getn(raidRoster) + 1] = playerInfo
         end
     end
 
-    return raidRosterTable
+    return raidRoster
 end
 
 function GuildRosterHandler:getCurrentSortingId()
@@ -232,15 +232,15 @@ local function isRaiderRank(rank)
 end
 
 function GuildRosterHandler:getRaiders()
-    local raiderTable = {}
+    local raiders = {}
 
     for _, rosterEntry in pairs(Roster) do
         local name = rosterEntry[1]
         local rank = rosterEntry[4]
         if isRaiderRank(rank) then
-            raiderTable[table.getn(raiderTable) + 1] = name
+            raiders[table.getn(raiders) + 1] = name
         end
     end
 
-    return raiderTable
+    return raiders
 end

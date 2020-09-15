@@ -18,7 +18,7 @@ end
 local function updateBenchEntries()
     Utils:clearEntries("JP_BenchFrameListEntry", MaximumMembersShown, Localization.PLAYER)
     local entryCounter = 1
-    local sortedBench = Utils:sortTableWhereKeyIsName(JP_Current_Bench)
+    local sortedBench = Utils:getTableWithKeysAsValuesSorted(JP_Current_Bench)
     for memberIndex = BenchIndex, #sortedBench, 1 do
         if entryCounter > MaximumMembersShown then
             return
@@ -40,7 +40,7 @@ local function decrementIndexIfNeeded()
 end
 
 local function incrementIndexIfNeeded()
-    if (BenchIndex + 1 <= Utils:getTableSize(JP_Current_Bench) - MaximumMembersShown) then
+    if (BenchIndex + 1 <= Utils:getSize(JP_Current_Bench) - MaximumMembersShown) then
         BenchIndex = BenchIndex + 1
     end
 end
@@ -169,7 +169,7 @@ local function onSyncAttempt(prefix, msg, sender)
         elseif Utils:isMsgType(msg, Localization.BENCH_MSG_CLEAR) then
             Bench:clearBench()
         elseif Utils:isMsgType(msg, Localization.BENCH_MSG_REQUEST) then
-            if (Utils:getTableSize(JP_Current_Bench) > 0) then
+            if (Utils:getSize(JP_Current_Bench) > 0) then
                 sendBench(sender)
             end
         elseif Utils:isMsgType(msg, Localization.BENCH_MSG_SHARE) then
@@ -213,7 +213,7 @@ local function newIndexIsValid(delta)
     if (BenchIndex == 1) and (delta < 0) then
         return false
     end
-    if (BenchIndex + delta > Utils:getTableSize(JP_Current_Bench) - MaximumMembersShown + 1) then
+    if (BenchIndex + delta > Utils:getSize(JP_Current_Bench) - MaximumMembersShown + 1) then
         return false
     end
     return true

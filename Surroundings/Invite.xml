@@ -134,7 +134,7 @@
                                     self:RegisterEvent("ADDON_LOADED")
                             </OnLoad>
                             <OnEvent>
-                                    Jp.Invite:loadTables(event, ...)
+                                    Jp.Invite:onAddonLoad(event, ...)
                             </OnEvent>
 <!--                            <OnMouseWheel>-->
 <!--                                    Jp.Bench:onMouseWheel(delta)-->

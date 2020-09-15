@@ -14,8 +14,8 @@ local PriorityIndex = 0
 local CurrentOrderUsed = Localization.ASCENDING
 
 local function getSortedPriorities()
-    local tableCopy = Utils:getTableWithNoNils(JP_Priority_List)
-    table.sort(tableCopy, function(member1, member2)
+    local copyOfPriorities = Utils:getCopyWithNoNils(JP_Priority_List)
+    table.sort(copyOfPriorities, function(member1, member2)
         if CurrentOrderUsed == Localization.DESCENDING then
             return member1[1] > member2[1]
         else
@@ -23,21 +23,21 @@ local function getSortedPriorities()
         end
     end)
 
-    return tableCopy
+    return copyOfPriorities
 end
 
 local function share()
-    local priorityList = getSortedPriorities()
+    local sortedPriorities = getSortedPriorities()
     local msg
-    for itemCount = 1, #priorityList, 1 do
+    for itemCount = 1, #sortedPriorities, 1 do
         if (itemCount == 1) then
-            msg = PRIORITY_MSG_SHARE_START .. "&"
-        elseif (itemCount == #priorityList) then
-            msg = PRIORITY_MSG_SHARE_END .. "&"
+            msg = Localization.PRIORITY_MSG_SHARE_START .. "&"
+        elseif (itemCount == #sortedPriorities) then
+            msg = Localization.PRIORITY_MSG_SHARE_END .. "&"
         else
-            msg = PRIORITY_MSG_SHARE .. "&"
+            msg = Localization.PRIORITY_MSG_SHARE .. "&"
         end
-        msg = msg .. priorityList[itemCount][1] .. "&" .. priorityList[itemCount][2]
+        msg = msg .. sortedPriorities[itemCount][1] .. "&" .. sortedPriorities[itemCount][2]
         Utils:sendOfficerAddonMsg(msg, "GUILD")
     end
     Utils:jpMsg("Shared priorities with all online guild members")
@@ -75,14 +75,14 @@ local function updateNextPreviousButtons()
         previousButton:Show()
     end
 
-    if ((PriorityIndex + MaximumPrioritiesShown) >= Utils:getTableSize(JP_Priority_List)) then
+    if ((PriorityIndex + MaximumPrioritiesShown) >= Utils:getSize(JP_Priority_List)) then
         nextButton:Hide()
     else
         nextButton:Show()
     end
 end
 
-local function updatePriorityList()
+local function updatePriorities()
     clearEntries()
     local sortedPriorities = getSortedPriorities()
     for itemCount = 1, MaximumPrioritiesShown, 1 do
@@ -99,7 +99,7 @@ end
 
 function Priorities:deleteAllPrios()
     JP_Priority_List = {}
-    updatePriorityList()
+    updatePriorities()
 end
 
 local function removeTextFromItemLink(itemLink)
@@ -111,9 +111,9 @@ end
 local function linkPriorityIfAny(item, sender)
     local priority
     local itemText = GetItemInfo(item)
-    for _, itemPriorityTable in pairs(JP_Priority_List) do
-        if (itemPriorityTable[1] == itemText) then
-            priority = itemPriorityTable[2]
+    for _, itemAndPriority in pairs(JP_Priority_List) do
+        if (itemAndPriority[1] == itemText) then
+            priority = itemAndPriority[2]
         end
     end
     if (priority ~= nil) then
@@ -141,13 +141,13 @@ function Priorities:onEvent(event, ...)
             local msgPrefix, item, prio = string.split("&", msg)
             if Utils:isSelfRemoveRealm(sender) then
                 return
-            elseif (msgPrefix == PRIORITY_MSG_SHARE_START) then
+            elseif (msgPrefix == Localization.PRIORITY_MSG_SHARE_START) then
                 JP_Priority_List = {}
                 JP_Priority_List[1] = { item, prio }
-            elseif (msgPrefix == PRIORITY_MSG_SHARE_END) then
+            elseif (msgPrefix == Localization.PRIORITY_MSG_SHARE_END) then
                 JP_Priority_List[#JP_Priority_List + 1] = { item, prio }
-                updatePriorityList()
-            elseif (msgPrefix == PRIORITY_MSG_SHARE) then
+                updatePriorities()
+            elseif (msgPrefix == Localization.PRIORITY_MSG_SHARE) then
                 JP_Priority_List[#JP_Priority_List + 1] = { item, prio }
             end
         end
@@ -160,7 +160,7 @@ function Priorities:onClick()
         getglobal("JP_PriorityFrameTitleFrameShare"):Hide()
     end
     if not getglobal(Localization.PRIORITY_FRAME):IsVisible() then
-        updatePriorityList()
+        updatePriorities()
         getglobal(Localization.PRIORITY_FRAME):Show()
     else
         getglobal(Localization.PRIORITY_FRAME):Hide()
@@ -191,7 +191,7 @@ local function isValid(string)
     return true
 end
 
-local function getListId(item)
+local function getIndex(item)
     for entry, itemInList in pairs(JP_Priority_List) do
         if (item == itemInList[1]) then
             return entry
@@ -200,12 +200,12 @@ local function getListId(item)
     return nil
 end
 
-local function insertInPriorityList(item, priority)
-    local listId = getListId(item)
-    if (listId ~= nil) then
-        JP_Priority_List[listId] = { item, priority }
+local function setPriority(item, priority)
+    local index = getIndex(item)
+    if (index ~= nil) then
+        JP_Priority_List[index] = { item, priority }
     else
-        JP_Priority_List[Utils:getTableSize(JP_Priority_List) + 1] = { item, priority }
+        JP_Priority_List[Utils:getSize(JP_Priority_List) + 1] = { item, priority }
     end
 end
 
@@ -218,9 +218,9 @@ function Priorities:accept()
     local item = getItemText()
     local priority = getglobal("JP_PriorityFrameAddFramePriorityValue"):GetText()
     if (isValid(item) and isValid(priority)) then
-        insertInPriorityList(item, priority)
+        setPriority(item, priority)
         if getglobal("JP_PriorityFrame"):IsVisible() then
-            updatePriorityList()
+            updatePriorities()
         end
     end
     getglobal("JP_PriorityFrameAddFrame"):Hide()
@@ -244,10 +244,10 @@ end
 
 local function deleteClick()
     local selectedEntryItem = getglobal("JP_PriorityFrameDisplayFrameListEntry" .. CurrentSelectedEntry .. "Item"):GetText()
-    local listId = getListId(selectedEntryItem)
-    table.remove(JP_Priority_List, listId)
+    local index = getIndex(selectedEntryItem)
+    table.remove(JP_Priority_List, index)
     removeSelection()
-    updatePriorityList()
+    updatePriorities()
 end
 
 local function createEntryModifiers()
@@ -313,7 +313,7 @@ function Priorities:itemNameClicked()
     else
         CurrentOrderUsed = Localization.ASCENDING
     end
-    updatePriorityList()
+    updatePriorities()
 end
 
 function Priorities:isSelected(id)
@@ -322,10 +322,10 @@ end
 
 function Priorities:next()
     PriorityIndex = PriorityIndex + MaximumPrioritiesShown
-    updatePriorityList()
+    updatePriorities()
 end
 
 function Priorities:previous()
     PriorityIndex = PriorityIndex - MaximumPrioritiesShown
-    updatePriorityList()
+    updatePriorities()
 end
