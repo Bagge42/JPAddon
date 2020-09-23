@@ -79,6 +79,7 @@ local function removeFromImports(player)
 end
 
 local function updateRaidRoster()
+    RaidRoster = {}
     local membersInRaid = GetNumGroupMembers()
     for member = 1, membersInRaid do
         local name, rank, _, _, class, _, _, _, _, role = GetRaidRosterInfo(member)

@@ -92,9 +92,13 @@ Jp.Localization = {
     SHOULD_SAVE_CONS_BUFFS = "SaveConsBuffs",
     VERSION = "Version",
     VERSION_CHECK_REQUEST = "CheckVersion",
+    VERSION_SEND = "SendVersion",
+    VERSION_RESPOND = "ResponseVersion",
     PRIORITY_MSG_SHARE = "SharePrio",
     PRIORITY_MSG_SHARE_START = "SharePrioStart",
     PRIORITY_MSG_SHARE_END = "SharePrioEnd",
+    CONSUME_AMOUNT = "ConsAmount",
+    CONSUME_AMOUNT_RESPONSE = "ConsAmountRe",
 
     -- Role --
     CASTER = "Caster",

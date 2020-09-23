@@ -12,10 +12,12 @@ local GuildRosterHandler = Jp.GuildRosterHandler
 local FrameHandler = Jp.FrameHandler
 local DateEditBox = Jp.DateEditBox
 local DkpManager = Jp.DkpManager
+local VersionCheck = Jp.VersionCheck
 Jp.TrackingLog = TrackingLog
 
 local RequestedInitBuffs
 local RequestedInitCons
+local RequestedPostCons
 local CreatedBuffCheck = false
 local BuffBonus = 3
 local NrOfRequiredBuffs = 2
@@ -26,6 +28,7 @@ function TrackingLog:onLoad()
     FrameHandler:createTrackingTabButtons()
     Buffs:onLoad()
     Consumables:onLoad()
+    VersionCheck:onLoad()
     BrowserSelection:setTrackingButtonsTextEmpty()
 end
 
@@ -203,9 +206,9 @@ end
 local function sortBuffData(data)
     local sortedData = {}
     for player, buffs in pairs(data) do
-        table.insert(sortedData, {player, buffs})
+        table.insert(sortedData, { player, buffs })
     end
-    return Utils:sortByFirstEntryInValue(sortedData)
+    return Utils:sortByEntryInValue(sortedData, 1)
 end
 
 function Buffs:getRequiredBuffData(date)
@@ -235,7 +238,7 @@ function TrackingLog:getBuffFromLog(date, buff)
     end
 
     local buffEntries = JP_Buff_Log[date][buff]
-    buffEntries = Utils:sortByFirstEntryInValue(buffEntries)
+    buffEntries = Utils:sortByEntryInValue(buffEntries, 1)
     Utils:jpMsg(buff)
     Utils:jpMsg("----------------------------------------")
     local msg = ""
@@ -486,9 +489,9 @@ local function handleBuffs(msg, msgPrefix, sender)
     for buff in string.gmatch(noPrefixMsg, "([^&]+)") do
         addBuff(datestamp, sender, buff)
     end
---    if CreatedBuffCheck then
---        addDkpForHavingBuffs(datestamp, sender)
---    end
+    --    if CreatedBuffCheck then
+    --        addDkpForHavingBuffs(datestamp, sender)
+    --    end
 end
 
 local function setCreatedBuffCheck(sender)
@@ -554,7 +557,7 @@ local function isCurrentlyTracking(date)
         return false
     end
     local initCheckDone = JP_Consumables_Log[date][Localization.INIT_CONS] ~= nil
-    local postCheckDone = JP_Consumables_Log[date][Localization.POST_CONS] ~= nil
+    local postCheckDone = RequestedPostCons == true
     return initCheckDone and not postCheckDone
 end
 
@@ -611,6 +614,7 @@ function TrackingLog:onEvent(event, ...)
                 RequestedInitBuffs = tonumber(buffs)
                 setCreatedBuffCheck(sender)
             elseif (msgPrefix == Localization.REQUEST_POST_CONS) then
+                RequestedPostCons = true
                 sendCons(Localization.POST_CONS)
             elseif (msgPrefix == Localization.CONS_SHARE) and GuildRosterHandler:isOfficer(sender) then
                 Consumables:updateConsume(msg)
@@ -622,6 +626,16 @@ function TrackingLog:onEvent(event, ...)
                 Buffs:updateBuff(msg)
             elseif (msgPrefix == Localization.INIT_UPDATE) and Utils:isOfficer() then
                 updateInit(msg, sender)
+            elseif (msgPrefix == Localization.VERSION_CHECK_REQUEST) or (msgPrefix == Localization.VERSION) then
+                VersionCheck:onEvent(msg, sender)
+            elseif (msgPrefix == Localization.VERSION_SEND) then
+                VersionCheck:reactToVersionMsg(msg, sender)
+            elseif (msgPrefix == Localization.VERSION_RESPOND) then
+                VersionCheck:printOutOfDateMsg(msg, sender)
+            elseif (msgPrefix == Localization.CONSUME_AMOUNT) then
+                Consumables:reactToAmount(msg, sender)
+            elseif (msgPrefix == Localization.CONSUME_AMOUNT_RESPONSE) and Utils:isOfficer() then
+                Consumables:printAmountMsg(msg, sender)
             end
         end
     elseif (event == "ADDON_LOADED") and (prefix == Localization.ADDON_PREFIX) then
@@ -631,6 +645,9 @@ function TrackingLog:onEvent(event, ...)
         reactToLoot(prefix, target)
     elseif (event == "TRADE_SHOW") then
         TradeTarget = UnitName("npc")
+    elseif (event == "PLAYER_LOGIN") then
+        VersionCheck:sendVersion()
+        Consumables:sendNrOfConsTracked()
     end
 end
 

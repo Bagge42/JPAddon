@@ -210,18 +210,27 @@ function Utils:indexIsValidForList(delta, index, maximumEntriesShown, listSize)
     return true
 end
 
-function Utils:clearEntries(entryFrameNames, maximumEntries, entryText)
+function Utils:clearEntries(entryFrameNames, maximumEntries, ...)
     for member = 1, maximumEntries, 1 do
         local entry = getglobal(entryFrameNames .. member)
-        getglobal(entry:GetName() .. entryText):SetText("")
+        local nrOfTexts = select('#', ...)
+        for textCount = 1, nrOfTexts do
+            local text = select(textCount, ...)
+            getglobal(entry:GetName() .. text):SetText("")
+        end
         entry:Hide()
     end
 end
 
-function Utils:sortByFirstEntryInValue(tableToSort)
+function Utils:sortByEntryInValue(tableToSort, entryNr)
     local resultOfSorting = Utils:copy(tableToSort)
     table.sort(resultOfSorting, function(member1, member2)
-        return member1[1] < member2[1]
+        return member1[entryNr] < member2[entryNr]
     end)
     return resultOfSorting
+end
+
+function Utils:getDate()
+    local currentTime = time()
+    return date("%d/%m/%Y", currentTime)
 end

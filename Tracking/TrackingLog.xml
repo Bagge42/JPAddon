@@ -108,22 +108,32 @@
             <Color r="0" g="0" b="0.5" a="0.33"/>
         </NormalTexture>
     </Button>
-    <Button name="JP_DmtListEntry" hidden="true" virtual="true">
+    <Button name="JP_VersionListEntry" hidden="true" virtual="true">
         <Size>
-            <AbsDimension x="141" y="21"/>
+            <AbsDimension x="283" y="19"/>
         </Size>
         <Layers>
             <Layer>
                 <FontString name="$parentPlayer" justifyH="LEFT" inherits="GameFontNormal">
                     <Size>
-                        <AbsDimension x="141" y="21"/>
+                        <AbsDimension x="142" y="19"/>
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT">
                             <Offset>
-                                <AbsDimension x="6" y="0"/>
+                                <AbsDimension x="2" y="0"/>
                             </Offset>
                         </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+            <Layer>
+                <FontString name="$parentVersion" justifyH="RIGHT" inherits="GameFontNormal">
+                    <Size>
+                        <AbsDimension x="137" y="19"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentPlayer" relativePoint="RIGHT"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -132,9 +142,6 @@
             <OnLoad>
                     getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Hide()
             </OnLoad>
-            <OnClick>
-                    Jp.Buffs:onListEntryClick(self:GetName())
-            </OnClick>
             <OnEnter>
                     getglobal(self:GetName() .. Jp.Localization.BACKGROUND):Show()
             </OnEnter>
@@ -151,13 +158,14 @@
             <AbsDimension x="24" y="24"/>
         </Size>
     </CheckButton>
-    <Frame name="JP_TrackingFrame" inherits="JP_CenterFrameDynamic" hidden="true">
+    <Frame name="JP_TrackingFrame" parent="JP_OuterFrame" inherits="JP_CenterFrameDynamic" hidden="true">
         <Scripts>
             <OnLoad>
                     self:RegisterEvent("CHAT_MSG_ADDON")
                     self:RegisterEvent("ADDON_LOADED")
                     self:RegisterEvent("CHAT_MSG_LOOT")
                     self:RegisterEvent("TRADE_SHOW")
+                    self:RegisterEvent("PLAYER_LOGIN")
                     Jp.TrackingLog:onLoad()
             </OnLoad>
             <OnEvent>
@@ -409,28 +417,42 @@
                     </Frame>
                 </Frames>
             </Frame>
-            <Frame name="$parentDmtTab" inherits="JP_CenterFrameTab" hidden="true">
+            <Frame name="$parentVersionTab" inherits="JP_CenterFrameTab" hidden="true">
                 <Frames>
-                    <Frame name="$parentCritList">
+                    <Frame name="$parentDateFrame" inherits="JP_DateFrame">
+                        <Anchors>
+                            <Anchor point="TOP"/>
+                        </Anchors>
+                    </Frame>
+                    <Frame name="$parentList">
                         <Scripts>
                             <OnLoad>
-                                    Jp.Utils:createEntries("Button", JP_TrackingFrameConsTabList, "JP_DmtListEntry", Jp.Buffs:getMaximumDmtEntriesShown())
-                                    self:RegisterEvent("ADDON_LOADED")
+                                    Jp.Utils:createEntries("Button", JP_TrackingFrameVersionTabList, "JP_VersionListEntry", Jp.VersionCheck:getMaximumVersionEntriesShown())
                             </OnLoad>
-                            <OnEvent>
-                                    Jp.Buffs:loadDmtLists(event, ...)
-                            </OnEvent>
                             <OnMouseWheel>
-                                    Jp.Buffs:onMouseWheelDmtCrit(delta)
+                                    Jp.VersionCheck:onMouseWheel(delta)
                             </OnMouseWheel>
                         </Scripts>
                         <Size>
-                            <AbsDimension x="141" y="228"/>
+                            <AbsDimension x="283" y="228"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="TOP" relativeTo="$parentDateFrame" relativePoint="BOTTOM"/>
                         </Anchors>
                     </Frame>
+                    <Button name="$parentFetch" text="Get versions for date" inherits="JP_HoverLight">
+                        <Size>
+                            <AbsDimension x="283" y="21"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="BOTTOM"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                    Jp.VersionCheck:fetchVersions()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
                 </Frames>
             </Frame>
         </Frames>

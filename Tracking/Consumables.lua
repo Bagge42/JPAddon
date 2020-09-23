@@ -296,3 +296,31 @@ function Consumables:onMouseWheel(delta)
         updateConsEntries()
     end
 end
+
+local function printAmountMsg(sender, amount, ownAmount)
+    local printMsg = sender .. " only tracks " .. amount .. " items compared to your " .. ownAmount
+    Utils:jpMsg(printMsg)
+end
+
+function Consumables:sendNrOfConsTracked()
+    local msg = Localization.CONSUME_AMOUNT .. "&" .. Utils:getSize(JP_Required_Cons_List)
+    Utils:sendAddonMsg(msg, "GUILD")
+end
+
+function Consumables:reactToAmount(msg, sender)
+    local _, amount = string.split("&", msg)
+    amount = tonumber(amount)
+    local ownAmount = Utils:getSize(JP_Required_Cons_List)
+    if (amount > ownAmount) and Utils:isOfficer() then
+        printAmountMsg(sender, amount, ownAmount)
+    elseif (amount > ownAmount) then
+        local whisper = Localization.CONSUME_AMOUNT .. "&" .. Utils:getSize(JP_Required_Cons_List)
+        Utils:sendAddonMsg(whisper, "WHISPER", sender)
+    end
+end
+
+function Consumables:printAmountMsg(msg, sender)
+    local _, amount = string.split("&", msg)
+    local ownAmount = Utils:getSize(JP_Required_Cons_List)
+    printAmountMsg(sender, amount, ownAmount)
+end

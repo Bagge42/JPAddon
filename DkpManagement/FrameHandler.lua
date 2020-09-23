@@ -78,6 +78,7 @@ local function hideAllTrackingTabs()
     getglobal("JP_TrackingFrameTrackingTab"):Hide()
     getglobal("JP_TrackingFrameBuffTab"):Hide()
     getglobal("JP_TrackingFrameConsTab"):Hide()
+    getglobal("JP_TrackingFrameVersionTab"):Hide()
 end
 
 local function showTab(tab, parent)
@@ -148,12 +149,12 @@ function FrameHandler:createTrackingTabButtons()
         showTab("JP_TrackingFrameBuffTab", "tracking")
     end)
 
-    local dmtButton = CreateFrame("Button", "$parentDmtTabButton", JP_TrackingFrameTitleFrame, "JP_AllClassToggle")
-    dmtButton:SetPoint("LEFT", JP_TrackingFrameTitleFrameBuffTabButton, "RIGHT")
-    dmtButton:SetSize(50, 24)
-    dmtButton:SetText("DMT")
-    dmtButton:SetScript("OnClick", function()
-        showTab("JP_TrackingFrameDmtTab", "tracking")
+    local versionButton = CreateFrame("Button", "$parentVersionTabButton", JP_TrackingFrameTitleFrame, "JP_AllClassToggle")
+    versionButton:SetPoint("LEFT", JP_TrackingFrameTitleFrameBuffTabButton, "RIGHT")
+    versionButton:SetSize(66, 24)
+    versionButton:SetText("Version")
+    versionButton:SetScript("OnClick", function()
+        showTab("JP_TrackingFrameVersionTab", "tracking")
     end)
 end
 

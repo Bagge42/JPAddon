@@ -9,7 +9,6 @@ local DateEditBox = Jp.DateEditBox
 Jp.Buffs = Buffs
 
 local BuffCap = 32
-local MaximumDmtEntriesShown = 11
 
 local RaidBuffNamesToIds = {
     ["Rallying Cry of the Dragonslayer"] = 22888,
@@ -50,6 +49,7 @@ local RaidBuffNamesToAbb = {
 }
 
 local RaidBuffAbbToName = {
+    -- Deprecated
     ["RCotD"] = "Rallying Cry of the Dragonslayer",
     ["SSe"] = "Songflower Serenade",
     ["WB"] = "Warchief's Blessing",
@@ -65,6 +65,8 @@ local RaidBuffAbbToName = {
     ["SSa"] = "Slip'kik's Savvy",
     ["MM"] = "Mol'dar's Moxie",
     ["SoS"] = "Spirit of Zandalar",
+    -- Deprecated
+
     ["Ony"] = "Rallying Cry of the Dragonslayer",
     ["SF"] = "Songflower Serenade",
     ["Rend"] = "Warchief's Blessing",
